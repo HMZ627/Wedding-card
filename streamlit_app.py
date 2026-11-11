@@ -35,7 +35,6 @@ html_content = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invitation</title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <style>
         /* --- Base & Background --- */
         body {
@@ -113,7 +112,7 @@ html_content = """
         .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 40px; height: 120px; }
         .plant { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
         .flower { font-size: 4.5rem; transform: scale(0); transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
-        .butterfly { font-size: 2.5rem; position: absolute; bottom: 20px; opacity: 0; transition: all 1.5s ease-in-out; }
+        .butterfly { font-size: 3rem; position: absolute; bottom: 20px; opacity: 0; transition: all 1.5s ease-in-out; }
 
         .visible-ink .ink-spread-anim { opacity: 1; clip-path: circle(150% at center); filter: blur(0px); }
         .visible-ink .flower { transform: scale(1); animation: continuousBloom 3s infinite alternate ease-in-out 1.5s; }
@@ -155,12 +154,16 @@ html_content = """
             100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
         }
 
+        /* --- Custom Graphic Animations (Butterflies Flapping) --- */
+        .bf-flap-anim { animation: bfWing 0.3s infinite alternate ease-in-out; }
+        @keyframes bfWing { 0% { transform: scaleX(1); } 100% { transform: scaleX(0.25); } }
+
         /* --- Parallax & Float Elements --- */
         .bg-deco { opacity: 0.4; animation: floatDeco 6s infinite ease-in-out alternate; }
         .fg-deco { animation: floatDeco 8s infinite ease-in-out alternate-reverse; }
         @keyframes floatDeco { 0% { transform: translateY(0px); } 100% { transform: translateY(-25px); } }
         
-        /* --- NEW: Drawn Pencil Birds in Flocks with Wingtip-Flapping --- */
+        /* --- Drawn Pencil Birds in Flocks with Wingtip-Flapping --- */
         .bird-flock { position: fixed; z-index: 1; pointer-events: none; opacity: 0.55; }
         .bird-flock .interactive-emoji { pointer-events: auto; }
 
@@ -169,7 +172,6 @@ html_content = """
 
         @keyframes birdBob { 0% { transform: translateY(0px); } 100% { transform: translateY(12px); } }
         
-        /* NEW PATHS: The center (50 30) stays put, while the tips (5, 95) flap vastly up and down! */
         @keyframes birdFlap {
             0%   { d: path("M 5 10 Q 30 15 50 30 Q 70 15 95 10"); } /* Tips high up */
             100% { d: path("M 5 50 Q 30 35 50 30 Q 70 35 95 50"); } /* Tips swooped down */
@@ -183,6 +185,40 @@ html_content = """
     </style>
 </head>
 <body>
+
+    <!-- MASTER SVG DEFINITIONS (Invisible, used to generate all vector graphics efficiently) -->
+    <svg width="0" height="0" style="position:absolute; pointer-events: none;">
+      <defs>
+        <!-- Heart Custom Shape -->
+        <path id="svg-heart" d="M16 28.5C16 28.5 4 20 4 10C4 5.6 7.6 2 12 2C14.4 2 16 3.6 16 3.6C16 3.6 17.6 2 20 2C24.4 2 28 5.6 28 10C28 20 16 28.5 16 28.5Z"/>
+        
+        <!-- Flower Custom Shape -->
+        <g id="svg-flower">
+            <g>
+                <path d="M 16 16 C 10 4 22 4 16 16" />
+                <path d="M 16 16 C 10 4 22 4 16 16" transform="rotate(72 16 16)" />
+                <path d="M 16 16 C 10 4 22 4 16 16" transform="rotate(144 16 16)" />
+                <path d="M 16 16 C 10 4 22 4 16 16" transform="rotate(216 16 16)" />
+                <path d="M 16 16 C 10 4 22 4 16 16" transform="rotate(288 16 16)" />
+            </g>
+            <circle cx="16" cy="16" r="3.5" fill="#f7ecd3" />
+        </g>
+
+        <!-- Butterfly Custom Shape -->
+        <g id="svg-butterfly">
+            <!-- Wings (Animated with 3D flap) -->
+            <g class="bf-flap-anim" style="transform-origin: 16px 16px;">
+                <path d="M 15 16 C 5 4 0 10 7 16 C 0 22 5 28 15 16 Z" />
+                <path d="M 17 16 C 27 4 32 10 25 16 C 32 22 27 28 17 16 Z" />
+            </g>
+            <!-- Body -->
+            <rect x="15" y="8" width="2" height="16" rx="1" fill="#4a3b32"/>
+        </g>
+
+        <!-- Sparkle Custom Shape -->
+        <path id="svg-sparkle" d="M16 2 Q16 16 2 16 Q16 16 16 30 Q16 16 30 16 Q16 16 16 2 Z"/>
+      </defs>
+    </svg>
 
     <!-- Red Curtains -->
     <div id="curtain-wrapper">
@@ -206,14 +242,31 @@ html_content = """
                    you to the <span class="wedding-word">Wedding</span> ceremony
                </div>
                
+               <!-- Custom Vector Drawn Blooming Garden -->
                <div class="garden-container">
                    <div class="plant">
-                       <div class="butterfly"><span class="interactive-emoji">🦋</span></div>
-                       <div class="flower"><span class="interactive-emoji">🌸</span></div>
+                       <div class="butterfly">
+                           <span class="interactive-emoji">
+                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#00bfff"><use href="#svg-butterfly" /></svg>
+                           </span>
+                       </div>
+                       <div class="flower">
+                           <span class="interactive-emoji">
+                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffb6c1"><use href="#svg-flower" /></svg>
+                           </span>
+                       </div>
                    </div>
                    <div class="plant delayed">
-                       <div class="butterfly"><span class="interactive-emoji">🦋</span></div>
-                       <div class="flower"><span class="interactive-emoji">🌺</span></div>
+                       <div class="butterfly">
+                           <span class="interactive-emoji">
+                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffdab9"><use href="#svg-butterfly" /></svg>
+                           </span>
+                       </div>
+                       <div class="flower">
+                           <span class="interactive-emoji">
+                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ff033e"><use href="#svg-flower" /></svg>
+                           </span>
+                       </div>
                    </div>
                </div>
            </div>
@@ -265,12 +318,21 @@ html_content = """
             setTimeout(() => { wrapper.style.display = 'none'; }, 2500);
         }
 
-        // 2. Element Generators (Background Floaties, Foreground Floaties, Bird Flocks)
+        // 2. Element Generators (Background SVGs, Foreground SVGs, Bird Flocks)
         const content = document.getElementById('main-content');
-        const floaties = ['🌸', '❤️', '🌺', '💖', '✨'];
         
-        // A) Parallax Background Emoji Decor
-        for(let i=0; i<25; i++) {
+        // Define Custom Decor shapes & elegant wedding colors
+        const shapeTypes = ['heart', 'flower', 'butterfly', 'sparkle'];
+        const weddingColors = ['#ff033e', '#ffb6c1', '#d4af37', '#e6a8d7', '#ffdab9', '#ffffff', '#ffd700'];
+        
+        // Custom SVG Creator Function
+        function generateSvgGraphic(sizeRem, color) {
+            let type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+            return `<svg viewBox="0 0 32 32" width="${sizeRem}rem" height="${sizeRem}rem" fill="${color}" style="pointer-events: none;"><use href="#svg-${type}" /></svg>`;
+        }
+
+        // A) Parallax Background SVG Decor
+        for(let i=0; i<30; i++) {
             let wrapper = document.createElement('div');
             wrapper.className = 'parallax-bg-wrapper';
             wrapper.style.position = 'absolute';
@@ -284,16 +346,18 @@ html_content = """
             
             let inner = document.createElement('span');
             inner.className = 'interactive-emoji';
-            inner.innerHTML = floaties[Math.floor(Math.random() * floaties.length)];
-            inner.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
+            let randomSize = Math.random() * 1.5 + 1; // 1 to 2.5rem
+            let randomColor = weddingColors[Math.floor(Math.random() * weddingColors.length)];
+            
+            inner.innerHTML = generateSvgGraphic(randomSize, randomColor);
             
             el.appendChild(inner);
             wrapper.appendChild(el);
             content.appendChild(wrapper);
         }
 
-        // B) Parallax Foreground Decor
-        for(let i=0; i<12; i++) {
+        // B) Parallax Foreground SVG Decor
+        for(let i=0; i<15; i++) {
             let wrapper = document.createElement('div');
             wrapper.className = 'parallax-fg-wrapper';
             wrapper.style.position = 'absolute';
@@ -308,9 +372,11 @@ html_content = """
             
             let inner = document.createElement('span');
             inner.className = 'interactive-emoji';
-            inner.innerHTML = floaties[Math.floor(Math.random() * floaties.length)];
-            inner.style.fontSize = (Math.random() * 2 + 2) + 'rem'; 
-            inner.style.filter = 'blur(3px)';
+            let randomSize = Math.random() * 2 + 2; // 2 to 4rem (Bigger for foreground)
+            let randomColor = weddingColors[Math.floor(Math.random() * weddingColors.length)];
+            
+            inner.innerHTML = generateSvgGraphic(randomSize, randomColor);
+            inner.style.filter = 'blur(4px)'; // Blurry depth
             inner.style.opacity = '0.7';
             inner.style.pointerEvents = 'auto'; 
             
@@ -319,7 +385,7 @@ html_content = """
             content.appendChild(wrapper);
         }
 
-        // C) NEW: Organized Bird Flocks with V-formation geometry
+        // C) Organized Bird Flocks with V-formation geometry
         const numFlocks = 5;
         for(let f = 0; f < numFlocks; f++) {
             let flockWrapper = document.createElement('div');
@@ -339,10 +405,7 @@ html_content = """
                 let birdNode = document.createElement('div');
                 birdNode.style.position = 'absolute';
                 
-                // Mathematically calculate a loose V-Formation trailing behind the leader
-                // If flying right, birds offset to the left (negative X). Vice versa.
                 let xOffset = isRight ? -(b * 35 + Math.random()*10) : (b * 35 + Math.random()*10);
-                // Alternate placing birds above and below the leader's Y axis
                 let yOffset = (b % 2 === 0 ? 1 : -1) * (Math.ceil(b/2) * 20) + (Math.random()*10 - 5);
                 
                 birdNode.style.left = xOffset + 'px';
@@ -353,18 +416,16 @@ html_content = """
                 let tilt = isRight ? 'rotate(-10deg)' : 'rotate(10deg)';
                 inner.style.transform = tilt;
                 
-                // Stagger flap animation so they don't look robotic
                 let flapDelay = '-' + (Math.random() * 0.5).toFixed(2) + 's';
                 
                 inner.innerHTML = `
-                <svg class="bird-svg" viewBox="0 0 100 60" width="${Math.random() * 15 + 35}" height="25">
+                <svg class="bird-svg" viewBox="0 0 100 60" width="${Math.random() * 15 + 35}" height="25" style="pointer-events:none;">
                     <path class="bird-wing" style="animation-delay: ${flapDelay};" fill="none" stroke="#4a3b32" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
                 </svg>`;
                 
                 birdNode.appendChild(inner);
                 flockWrapper.appendChild(birdNode);
             }
-            
             document.body.appendChild(flockWrapper);
         }
 
@@ -372,11 +433,9 @@ html_content = """
         window.addEventListener('scroll', () => {
             const scrollY = window.scrollY;
             
-            // Push DOWN as you scroll down -> Result: they move UP slower on the screen
             document.querySelectorAll('.parallax-bg-wrapper').forEach(el => {
                 el.style.transform = `translateY(${scrollY * 0.5}px)`; 
             });
-            // Pull UP as you scroll down -> Result: they move UP faster on the screen
             document.querySelectorAll('.parallax-fg-wrapper').forEach(el => {
                 el.style.transform = `translateY(${-scrollY * 0.4}px)`; 
             });
@@ -482,36 +541,61 @@ html_content = """
                 if (imageData.data[i] === 0) transparentPixels++;
             }
             
-            // INCREASED SENSITIVITY: Pops when only 30% is scratched
             if (transparentPixels / (totalPixels/10) > 0.30 && !isRevealed) {
                 isRevealed = true;
                 canvas.style.transition = 'opacity 0.8s';
                 canvas.style.opacity = 0;
                 setTimeout(() => canvas.style.display = 'none', 800);
-                triggerPopping();
+                
+                // Triggers Custom Explosion System!
+                spawnExplosionDecor();
+                spawnExplosionFlock();
             }
         }
 
-        // 8. Confetti & Flock of Birds Burst Animation!
-        function triggerPopping() {
-            const duration = 3000;
-            const end = Date.now() + duration;
+        // 8. Custom 3D SVG Explosion Particles (Replaces Confetti library entirely!)
+        function spawnExplosionDecor() {
+            const decorContainer = document.createElement('div');
+            decorContainer.style.position = 'fixed';
+            decorContainer.style.left = '50%';
+            decorContainer.style.top = '50%';
+            decorContainer.style.transform = 'translate(-50%, -50%)';
+            decorContainer.style.zIndex = '999';
+            decorContainer.style.pointerEvents = 'none';
+            document.body.appendChild(decorContainer);
 
-            // Heart and Flower Confetti
-            const heartShape = confetti.shapeFromText({ text: '❤️', scalar: 2.5 });
-            const flowerShape = confetti.shapeFromText({ text: '🌸', scalar: 2.5 });
-            const butterflyShape = confetti.shapeFromText({ text: '🦋', scalar: 2.5 });
+            for (let i = 0; i < 40; i++) { 
+                let p = document.createElement('div');
+                p.style.position = 'absolute';
+                
+                let randomSize = Math.random() * 1.5 + 1; 
+                let randomColor = weddingColors[Math.floor(Math.random() * weddingColors.length)];
+                p.innerHTML = generateSvgGraphic(randomSize, randomColor);
+                
+                // Physics calculation for burst and gravity
+                let angle = Math.random() * Math.PI * 2;
+                let velocity = Math.random() * 300 + 100;
+                let tx = Math.cos(angle) * velocity;
+                let ty = Math.sin(angle) * velocity - 200; // bias upward blast
+                let rot = (Math.random() - 0.5) * 360; 
 
-            (function frame() {
-                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0, y: 0.6 }, shapes: [heartShape, flowerShape, butterflyShape], zIndex: 100 });
-                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1, y: 0.6 }, shapes: [heartShape, flowerShape, butterflyShape], zIndex: 100 });
-                if (Date.now() < end) requestAnimationFrame(frame);
-            }());
-            
-            // EXPLODING FLOCK OF BIRDS
-            spawnExplosionFlock();
+                // JS standard Web Animation API for complex pathing
+                p.animate([
+                    { transform: `translate(0px, 0px) scale(0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate(${tx * 0.6}px, ${ty * 0.6}px) scale(1) rotate(${rot/2}deg)`, opacity: 1, offset: 0.4 },
+                    { transform: `translate(${tx}px, ${ty + 500}px) scale(0.5) rotate(${rot}deg)`, opacity: 0 } // Fall down mimicking gravity
+                ], {
+                    duration: Math.random() * 1500 + 2000,
+                    easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                    fill: 'forwards'
+                });
+
+                decorContainer.appendChild(p);
+            }
+            setTimeout(() => decorContainer.remove(), 4000);
         }
 
+        // 9. Exploding Flock of Birds
         function spawnExplosionFlock() {
             const flockContainer = document.createElement('div');
             flockContainer.style.position = 'fixed';
@@ -527,7 +611,6 @@ html_content = """
                 bird.style.position = 'absolute';
                 
                 let flapDelay = '-' + (Math.random() * 0.5).toFixed(2) + 's';
-                // Utilizing the exact same new Wingtip flapping CSS
                 bird.innerHTML = `
                     <svg class="bird-svg" viewBox="0 0 100 60" width="${Math.random() * 15 + 25}" height="20">
                         <path class="bird-wing" style="animation-delay: ${flapDelay};" fill="none" stroke="#4a3b32" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
@@ -538,7 +621,6 @@ html_content = """
                 let ty = - (Math.random() * window.innerHeight/2 + 200); 
                 let rot = (Math.random() - 0.5) * 60; 
 
-                // Dynamic API Javascript animation
                 bird.animate([
                     { transform: `translate(0px, 0px) scale(0.2) rotate(0deg)`, opacity: 1 },
                     { transform: `translate(${tx}px, ${ty}px) scale(1.5) rotate(${rot}deg)`, opacity: 0 }
@@ -550,8 +632,6 @@ html_content = """
 
                 flockContainer.appendChild(bird);
             }
-            
-            // Clean up flock node after finishing animation
             setTimeout(() => flockContainer.remove(), 4000);
         }
     </script>
