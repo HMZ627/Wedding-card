@@ -121,18 +121,8 @@ html_content = """
         .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 40px; height: 120px; }
         .plant { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
         
-        .flower { 
-            font-size: 4.5rem; 
-            transform: scale(0); 
-            transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
-        }
-        .butterfly { 
-            font-size: 2.5rem; 
-            position: absolute; 
-            bottom: 20px; 
-            opacity: 0; 
-            transition: all 1.5s ease-in-out; 
-        }
+        .flower { font-size: 4.5rem; transform: scale(0); transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .butterfly { font-size: 2.5rem; position: absolute; bottom: 20px; opacity: 0; transition: all 1.5s ease-in-out; }
 
         .visible-ink .ink-spread-anim { opacity: 1; clip-path: circle(150% at center); filter: blur(0px); }
         .visible-ink .flower { transform: scale(1); animation: continuousBloom 3s infinite alternate ease-in-out 1.5s; }
@@ -165,17 +155,12 @@ html_content = """
         /* --- Footer --- */
         .footer-text { font-size: 1.5rem; opacity: 0; transform: translateY(50px); transition: all 1.5s; padding-bottom: 100px; font-style: italic; color: #800000; font-weight: bold;}
 
-        /* --- NEW: Interactive Classes & Animations --- */
+        /* --- Interactive Trigger Class --- */
         .interactive-emoji {
-            display: inline-block;
-            cursor: pointer;
-            user-select: none;
+            display: inline-block; cursor: pointer; user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
-        /* The trigger animation class when clicked */
-        .pop-anim {
-            animation: clickPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-        }
+        .pop-anim { animation: clickPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
         @keyframes clickPop {
             0% { transform: scale(1) rotate(0deg); filter: brightness(1); }
             30% { transform: scale(1.6) rotate(15deg); filter: brightness(1.2); }
@@ -183,31 +168,47 @@ html_content = """
             100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
         }
 
-        /* --- NEW: Background, Foreground & Flying Elements --- */
+        /* --- Background / Foreground Hearts & Flowers --- */
         .bg-deco { position: absolute; opacity: 0.4; z-index: -1; animation: floatDeco 6s infinite ease-in-out alternate; }
+        .fg-deco { position: fixed; pointer-events: none; z-index: 50; animation: floatDeco 8s infinite ease-in-out alternate-reverse; }
+        .fg-deco .interactive-emoji { pointer-events: auto; } 
+        @keyframes floatDeco { 0% { transform: translateY(0px); } 100% { transform: translateY(-25px); } }
         
-        .fg-deco {
-            position: fixed; pointer-events: none; z-index: 50; 
-            animation: floatDeco 8s infinite ease-in-out alternate-reverse;
-        }
-        .fg-deco .interactive-emoji { pointer-events: auto; } /* Make clickable even though wrapper ignores clicks */
-
+        /* --- NEW: Drawn Pencil Birds Animation & Setup --- */
         .bird-wrapper { position: fixed; z-index: 5; pointer-events: none; }
         .bird-wrapper .interactive-emoji { pointer-events: auto; }
 
-        @keyframes floatDeco { 0% { transform: translateY(0px); } 100% { transform: translateY(-25px); } }
-        
-        /* Bird Flying Trajectories */
-        @keyframes flyRight {
-            0% { transform: translateX(-10vw) translateY(5vh) scaleX(-1); }
-            100% { transform: translateX(110vw) translateY(-5vh) scaleX(-1); }
+        .bird-svg {
+            overflow: visible;
+            animation: birdBob 0.8s infinite ease-in-out alternate;
         }
-        @keyframes flyLeft {
-            0% { transform: translateX(110vw) translateY(-5vh); }
-            100% { transform: translateX(-10vw) translateY(5vh); }
+        .bird-wing {
+            animation: birdFlap 0.8s infinite ease-in-out alternate;
         }
 
-        /* Animation Triggers */
+        /* Bobbing motion to mimic real flight aerodynamics */
+        @keyframes birdBob {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(8px); }
+        }
+        
+        /* SVG Path Morphing to flap wings up and down beautifully */
+        @keyframes birdFlap {
+            0% { d: path("M 10 30 C 20 10, 40 15, 50 30 C 60 15, 80 10, 90 30"); }
+            100% { d: path("M 10 30 C 25 45, 40 40, 50 30 C 60 40, 75 45, 90 30"); }
+        }
+
+        /* Screen Traversal */
+        @keyframes flyRight {
+            0% { transform: translateX(-10vw) translateY(10vh); }
+            100% { transform: translateX(110vw) translateY(-10vh); }
+        }
+        @keyframes flyLeft {
+            0% { transform: translateX(110vw) translateY(10vh); }
+            100% { transform: translateX(-10vw) translateY(-10vh); }
+        }
+
+        /* Trigger classes */
         .visible-up { opacity: 1 !important; transform: translateY(0) !important; }
         .visible-fade { opacity: 1 !important; }
     </style>
@@ -230,7 +231,7 @@ html_content = """
        <!-- Typewriter Header -->
        <div class="header-text obs type-fade" data-text="Starting with the name of Allah, The most Beneficial and The most Merciful."></div>
 
-       <!-- Ink Spread Sub-header Wrapper -->
+       <!-- Ink Spread -->
        <div class="obs ink-trigger" style="min-height: 400px; margin-bottom: 15vh; display: flex; align-items: center; justify-content: center;">
            <div class="ink-spread-anim">
                <div class="sub-header-text">
@@ -239,7 +240,6 @@ html_content = """
                    you to the <span class="wedding-word">Wedding</span> ceremony
                </div>
                
-               <!-- Blooming flowers with butterflies (Now Wraps interactive elements!) -->
                <div class="garden-container">
                    <div class="plant">
                        <div class="butterfly"><span class="interactive-emoji">🦋</span></div>
@@ -253,7 +253,7 @@ html_content = """
            </div>
        </div>
 
-       <!-- Scratchable Heart Space -->
+       <!-- Scratchable Heart -->
        <div class="scratch-wrapper obs fade-up">
            <div class="scratch-container">
                <div class="scratch-bg">
@@ -267,7 +267,7 @@ html_content = """
            </div>
        </div>
 
-       <!-- Sub-header Typewriter -->
+       <!-- Sub-header -->
        <div class="header-text obs type-fade" data-text="Show your kind love by participating in the event"></div>
 
        <!-- Schedule Table -->
@@ -303,11 +303,11 @@ html_content = """
             setTimeout(() => { wrapper.style.display = 'none'; }, 2500);
         }
 
-        // 2. Element Generators (Background, Foreground, and Birds)
+        // 2. Element Generators (Background Floaties, Foreground Floaties, Drawn Birds)
         const content = document.getElementById('main-content');
         const floaties = ['🌸', '❤️', '🌺', '💖', '✨'];
         
-        // A) Background Floating Decor
+        // A) Background Emoji Decor
         for(let i=0; i<15; i++) {
             let el = document.createElement('div');
             el.className = 'bg-deco';
@@ -324,7 +324,7 @@ html_content = """
             content.appendChild(el);
         }
 
-        // B) Foreground Blurry Decor (Parallax)
+        // B) Foreground Parallax Decor
         for(let i=0; i<7; i++) {
             let el = document.createElement('div');
             el.className = 'fg-deco';
@@ -335,51 +335,58 @@ html_content = """
             let inner = document.createElement('span');
             inner.className = 'interactive-emoji';
             inner.innerHTML = floaties[Math.floor(Math.random() * floaties.length)];
-            inner.style.fontSize = (Math.random() * 2 + 2) + 'rem'; // Larger
-            inner.style.filter = 'blur(3px)'; // Blurry depth
+            inner.style.fontSize = (Math.random() * 2 + 2) + 'rem'; 
+            inner.style.filter = 'blur(3px)';
             inner.style.opacity = '0.6';
             
             el.appendChild(inner);
             document.body.appendChild(el);
         }
 
-        // C) Flying Birds
-        const birds = ['🕊️', '🐦'];
-        for(let i=0; i<5; i++) {
+        // C) NEW: Drawn Pencil Birds
+        for(let i=0; i<6; i++) {
             let wrapper = document.createElement('div');
             wrapper.className = 'bird-wrapper';
             
-            let isRight = Math.random() > 0.5; // Fly Left or Right
+            let isRight = Math.random() > 0.5; // Random flight direction
             let animName = isRight ? 'flyRight' : 'flyLeft';
-            let animDuration = Math.random() * 15 + 15; // 15 to 30 seconds
+            let animDuration = Math.random() * 20 + 25; // Slow, elegant glide (25-45s)
             
             wrapper.style.animation = `${animName} ${animDuration}s linear infinite`;
-            wrapper.style.animationDelay = '-' + (Math.random() * 20) + 's'; // Start at different times
-            wrapper.style.top = (Math.random() * 75 + 5) + 'vh'; // Random height
+            wrapper.style.animationDelay = '-' + (Math.random() * 20) + 's';
+            wrapper.style.top = (Math.random() * 65 + 10) + 'vh'; 
             
-            let inner = document.createElement('span');
+            let inner = document.createElement('div');
             inner.className = 'interactive-emoji';
-            inner.innerHTML = birds[Math.floor(Math.random() * birds.length)];
-            inner.style.fontSize = '2.2rem';
-            inner.style.opacity = '0.7';
+            
+            // Adjust tilt based on direction it's flying
+            let tilt = isRight ? 'rotate(-10deg)' : 'rotate(10deg)';
+            inner.style.transform = tilt;
+            inner.style.opacity = '0.7'; // Pencil fade
+            
+            // Construct the elegant SVG Bird
+            // Using stroke to represent a pencil drawing
+            inner.innerHTML = `
+            <svg class="bird-svg" viewBox="0 0 100 50" width="${Math.random() * 25 + 40}" height="35">
+                <path class="bird-wing" fill="none" stroke="#4a3b32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M 10 30 C 20 10, 40 15, 50 30 C 60 15, 80 10, 90 30" />
+            </svg>`;
             
             wrapper.appendChild(inner);
             document.body.appendChild(wrapper);
         }
 
-        // 3. Interactive Emoji Click/Tap Event Listener
+        // 3. Interactive Click/Tap Event Listener
         document.addEventListener('click', function(e) {
-            if(e.target.classList.contains('interactive-emoji')) {
-                // Remove class to allow rapid re-clicking
-                e.target.classList.remove('pop-anim');
-                // Trigger quick reflow to reset CSS animation state
-                void e.target.offsetWidth;
-                // Add pop animation back
-                e.target.classList.add('pop-anim');
+            // Find closest interactive element if child is clicked (like SVG path)
+            const target = e.target.closest('.interactive-emoji');
+            if(target) {
+                target.classList.remove('pop-anim');
+                void target.offsetWidth; // Trigger reflow
+                target.classList.add('pop-anim');
             }
         });
 
-        // 4. Scroll Interactions (Intersection Observer)
+        // 4. Scroll Interactions
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -407,7 +414,7 @@ html_content = """
             
             chars.forEach(char => {
                 if (char === ' ') {
-                    el.appendChild(document.createTextNode(' ')); // Allow standard word-wrap
+                    el.appendChild(document.createTextNode(' '));
                 } else {
                     let span = document.createElement('span');
                     span.textContent = char;
@@ -486,7 +493,7 @@ html_content = """
             }
         }
 
-        // 7. Confetti & Heart Bubbles Animation on Reveal
+        // 7. Confetti & Heart Bubbles Animation
         function triggerPopping() {
             const duration = 3000;
             const end = Date.now() + duration;
