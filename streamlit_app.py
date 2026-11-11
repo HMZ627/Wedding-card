@@ -88,47 +88,102 @@ html_content = """
         /* Type-in Fade-in */
         .type-fade { font-size: 2rem; margin: 0 auto 25vh auto; max-width: 800px; opacity: 0; transition: opacity 1.5s ease-in; min-height: 80px;}
         
-        /* Ink Spread */
-        .ink-spread-anim { margin-bottom: 25vh; clip-path: circle(0% at center); filter: blur(10px); opacity: 0; transition: clip-path 2.5s ease-in-out, filter 2.5s ease-out, opacity 1s ease-in; }
+        /* --- UPDATED: Ink Spread & Invitation Section --- */
+        .ink-spread-anim { 
+            margin-bottom: 25vh; 
+            clip-path: circle(0% at center); 
+            filter: blur(20px); 
+            opacity: 0; 
+            transition: clip-path 2.5s cubic-bezier(0.25, 1, 0.5, 1), filter 2.5s ease-out, opacity 1.5s ease-in; 
+        }
         .sub-header-text { font-size: 2rem; position: relative; }
-        .invite-word { font-size: 5rem; display: block; font-family: 'Great Vibes', cursive; margin: 20px 0; color: #4a3b32; }
-        .wedding-word { color: #cc0033; font-weight: bold; }
         
-        /* Flowers & Butterflies */
-        .garden { position: relative; height: 100px; margin-top: 20px; }
-        .flower { font-size: 3rem; display: inline-block; animation: bloom 3s infinite alternate ease-in-out; margin: 0 10px; }
-        .butterfly { font-size: 2.5rem; position: absolute; animation: hoverfly 2.5s infinite ease-in-out alternate; }
-        @keyframes bloom { 0% { transform: scale(0.8); } 100% { transform: scale(1.15); } }
-        @keyframes hoverfly { 0% { transform: translateY(0) rotate(-10deg); } 100% { transform: translateY(-25px) rotate(15deg); } }
+        /* Isolated, Large Invite Word */
+        .invite-word { 
+            font-size: 6rem; /* Very Large */
+            display: block; 
+            text-align: center;
+            font-family: 'Great Vibes', cursive; 
+            margin: 30px 0; 
+            color: #4a3b32; 
+        }
+        
+        /* Rose-Red Wedding Word */
+        .wedding-word { color: #ff033e; font-weight: bold; font-style: italic; }
+        
+        /* 2 Blooming Flowers & Hovering Butterflies */
+        .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 40px; height: 120px; }
+        .plant { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+        
+        .flower { 
+            font-size: 4.5rem; 
+            transform: scale(0); /* Starts hidden */
+            transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+        }
+        .butterfly { 
+            font-size: 2.5rem; 
+            position: absolute; 
+            bottom: 20px; /* Starts inside flower */
+            opacity: 0; 
+            transition: all 1.5s ease-in-out; 
+        }
 
-        /* Scratch Card */
+        /* Triggered animations when ink spread appears */
+        .visible-ink { opacity: 1 !important; clip-path: circle(150% at center) !important; filter: blur(0px) !important; }
+        
+        /* 1st Bloom the flowers */
+        .visible-ink .flower { 
+            transform: scale(1); 
+            animation: continuousBloom 3s infinite alternate ease-in-out 1.5s; /* Wait for scale transition, then continuous */
+        }
+        
+        /* 2nd Fly the butterflies up out of the flowers */
+        .visible-ink .butterfly { 
+            bottom: 90px; /* Fly up above flower */
+            opacity: 1; 
+            transition-delay: 1.2s; /* Wait for flower to bloom first */
+            animation: hoverfly 2.5s infinite ease-in-out alternate 2.7s; /* Start hovering after fly-up */
+        }
+        
+        /* Asynchronous delay for right plant so they don't look robotic */
+        .plant.delayed .flower { transition-delay: 0.4s; }
+        .plant.delayed .butterfly { transition-delay: 1.6s; animation-delay: 3.1s; }
+
+        @keyframes continuousBloom { 
+            0% { transform: scale(1) rotate(-5deg); } 
+            100% { transform: scale(1.15) rotate(5deg); } 
+        }
+        @keyframes hoverfly { 
+            0% { transform: translateY(0) translateX(0) rotate(-10deg); } 
+            100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } 
+        }
+
+        /* --- Scratch Card --- */
         .scratch-wrapper { margin: 0 auto 25vh auto; display: flex; justify-content: center; opacity: 0; transform: translateY(30px); transition: all 1.5s ease-out; }
         .scratch-container {
             position: relative; width: 320px; height: 320px;
-            /* Perfect SVG Heart mask clipping */
             clip-path: path("M 160,90 C 160,90 110,0 20,50 C -50,120 160,300 160,300 C 160,300 370,120 300,50 C 210,0 160,90 160,90 Z");
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
         .scratch-bg { width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: 'Great Vibes', cursive; font-size: 3.5rem; color: #b30000; }
         canvas { position: absolute; top: 0; left: 0; z-index: 10; cursor: pointer; touch-action: none; }
 
-        /* Schedule Table */
+        /* --- Schedule Table --- */
         .schedule-box { max-width: 800px; margin: 0 auto 25vh auto; opacity: 0; transform: translateY(50px); transition: all 1.5s; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 15px; text-align: center; border-bottom: 1px solid #d8ccb8; }
         th { font-family: 'Great Vibes', cursive; font-size: 2rem; color: #800000; border-bottom: 2px solid #bba171; }
         td { font-size: 1.2rem; }
 
-        /* Footer */
+        /* --- Footer --- */
         .footer-text { font-size: 1.5rem; opacity: 0; transform: translateY(50px); transition: all 1.5s; padding-bottom: 100px; font-style: italic; color: #800000; font-weight: bold;}
 
-        /* Background Decorations */
+        /* --- Background Decorations --- */
         .bg-deco { position: absolute; opacity: 0.3; z-index: -1; animation: floatDeco 6s infinite ease-in-out alternate; }
         @keyframes floatDeco { 0% { transform: translateY(0); } 100% { transform: translateY(-20px); } }
 
         /* Animation Triggers */
         .visible-up { opacity: 1 !important; transform: translateY(0) !important; }
-        .visible-ink { opacity: 1 !important; clip-path: circle(150% at center) !important; filter: blur(0px) !important; }
         .visible-fade { opacity: 1 !important; }
     </style>
 </head>
@@ -150,20 +205,24 @@ html_content = """
        <!-- Typewriter Header -->
        <div class="header-text obs type-fade" data-text="Starting with the name of Allah, The most Beneficial and The most Merciful."></div>
 
-       <!-- Ink Spread Sub-header -->
+       <!-- UPDATED: Ink Spread Sub-header with blooming garden -->
        <div class="ink-spread-anim obs ink-trigger">
            <div class="sub-header-text">
                We are pleased to
-               <div class="invite-word">Invite</div>
+               <span class="invite-word">Invite</span>
                you to the <span class="wedding-word">Wedding</span> ceremony
            </div>
            
-           <div class="garden">
-               <div class="butterfly" style="left: 30%; top: -20px;">🦋</div>
-               <div class="butterfly" style="left: 65%; top: -40px; animation-delay: 1s;">🦋</div>
-               <div class="flower" style="color: pink;">🌸</div>
-               <div class="flower" style="color: red;">🌺</div>
-               <div class="flower" style="color: pink;">🌸</div>
+           <!-- The 2 blooming flowers with butterflies -->
+           <div class="garden-container">
+               <div class="plant">
+                   <div class="butterfly">🦋</div>
+                   <div class="flower">🌸</div>
+               </div>
+               <div class="plant delayed">
+                   <div class="butterfly">🦋</div>
+                   <div class="flower">🌺</div>
+               </div>
            </div>
        </div>
 
@@ -213,7 +272,7 @@ html_content = """
             setTimeout(() => { wrapper.style.display = 'none'; }, 2500);
         }
 
-        // 2. Generate Random Decor (Hearts, Butterflies, Flowers)
+        // 2. Generate Random Decor (Hearts, Butterflies, Flowers) for Background
         const decorElements = ['🌸', '❤️', '🦋', '🌺', '💖'];
         const content = document.getElementById('main-content');
         for(let i=0; i<15; i++) {
@@ -252,7 +311,7 @@ html_content = """
 
         // 4. Typewriter Logic
         function typeWriter(el) {
-            if(el.dataset.typed) return; // run only once
+            if(el.dataset.typed) return; 
             el.dataset.typed = true;
             let text = el.getAttribute('data-text');
             el.innerHTML = '';
@@ -264,7 +323,7 @@ html_content = """
                 } else {
                     clearInterval(timer);
                 }
-            }, 60); // Speed of typing
+            }, 60);
         }
 
         // 5. Scratch Card Logic
@@ -292,7 +351,7 @@ html_content = """
 
         function scratch(e) {
             if (!isDrawing || isRevealed) return;
-            e.preventDefault(); // Stop page scrolling whilst scratching
+            e.preventDefault(); 
             const pos = getMousePos(e);
             ctx.globalCompositeOperation = 'destination-out';
             ctx.beginPath();
@@ -301,23 +360,19 @@ html_content = """
             checkReveal();
         }
 
-        // Mouse Events
         canvas.addEventListener('mousedown', () => isDrawing = true);
         canvas.addEventListener('mousemove', scratch);
         canvas.addEventListener('mouseup', () => isDrawing = false);
         canvas.addEventListener('mouseleave', () => isDrawing = false);
-        // Touch Events
         canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); });
         canvas.addEventListener('touchmove', scratch);
         canvas.addEventListener('touchend', () => isDrawing = false);
 
         function checkReveal() {
-            // Sample checking pixels to determine cleared amount
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             let transparentPixels = 0;
             const totalPixels = imageData.data.length / 4;
             
-            // Check every 10th pixel for performance
             for (let i = 3; i < imageData.data.length; i += 40) {
                 if (imageData.data[i] === 0) transparentPixels++;
             }
@@ -336,32 +391,14 @@ html_content = """
             const duration = 3000;
             const end = Date.now() + duration;
 
-            // Creating SVG Custom Shapes for Canvas Confetti
             const heartShape = confetti.shapeFromText({ text: '❤️', scalar: 2.5 });
             const flowerShape = confetti.shapeFromText({ text: '🌸', scalar: 2.5 });
             const butterflyShape = confetti.shapeFromText({ text: '🦋', scalar: 2.5 });
 
             (function frame() {
-                confetti({
-                    particleCount: 5,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0, y: 0.6 },
-                    shapes: [heartShape, flowerShape, butterflyShape],
-                    zIndex: 100
-                });
-                confetti({
-                    particleCount: 5,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1, y: 0.6 },
-                    shapes: [heartShape, flowerShape, butterflyShape],
-                    zIndex: 100
-                });
-
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0, y: 0.6 }, shapes: [heartShape, flowerShape, butterflyShape], zIndex: 100 });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1, y: 0.6 }, shapes: [heartShape, flowerShape, butterflyShape], zIndex: 100 });
+                if (Date.now() < end) requestAnimationFrame(frame);
             }());
         }
     </script>
@@ -369,5 +406,4 @@ html_content = """
 </html>
 """
 
-# Render the exact HTML string using Streamlit Components Fullscreen Viewport
 components.html(html_content, scrolling=True)
