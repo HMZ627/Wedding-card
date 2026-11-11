@@ -108,19 +108,42 @@ html_content = """
         .invite-word { font-size: 6rem; display: block; text-align: center; font-family: 'Great Vibes', cursive; margin: 30px 0; color: #4a3b32; }
         .wedding-word { color: #ff033e; font-weight: bold; font-style: italic; }
         
-        /* 2 Blooming Flowers & Hovering Butterflies */
-        .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 40px; height: 120px; }
+        /* --- NEW Detailed Blooming Garden Sequence --- */
+        .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 40px; height: 130px; }
         .plant { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
-        .flower { font-size: 4.5rem; transform: scale(0); transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
-        .butterfly { font-size: 3rem; position: absolute; bottom: 20px; opacity: 0; transition: all 1.5s ease-in-out; }
+        .flower { font-size: 6rem; display: flex; align-items: center; justify-content: center; }
+        .butterfly { font-size: 3rem; position: absolute; bottom: 20px; opacity: 0; transition: all 1.5s ease-in-out; z-index: 10; }
 
         .visible-ink .ink-spread-anim { opacity: 1; clip-path: circle(150% at center); filter: blur(0px); }
-        .visible-ink .flower { transform: scale(1); animation: continuousBloom 3s infinite alternate ease-in-out 1.5s; }
-        .visible-ink .butterfly { bottom: 90px; opacity: 1; transition-delay: 1.2s; animation: hoverfly 2.5s infinite ease-in-out alternate 2.7s; }
-        .plant.delayed .flower { transition-delay: 0.4s; }
-        .plant.delayed .butterfly { transition-delay: 1.6s; animation-delay: 3.1s; }
+        .visible-ink .butterfly { bottom: 100px; opacity: 1; transition-delay: 2.2s; animation: hoverfly 2.5s infinite ease-in-out alternate 3.7s; }
+        .plant.delayed .butterfly { transition-delay: 2.6s; animation-delay: 4.1s; }
 
-        @keyframes continuousBloom { 0% { transform: scale(1) rotate(-5deg); } 100% { transform: scale(1.15) rotate(5deg); } }
+        /* Elegant Nested Blooming Animations for SVG inner layers */
+        .flower-layer-1, .flower-layer-2, .flower-layer-3, .flower-center {
+            transform-origin: 16px 16px;
+            transform: scale(0);
+        }
+        
+        .visible-ink .flower-layer-1 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1s; }
+        .visible-ink .flower-layer-2 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.3s; }
+        .visible-ink .flower-layer-3 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.6s; }
+        .visible-ink .flower-center { animation: bloomLayer 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.9s; }
+        
+        /* The whole flower breathes gently after blooming */
+        .visible-ink .flower svg { animation: continuousBloom 4s infinite alternate ease-in-out 3.5s; }
+
+        .plant.delayed .flower-layer-1 { animation-delay: 1.4s; }
+        .plant.delayed .flower-layer-2 { animation-delay: 1.7s; }
+        .plant.delayed .flower-layer-3 { animation-delay: 2.0s; }
+        .plant.delayed .flower-center { animation-delay: 2.3s; }
+        .plant.delayed .flower svg { animation-delay: 3.9s; }
+
+        @keyframes bloomLayer {
+            0% { transform: scale(0) rotate(-15deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
         @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
         /* --- Scratch Card --- */
@@ -166,17 +189,13 @@ html_content = """
         /* --- Drawn Pencil Birds in Flocks with Wingtip-Flapping --- */
         .bird-flock { position: fixed; z-index: 1; pointer-events: none; opacity: 0.55; }
         .bird-flock .interactive-emoji { pointer-events: auto; }
-
         .bird-svg { overflow: visible; animation: birdBob 1.2s infinite ease-in-out alternate; }
         .bird-wing { animation: birdFlap 0.5s infinite ease-in-out alternate; } 
-
         @keyframes birdBob { 0% { transform: translateY(0px); } 100% { transform: translateY(12px); } }
-        
         @keyframes birdFlap {
             0%   { d: path("M 5 10 Q 30 15 50 30 Q 70 15 95 10"); } /* Tips high up */
             100% { d: path("M 5 50 Q 30 35 50 30 Q 70 35 95 50"); } /* Tips swooped down */
         }
-
         @keyframes flyRight { 0% { transform: translateX(-15vw) translateY(15vh); } 100% { transform: translateX(115vw) translateY(-15vh); } }
         @keyframes flyLeft { 0% { transform: translateX(115vw) translateY(15vh); } 100% { transform: translateX(-15vw) translateY(-15vh); } }
 
@@ -190,16 +209,27 @@ html_content = """
     <svg width="0" height="0" style="position:absolute; pointer-events: none;">
       <defs>
         <path id="svg-heart" d="M16 28.5C16 28.5 4 20 4 10C4 5.6 7.6 2 12 2C14.4 2 16 3.6 16 3.6C16 3.6 17.6 2 20 2C24.4 2 28 5.6 28 10C28 20 16 28.5 16 28.5Z"/>
+        
+        <!-- NEW Highly Detailed 3-Layer Botanical Flower for Backgrounds -->
         <g id="svg-flower">
-            <g>
-                <path d="M 16 16 C 10 4 22 4 16 16" />
-                <path d="M 16 16 C 10 4 22 4 16 16" transform="rotate(72 16 16)" />
-                <path d="M 16 16 C 10 4 22 4 16 16" transform="rotate(144 16 16)" />
-                <path d="M 16 16 C 10 4 22 4 16 16" transform="rotate(216 16 16)" />
-                <path d="M 16 16 C 10 4 22 4 16 16" transform="rotate(288 16 16)" />
+            <g stroke="#ffffff" stroke-width="0.5">
+                <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
+                <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
+                <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
+                <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
+                <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
             </g>
-            <circle cx="16" cy="16" r="3.5" fill="#f7ecd3" />
+            <g fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
+                <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
+                <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
+                <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
+                <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
+                <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
+            </g>
+            <circle cx="16" cy="16" r="3" fill="#ffd700" />
+            <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
         </g>
+        
         <g id="svg-butterfly">
             <g class="bf-flap-anim" style="transform-origin: 16px 16px;">
                 <path d="M 15 16 C 5 4 0 10 7 16 C 0 22 5 28 15 16 Z" />
@@ -233,6 +263,7 @@ html_content = """
                    you to the <span class="wedding-word">Wedding</span> ceremony
                </div>
                
+               <!-- NEW DIRECTLY INJECTED DETAILED FLOWERS (Enables individual layer blooming) -->
                <div class="garden-container">
                    <div class="plant">
                        <div class="butterfly">
@@ -242,7 +273,36 @@ html_content = """
                        </div>
                        <div class="flower">
                            <span class="interactive-emoji">
-                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffb6c1"><use href="#svg-flower" /></svg>
+                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffb6c1" style="overflow: visible;">
+                                   <!-- Layer 1 -->
+                                   <g class="flower-layer-1" stroke="#ffffff" stroke-width="0.5">
+                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
+                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
+                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
+                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
+                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
+                                   </g>
+                                   <!-- Layer 2 -->
+                                   <g class="flower-layer-2" fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
+                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
+                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
+                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
+                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
+                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
+                                   </g>
+                                   <!-- Layer 3 -->
+                                   <g class="flower-layer-3" fill="#ffffff" opacity="0.6">
+                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" />
+                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(72 16 16)" />
+                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(144 16 16)" />
+                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(216 16 16)" />
+                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(288 16 16)" />
+                                   </g>
+                                   <g class="flower-center">
+                                       <circle cx="16" cy="16" r="3" fill="#ffd700" />
+                                       <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
+                                   </g>
+                               </svg>
                            </span>
                        </div>
                    </div>
@@ -254,7 +314,33 @@ html_content = """
                        </div>
                        <div class="flower">
                            <span class="interactive-emoji">
-                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ff033e"><use href="#svg-flower" /></svg>
+                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ff033e" style="overflow: visible;">
+                                   <g class="flower-layer-1" stroke="#ffffff" stroke-width="0.5">
+                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
+                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
+                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
+                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
+                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
+                                   </g>
+                                   <g class="flower-layer-2" fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
+                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
+                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
+                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
+                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
+                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
+                                   </g>
+                                   <g class="flower-layer-3" fill="#ffffff" opacity="0.6">
+                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" />
+                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(72 16 16)" />
+                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(144 16 16)" />
+                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(216 16 16)" />
+                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(288 16 16)" />
+                                   </g>
+                                   <g class="flower-center">
+                                       <circle cx="16" cy="16" r="3" fill="#ffd700" />
+                                       <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
+                                   </g>
+                               </svg>
                            </span>
                        </div>
                    </div>
@@ -317,12 +403,12 @@ html_content = """
             return `<svg viewBox="0 0 32 32" width="${sizeRem}rem" height="${sizeRem}rem" fill="${color}" style="pointer-events: none;"><use href="#svg-${type}" /></svg>`;
         }
 
-        // A) Parallax Background SVG Decor (Blurred & Very Slow)
-        for(let i=0; i<30; i++) {
+        // A) Parallax Background SVG Decor - INCREASED DENSITY & REDUCED BLUR
+        for(let i=0; i<60; i++) {
             let wrapper = document.createElement('div');
             wrapper.className = 'parallax-bg-wrapper';
             wrapper.style.position = 'absolute';
-            wrapper.style.left = Math.random() * 90 + 'vw';
+            wrapper.style.left = Math.random() * 95 + 'vw';
             wrapper.style.top = Math.random() * 100 + '%'; 
             wrapper.style.zIndex = '0'; 
 
@@ -337,21 +423,21 @@ html_content = """
             
             inner.innerHTML = generateSvgGraphic(randomSize, randomColor);
             
-            // Blur the background to separate from foreground text
-            inner.style.filter = 'blur(3px)'; 
-            inner.style.opacity = '0.5';
+            // Reduced Blur for sharper depth
+            inner.style.filter = 'blur(1.5px)'; 
+            inner.style.opacity = '0.55';
             
             el.appendChild(inner);
             wrapper.appendChild(el);
             content.appendChild(wrapper);
         }
 
-        // B) Parallax Foreground SVG Decor (Larger, more blurred for extreme foreground)
-        for(let i=0; i<12; i++) {
+        // B) Parallax Foreground SVG Decor - INCREASED DENSITY & REDUCED BLUR
+        for(let i=0; i<25; i++) {
             let wrapper = document.createElement('div');
             wrapper.className = 'parallax-fg-wrapper';
             wrapper.style.position = 'absolute';
-            wrapper.style.left = Math.random() * 90 + 'vw';
+            wrapper.style.left = Math.random() * 95 + 'vw';
             wrapper.style.top = Math.random() * 100 + '%';
             wrapper.style.zIndex = '50'; 
             wrapper.style.pointerEvents = 'none'; 
@@ -366,8 +452,10 @@ html_content = """
             let randomColor = weddingColors[Math.floor(Math.random() * weddingColors.length)];
             
             inner.innerHTML = generateSvgGraphic(randomSize, randomColor);
-            inner.style.filter = 'blur(6px)'; 
-            inner.style.opacity = '0.6';
+            
+            // Reduced Blur for crisper foreground elements
+            inner.style.filter = 'blur(3px)'; 
+            inner.style.opacity = '0.65';
             inner.style.pointerEvents = 'auto'; 
             
             el.appendChild(inner);
@@ -550,8 +638,8 @@ html_content = """
         function fireCustomCannon(side) {
             const container = document.createElement('div');
             container.style.position = 'fixed';
-            container.style[side] = '0px'; // Anchors to left or right edge
-            container.style.top = '60%';   // Fires from slightly below center height
+            container.style[side] = '0px'; 
+            container.style.top = '60%';   
             container.style.zIndex = '1000';
             container.style.pointerEvents = 'none';
             document.body.appendChild(container);
@@ -564,7 +652,6 @@ html_content = """
                 let randomColor = weddingColors[Math.floor(Math.random() * weddingColors.length)];
                 p.innerHTML = generateSvgGraphic(randomSize, randomColor);
                 
-                // Physics calculation for burst angles mimicking dual cannons
                 let angleDeg = side === 'left' ? -(Math.random() * 50 + 25) : -(Math.random() * 50 + 105);
                 let angle = angleDeg * (Math.PI / 180);
                 
@@ -576,7 +663,7 @@ html_content = """
                 p.animate([
                     { transform: `translate(0px, 0px) scale(0) rotate(0deg)`, opacity: 1 },
                     { transform: `translate(${tx * 0.7}px, ${ty * 0.7}px) scale(1) rotate(${rot/2}deg)`, opacity: 1, offset: 0.3 },
-                    { transform: `translate(${tx * 1.2}px, ${ty + 800}px) scale(0.6) rotate(${rot}deg)`, opacity: 0 } // Gravity fall
+                    { transform: `translate(${tx * 1.2}px, ${ty + 800}px) scale(0.6) rotate(${rot}deg)`, opacity: 0 }
                 ], {
                     duration: Math.random() * 2000 + 2500,
                     easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
@@ -609,7 +696,6 @@ html_content = """
                         <path class="bird-wing" style="animation-delay: ${flapDelay};" fill="none" stroke="#4a3b32" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
                     </svg>`;
                 
-                // Random explosion trajectory outward and upward for the flock
                 let tx = (Math.random() - 0.5) * window.innerWidth * 1.2;
                 let ty = - (Math.random() * window.innerHeight/1.5 + 300); 
                 let rot = (Math.random() - 0.5) * 60; 
