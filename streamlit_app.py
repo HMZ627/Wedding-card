@@ -84,16 +84,8 @@ html_content = """
         /* Bismillah */
         .bismillah { font-family: 'Amiri', serif; font-size: 4.5rem; margin-bottom: 25vh; opacity: 0; transform: translateY(30px); transition: all 1.5s ease-out; }
         
-        /* Standard Fade-in Texts */
-        .header-text { 
-            font-size: 2rem; 
-            margin: 0 auto 25vh auto; 
-            max-width: 800px; 
-            line-height: 1.5;
-            opacity: 0; 
-            transform: translateY(30px); 
-            transition: all 1.5s ease-out; 
-        }
+        /* Type-in Fade-in */
+        .type-fade { font-size: 2rem; margin: 0 auto 25vh auto; max-width: 800px; opacity: 0; transition: opacity 1.5s ease-in; min-height: 80px;}
         
         /* --- Ink Spread Section --- */
         .ink-spread-anim { 
@@ -169,6 +161,7 @@ html_content = """
         }
         .scratch-bg { width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
+        /* Adjusted Text Size and Position to fit the heart precisely */
         .heart-text {
             font-family: 'Great Vibes', cursive;
             color: #b30000;
@@ -196,6 +189,7 @@ html_content = """
 
         /* Animation Triggers */
         .visible-up { opacity: 1 !important; transform: translateY(0) !important; }
+        .visible-fade { opacity: 1 !important; }
     </style>
 </head>
 <body>
@@ -213,10 +207,8 @@ html_content = """
        <!-- Calligraphy -->
        <div class="bismillah obs fade-up">﷽</div>
 
-       <!-- Fade-in Header -->
-       <div class="header-text obs fade-up">
-           Starting with the name of Allah, The most Beneficial and The most Merciful.
-       </div>
+       <!-- Typewriter Header -->
+       <div class="header-text obs type-fade" data-text="Starting with the name of Allah, The most Beneficial and The most Merciful."></div>
 
        <!-- Ink Spread Sub-header Wrapper -->
        <div class="obs ink-trigger" style="min-height: 400px; margin-bottom: 15vh; display: flex; align-items: center; justify-content: center;">
@@ -255,10 +247,8 @@ html_content = """
            </div>
        </div>
 
-       <!-- Sub-header Fade-in -->
-       <div class="header-text obs fade-up">
-           Show your kind love by participating in the event
-       </div>
+       <!-- Sub-header Typewriter -->
+       <div class="header-text obs type-fade" data-text="Show your kind love by participating in the event"></div>
 
        <!-- Schedule Table -->
        <div class="schedule-box obs fade-up">
@@ -319,13 +309,49 @@ html_content = """
                     if(entry.target.classList.contains('ink-trigger')) {
                         entry.target.classList.add('visible-ink');
                     }
+                    // Typewriter Trigger
+                    if(entry.target.classList.contains('type-fade')) {
+                        entry.target.classList.add('visible-fade');
+                        typeWriterFadeIn(entry.target);
+                    }
                 }
             });
         }, { threshold: 0.25 });
 
         document.querySelectorAll('.obs').forEach(el => observer.observe(el));
 
-        // 4. Scratch Card Logic
+        // 4. Typewriter "Fade-In" Logic (UPDATED)
+        function typeWriterFadeIn(el) {
+            if(el.dataset.typed) return; 
+            el.dataset.typed = true;
+            let text = el.getAttribute('data-text');
+            el.innerHTML = '';
+            
+            // Create a span for every letter and make it invisible
+            let chars = text.split('');
+            chars.forEach(char => {
+                let span = document.createElement('span');
+                // preserve spaces properly in HTML
+                span.innerHTML = char === ' ' ? '&nbsp;' : char; 
+                span.style.opacity = '0';
+                span.style.transition = 'opacity 0.5s ease-in-out';
+                el.appendChild(span);
+            });
+            
+            // Fade them in one by one
+            let spans = el.querySelectorAll('span');
+            let i = 0;
+            let timer = setInterval(() => {
+                if (i < spans.length) {
+                    spans[i].style.opacity = '1';
+                    i++;
+                } else {
+                    clearInterval(timer);
+                }
+            }, 30); // Adjust this number to make the typing faster or slower (30ms per letter)
+        }
+
+        // 5. Scratch Card Logic
         const canvas = document.getElementById('scratchCard');
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
@@ -385,7 +411,7 @@ html_content = """
             }
         }
 
-        // 5. Confetti & Heart Bubbles Animation on Reveal
+        // 6. Confetti & Heart Bubbles Animation on Reveal
         function triggerPopping() {
             const duration = 3000;
             const end = Date.now() + duration;
