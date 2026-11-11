@@ -160,23 +160,23 @@ html_content = """
         .fg-deco { animation: floatDeco 8s infinite ease-in-out alternate-reverse; }
         @keyframes floatDeco { 0% { transform: translateY(0px); } 100% { transform: translateY(-25px); } }
         
-        /* --- NEW: Refined Drawn Pencil Birds --- */
-        .bird-wrapper { position: fixed; z-index: 1; pointer-events: none; opacity: 0.5; } /* Forced to Background */
-        .bird-wrapper .interactive-emoji { pointer-events: auto; }
+        /* --- NEW: Drawn Pencil Birds in Flocks with Wingtip-Flapping --- */
+        .bird-flock { position: fixed; z-index: 1; pointer-events: none; opacity: 0.55; }
+        .bird-flock .interactive-emoji { pointer-events: auto; }
 
         .bird-svg { overflow: visible; animation: birdBob 1.2s infinite ease-in-out alternate; }
-        .bird-wing { animation: birdFlap 0.4s infinite ease-in-out alternate; } /* Rapid, realistic flapping */
+        .bird-wing { animation: birdFlap 0.5s infinite ease-in-out alternate; } 
 
         @keyframes birdBob { 0% { transform: translateY(0px); } 100% { transform: translateY(12px); } }
         
-        /* Precise path morphing using Quadratic Beziers for smooth wing arcs */
+        /* NEW PATHS: The center (50 30) stays put, while the tips (5, 95) flap vastly up and down! */
         @keyframes birdFlap {
-            0%   { d: path("M 10 20 Q 30 -10 50 30 Q 70 -10 90 20"); } /* Wings Up */
-            100% { d: path("M 10 45 Q 30 70 50 30 Q 70 70 90 45"); }  /* Wings Down */
+            0%   { d: path("M 5 10 Q 30 15 50 30 Q 70 15 95 10"); } /* Tips high up */
+            100% { d: path("M 5 50 Q 30 35 50 30 Q 70 35 95 50"); } /* Tips swooped down */
         }
 
-        @keyframes flyRight { 0% { transform: translateX(-10vw) translateY(10vh); } 100% { transform: translateX(110vw) translateY(-10vh); } }
-        @keyframes flyLeft { 0% { transform: translateX(110vw) translateY(10vh); } 100% { transform: translateX(-10vw) translateY(-10vh); } }
+        @keyframes flyRight { 0% { transform: translateX(-15vw) translateY(15vh); } 100% { transform: translateX(115vw) translateY(-15vh); } }
+        @keyframes flyLeft { 0% { transform: translateX(115vw) translateY(15vh); } 100% { transform: translateX(-15vw) translateY(-15vh); } }
 
         .visible-up { opacity: 1 !important; transform: translateY(0) !important; }
         .visible-fade { opacity: 1 !important; }
@@ -265,7 +265,7 @@ html_content = """
             setTimeout(() => { wrapper.style.display = 'none'; }, 2500);
         }
 
-        // 2. Element Generators (Background Floaties, Foreground Floaties, Drawn Birds)
+        // 2. Element Generators (Background Floaties, Foreground Floaties, Bird Flocks)
         const content = document.getElementById('main-content');
         const floaties = ['🌸', '❤️', '🌺', '💖', '✨'];
         
@@ -275,8 +275,8 @@ html_content = """
             wrapper.className = 'parallax-bg-wrapper';
             wrapper.style.position = 'absolute';
             wrapper.style.left = Math.random() * 90 + 'vw';
-            wrapper.style.top = Math.random() * 100 + '%'; // Spread across total document height
-            wrapper.style.zIndex = '0'; // Behind everything
+            wrapper.style.top = Math.random() * 100 + '%'; 
+            wrapper.style.zIndex = '0'; 
 
             let el = document.createElement('div');
             el.className = 'bg-deco';
@@ -299,8 +299,8 @@ html_content = """
             wrapper.style.position = 'absolute';
             wrapper.style.left = Math.random() * 90 + 'vw';
             wrapper.style.top = Math.random() * 100 + '%';
-            wrapper.style.zIndex = '50'; // Deep Foreground
-            wrapper.style.pointerEvents = 'none'; // Don't block clicking main UI
+            wrapper.style.zIndex = '50'; 
+            wrapper.style.pointerEvents = 'none'; 
 
             let el = document.createElement('div');
             el.className = 'fg-deco';
@@ -312,40 +312,60 @@ html_content = """
             inner.style.fontSize = (Math.random() * 2 + 2) + 'rem'; 
             inner.style.filter = 'blur(3px)';
             inner.style.opacity = '0.7';
-            inner.style.pointerEvents = 'auto'; // Re-enable click just for the emoji
+            inner.style.pointerEvents = 'auto'; 
             
             el.appendChild(inner);
             wrapper.appendChild(el);
             content.appendChild(wrapper);
         }
 
-        // C) Drawn Pencil Birds in Background
-        for(let i=0; i<7; i++) {
-            let wrapper = document.createElement('div');
-            wrapper.className = 'bird-wrapper';
+        // C) NEW: Organized Bird Flocks with V-formation geometry
+        const numFlocks = 5;
+        for(let f = 0; f < numFlocks; f++) {
+            let flockWrapper = document.createElement('div');
+            flockWrapper.className = 'bird-flock';
             
             let isRight = Math.random() > 0.5;
             let animName = isRight ? 'flyRight' : 'flyLeft';
-            let animDuration = Math.random() * 20 + 25; 
+            let animDuration = Math.random() * 25 + 30; // 30-55s slow sky drift
             
-            wrapper.style.animation = `${animName} ${animDuration}s linear infinite`;
-            wrapper.style.animationDelay = '-' + (Math.random() * 20) + 's';
-            wrapper.style.top = (Math.random() * 70 + 10) + 'vh'; 
+            flockWrapper.style.animation = `${animName} ${animDuration}s linear infinite`;
+            flockWrapper.style.animationDelay = '-' + (Math.random() * 25) + 's';
+            flockWrapper.style.top = (Math.random() * 65 + 10) + 'vh'; 
             
-            let inner = document.createElement('div');
-            inner.className = 'interactive-emoji';
+            let birdsInFlock = Math.floor(Math.random() * 3) + 3; // 3 to 5 birds per flock
             
-            let tilt = isRight ? 'rotate(-10deg)' : 'rotate(10deg)';
-            inner.style.transform = tilt;
+            for(let b = 0; b < birdsInFlock; b++) {
+                let birdNode = document.createElement('div');
+                birdNode.style.position = 'absolute';
+                
+                // Mathematically calculate a loose V-Formation trailing behind the leader
+                // If flying right, birds offset to the left (negative X). Vice versa.
+                let xOffset = isRight ? -(b * 35 + Math.random()*10) : (b * 35 + Math.random()*10);
+                // Alternate placing birds above and below the leader's Y axis
+                let yOffset = (b % 2 === 0 ? 1 : -1) * (Math.ceil(b/2) * 20) + (Math.random()*10 - 5);
+                
+                birdNode.style.left = xOffset + 'px';
+                birdNode.style.top = yOffset + 'px';
+                
+                let inner = document.createElement('div');
+                inner.className = 'interactive-emoji';
+                let tilt = isRight ? 'rotate(-10deg)' : 'rotate(10deg)';
+                inner.style.transform = tilt;
+                
+                // Stagger flap animation so they don't look robotic
+                let flapDelay = '-' + (Math.random() * 0.5).toFixed(2) + 's';
+                
+                inner.innerHTML = `
+                <svg class="bird-svg" viewBox="0 0 100 60" width="${Math.random() * 15 + 35}" height="25">
+                    <path class="bird-wing" style="animation-delay: ${flapDelay};" fill="none" stroke="#4a3b32" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
+                </svg>`;
+                
+                birdNode.appendChild(inner);
+                flockWrapper.appendChild(birdNode);
+            }
             
-            // New Seamless Quadratic Bezier Flapping Wings
-            inner.innerHTML = `
-            <svg class="bird-svg" viewBox="0 -10 100 80" width="${Math.random() * 25 + 35}" height="35">
-                <path class="bird-wing" fill="none" stroke="#4a3b32" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M 10 20 Q 30 -10 50 30 Q 70 -10 90 20" />
-            </svg>`;
-            
-            wrapper.appendChild(inner);
-            document.body.appendChild(wrapper);
+            document.body.appendChild(flockWrapper);
         }
 
         // 3. Parallax Scroll Math Integration
@@ -414,7 +434,7 @@ html_content = """
             }, 30);
         }
 
-        // 7. Scratch Card Logic (Updated to 65% trigger threshold)
+        // 7. Scratch Card Logic (Threshold adjusted to 30%)
         const canvas = document.getElementById('scratchCard');
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
@@ -462,8 +482,8 @@ html_content = """
                 if (imageData.data[i] === 0) transparentPixels++;
             }
             
-            // INCREASED TO 65% THRESHOLD
-            if (transparentPixels / (totalPixels/10) > 0.65 && !isRevealed) {
+            // INCREASED SENSITIVITY: Pops when only 30% is scratched
+            if (transparentPixels / (totalPixels/10) > 0.30 && !isRevealed) {
                 isRevealed = true;
                 canvas.style.transition = 'opacity 0.8s';
                 canvas.style.opacity = 0;
@@ -489,10 +509,10 @@ html_content = """
             }());
             
             // EXPLODING FLOCK OF BIRDS
-            spawnFlock();
+            spawnExplosionFlock();
         }
 
-        function spawnFlock() {
+        function spawnExplosionFlock() {
             const flockContainer = document.createElement('div');
             flockContainer.style.position = 'fixed';
             flockContainer.style.left = '50%';
@@ -505,10 +525,12 @@ html_content = """
             for (let i = 0; i < 20; i++) { 
                 let bird = document.createElement('div');
                 bird.style.position = 'absolute';
-                // Utilizing the exact same flapping wing CSS classes we created above
+                
+                let flapDelay = '-' + (Math.random() * 0.5).toFixed(2) + 's';
+                // Utilizing the exact same new Wingtip flapping CSS
                 bird.innerHTML = `
-                    <svg class="bird-svg" viewBox="0 -10 100 80" width="${Math.random() * 15 + 25}" height="25">
-                        <path class="bird-wing" fill="none" stroke="#4a3b32" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 10 20 Q 30 -10 50 30 Q 70 -10 90 20" />
+                    <svg class="bird-svg" viewBox="0 0 100 60" width="${Math.random() * 15 + 25}" height="20">
+                        <path class="bird-wing" style="animation-delay: ${flapDelay};" fill="none" stroke="#4a3b32" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
                     </svg>`;
                 
                 // Random explosion trajectory outward and upward
