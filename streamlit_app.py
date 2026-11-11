@@ -26,7 +26,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with all animations, scratch card & curtain logic
+# HTML, CSS, JS payload with all animations, scratch card, curtain logic & interactive elements
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -89,7 +89,7 @@ html_content = """
             font-size: 2.2rem; 
             margin: 0 auto 25vh auto; 
             max-width: 800px; 
-            padding: 0 15px; /* Keeps text away from screen edges on mobile */
+            padding: 0 15px;
             line-height: 1.5;
             opacity: 0; 
             transition: opacity 1.5s ease-in; 
@@ -134,32 +134,15 @@ html_content = """
             transition: all 1.5s ease-in-out; 
         }
 
-        /* Triggered animations when ink wrapper is visible */
         .visible-ink .ink-spread-anim { opacity: 1; clip-path: circle(150% at center); filter: blur(0px); }
-        
-        .visible-ink .flower { 
-            transform: scale(1); 
-            animation: continuousBloom 3s infinite alternate ease-in-out 1.5s; 
-        }
-        
-        .visible-ink .butterfly { 
-            bottom: 90px; 
-            opacity: 1; 
-            transition-delay: 1.2s; 
-            animation: hoverfly 2.5s infinite ease-in-out alternate 2.7s; 
-        }
+        .visible-ink .flower { transform: scale(1); animation: continuousBloom 3s infinite alternate ease-in-out 1.5s; }
+        .visible-ink .butterfly { bottom: 90px; opacity: 1; transition-delay: 1.2s; animation: hoverfly 2.5s infinite ease-in-out alternate 2.7s; }
         
         .plant.delayed .flower { transition-delay: 0.4s; }
         .plant.delayed .butterfly { transition-delay: 1.6s; animation-delay: 3.1s; }
 
-        @keyframes continuousBloom { 
-            0% { transform: scale(1) rotate(-5deg); } 
-            100% { transform: scale(1.15) rotate(5deg); } 
-        }
-        @keyframes hoverfly { 
-            0% { transform: translateY(0) translateX(0) rotate(-10deg); } 
-            100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } 
-        }
+        @keyframes continuousBloom { 0% { transform: scale(1) rotate(-5deg); } 100% { transform: scale(1.15) rotate(5deg); } }
+        @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
         /* --- Scratch Card --- */
         .scratch-wrapper { margin: 0 auto 25vh auto; display: flex; justify-content: center; opacity: 0; transform: translateY(30px); transition: all 1.5s ease-out; }
@@ -169,17 +152,7 @@ html_content = """
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
         .scratch-bg { width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        
-        /* Adjusted Text Size and Position to fit the heart precisely */
-        .heart-text {
-            font-family: 'Great Vibes', cursive;
-            color: #b30000;
-            font-size: 2.6rem;
-            line-height: 1.1;
-            text-align: center;
-            margin-top: 25px; 
-        }
-
+        .heart-text { font-family: 'Great Vibes', cursive; color: #b30000; font-size: 2.6rem; line-height: 1.1; text-align: center; margin-top: 25px; }
         canvas { position: absolute; top: 0; left: 0; z-index: 10; cursor: pointer; touch-action: none; }
 
         /* --- Schedule Table --- */
@@ -192,9 +165,47 @@ html_content = """
         /* --- Footer --- */
         .footer-text { font-size: 1.5rem; opacity: 0; transform: translateY(50px); transition: all 1.5s; padding-bottom: 100px; font-style: italic; color: #800000; font-weight: bold;}
 
-        /* --- Background Decorations --- */
-        .bg-deco { position: absolute; opacity: 0.3; z-index: -1; animation: floatDeco 6s infinite ease-in-out alternate; }
-        @keyframes floatDeco { 0% { transform: translateY(0); } 100% { transform: translateY(-20px); } }
+        /* --- NEW: Interactive Classes & Animations --- */
+        .interactive-emoji {
+            display: inline-block;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* The trigger animation class when clicked */
+        .pop-anim {
+            animation: clickPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+        @keyframes clickPop {
+            0% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+            30% { transform: scale(1.6) rotate(15deg); filter: brightness(1.2); }
+            70% { transform: scale(1.6) rotate(-15deg); filter: brightness(1.2); }
+            100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+        }
+
+        /* --- NEW: Background, Foreground & Flying Elements --- */
+        .bg-deco { position: absolute; opacity: 0.4; z-index: -1; animation: floatDeco 6s infinite ease-in-out alternate; }
+        
+        .fg-deco {
+            position: fixed; pointer-events: none; z-index: 50; 
+            animation: floatDeco 8s infinite ease-in-out alternate-reverse;
+        }
+        .fg-deco .interactive-emoji { pointer-events: auto; } /* Make clickable even though wrapper ignores clicks */
+
+        .bird-wrapper { position: fixed; z-index: 5; pointer-events: none; }
+        .bird-wrapper .interactive-emoji { pointer-events: auto; }
+
+        @keyframes floatDeco { 0% { transform: translateY(0px); } 100% { transform: translateY(-25px); } }
+        
+        /* Bird Flying Trajectories */
+        @keyframes flyRight {
+            0% { transform: translateX(-10vw) translateY(5vh) scaleX(-1); }
+            100% { transform: translateX(110vw) translateY(-5vh) scaleX(-1); }
+        }
+        @keyframes flyLeft {
+            0% { transform: translateX(110vw) translateY(-5vh); }
+            100% { transform: translateX(-10vw) translateY(5vh); }
+        }
 
         /* Animation Triggers */
         .visible-up { opacity: 1 !important; transform: translateY(0) !important; }
@@ -228,15 +239,15 @@ html_content = """
                    you to the <span class="wedding-word">Wedding</span> ceremony
                </div>
                
-               <!-- Blooming flowers with butterflies -->
+               <!-- Blooming flowers with butterflies (Now Wraps interactive elements!) -->
                <div class="garden-container">
                    <div class="plant">
-                       <div class="butterfly">🦋</div>
-                       <div class="flower">🌸</div>
+                       <div class="butterfly"><span class="interactive-emoji">🦋</span></div>
+                       <div class="flower"><span class="interactive-emoji">🌸</span></div>
                    </div>
                    <div class="plant delayed">
-                       <div class="butterfly">🦋</div>
-                       <div class="flower">🌺</div>
+                       <div class="butterfly"><span class="interactive-emoji">🦋</span></div>
+                       <div class="flower"><span class="interactive-emoji">🌺</span></div>
                    </div>
                </div>
            </div>
@@ -292,33 +303,88 @@ html_content = """
             setTimeout(() => { wrapper.style.display = 'none'; }, 2500);
         }
 
-        // 2. Generate Random Decor (Hearts, Butterflies, Flowers) for Background
-        const decorElements = ['🌸', '❤️', '🦋', '🌺', '💖'];
+        // 2. Element Generators (Background, Foreground, and Birds)
         const content = document.getElementById('main-content');
+        const floaties = ['🌸', '❤️', '🌺', '💖', '✨'];
+        
+        // A) Background Floating Decor
         for(let i=0; i<15; i++) {
             let el = document.createElement('div');
             el.className = 'bg-deco';
-            el.innerHTML = decorElements[Math.floor(Math.random() * decorElements.length)];
             el.style.left = Math.random() * 90 + 'vw';
             el.style.top = Math.random() * 90 + '%';
-            el.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
             el.style.animationDelay = (Math.random() * 3) + 's';
+            
+            let inner = document.createElement('span');
+            inner.className = 'interactive-emoji';
+            inner.innerHTML = floaties[Math.floor(Math.random() * floaties.length)];
+            inner.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
+            
+            el.appendChild(inner);
             content.appendChild(el);
         }
 
-        // 3. Scroll Interactions (Intersection Observer)
+        // B) Foreground Blurry Decor (Parallax)
+        for(let i=0; i<7; i++) {
+            let el = document.createElement('div');
+            el.className = 'fg-deco';
+            el.style.left = Math.random() * 90 + 'vw';
+            el.style.top = Math.random() * 90 + 'vh';
+            el.style.animationDelay = (Math.random() * 3) + 's';
+            
+            let inner = document.createElement('span');
+            inner.className = 'interactive-emoji';
+            inner.innerHTML = floaties[Math.floor(Math.random() * floaties.length)];
+            inner.style.fontSize = (Math.random() * 2 + 2) + 'rem'; // Larger
+            inner.style.filter = 'blur(3px)'; // Blurry depth
+            inner.style.opacity = '0.6';
+            
+            el.appendChild(inner);
+            document.body.appendChild(el);
+        }
+
+        // C) Flying Birds
+        const birds = ['🕊️', '🐦'];
+        for(let i=0; i<5; i++) {
+            let wrapper = document.createElement('div');
+            wrapper.className = 'bird-wrapper';
+            
+            let isRight = Math.random() > 0.5; // Fly Left or Right
+            let animName = isRight ? 'flyRight' : 'flyLeft';
+            let animDuration = Math.random() * 15 + 15; // 15 to 30 seconds
+            
+            wrapper.style.animation = `${animName} ${animDuration}s linear infinite`;
+            wrapper.style.animationDelay = '-' + (Math.random() * 20) + 's'; // Start at different times
+            wrapper.style.top = (Math.random() * 75 + 5) + 'vh'; // Random height
+            
+            let inner = document.createElement('span');
+            inner.className = 'interactive-emoji';
+            inner.innerHTML = birds[Math.floor(Math.random() * birds.length)];
+            inner.style.fontSize = '2.2rem';
+            inner.style.opacity = '0.7';
+            
+            wrapper.appendChild(inner);
+            document.body.appendChild(wrapper);
+        }
+
+        // 3. Interactive Emoji Click/Tap Event Listener
+        document.addEventListener('click', function(e) {
+            if(e.target.classList.contains('interactive-emoji')) {
+                // Remove class to allow rapid re-clicking
+                e.target.classList.remove('pop-anim');
+                // Trigger quick reflow to reset CSS animation state
+                void e.target.offsetWidth;
+                // Add pop animation back
+                e.target.classList.add('pop-anim');
+            }
+        });
+
+        // 4. Scroll Interactions (Intersection Observer)
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Fade-Up Trigger
-                    if(entry.target.classList.contains('fade-up')) {
-                        entry.target.classList.add('visible-up');
-                    }
-                    // Ink Spread Trigger
-                    if(entry.target.classList.contains('ink-trigger')) {
-                        entry.target.classList.add('visible-ink');
-                    }
-                    // Typewriter Trigger
+                    if(entry.target.classList.contains('fade-up')) { entry.target.classList.add('visible-up'); }
+                    if(entry.target.classList.contains('ink-trigger')) { entry.target.classList.add('visible-ink'); }
                     if(entry.target.classList.contains('type-fade')) {
                         entry.target.classList.add('visible-fade');
                         typeWriterFadeIn(entry.target);
@@ -329,7 +395,7 @@ html_content = """
 
         document.querySelectorAll('.obs').forEach(el => observer.observe(el));
 
-        // 4. Typewriter "Fade-In" Logic (Fixed Word Wrapping Bug)
+        // 5. Typewriter "Fade-In" Logic
         function typeWriterFadeIn(el) {
             if(el.dataset.typed) return; 
             el.dataset.typed = true;
@@ -341,19 +407,17 @@ html_content = """
             
             chars.forEach(char => {
                 if (char === ' ') {
-                    // Injecting a standard text node allows the browser to word-wrap beautifully!
-                    el.appendChild(document.createTextNode(' '));
+                    el.appendChild(document.createTextNode(' ')); // Allow standard word-wrap
                 } else {
                     let span = document.createElement('span');
                     span.textContent = char;
                     span.style.opacity = '0';
                     span.style.transition = 'opacity 0.5s ease-in-out';
                     el.appendChild(span);
-                    spans.push(span); // Only animate the actual letters
+                    spans.push(span);
                 }
             });
             
-            // Fade them in one by one
             let i = 0;
             let timer = setInterval(() => {
                 if (i < spans.length) {
@@ -362,20 +426,17 @@ html_content = """
                 } else {
                     clearInterval(timer);
                 }
-            }, 30); // 30ms per letter speed
+            }, 30);
         }
 
-        // 5. Scratch Card Logic
+        // 6. Scratch Card Logic
         const canvas = document.getElementById('scratchCard');
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
         let isRevealed = false;
 
-        // Draw Scratch Material
         ctx.fillStyle = '#a0a0a0';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Add Scratch me text
         ctx.fillStyle = '#ffffff';
         ctx.font = '30px Playfair Display';
         ctx.textAlign = 'center';
@@ -425,7 +486,7 @@ html_content = """
             }
         }
 
-        // 6. Confetti & Heart Bubbles Animation on Reveal
+        // 7. Confetti & Heart Bubbles Animation on Reveal
         function triggerPopping() {
             const duration = 3000;
             const end = Date.now() + duration;
