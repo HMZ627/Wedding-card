@@ -41,8 +41,8 @@ html_content = """
         body {
             margin: 0; padding: 0;
             font-family: 'Playfair Display', serif;
-            background-color: #f7ecd3; /* Off-white */
-            background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png'); /* Brown marks old paper */
+            background-color: #f7ecd3; 
+            background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png'); 
             color: #4a3b32;
             overflow-x: hidden;
             scroll-behavior: smooth;
@@ -74,7 +74,6 @@ html_content = """
         }
         .open-btn:hover { transform: translate(-50%, -50%) scale(1.1); }
         
-        /* Triggered Classes for Curtains */
         #curtain-wrapper.opened .curtain-left { transform: translateX(-100%); }
         #curtain-wrapper.opened .curtain-right { transform: translateX(100%); }
         #curtain-wrapper.opened .open-btn { opacity: 0; pointer-events: none; }
@@ -88,19 +87,18 @@ html_content = """
         /* Type-in Fade-in */
         .type-fade { font-size: 2rem; margin: 0 auto 25vh auto; max-width: 800px; opacity: 0; transition: opacity 1.5s ease-in; min-height: 80px;}
         
-        /* --- UPDATED: Ink Spread & Invitation Section --- */
+        /* --- Ink Spread Section --- */
         .ink-spread-anim { 
-            margin-bottom: 25vh; 
             clip-path: circle(0% at center); 
             filter: blur(20px); 
             opacity: 0; 
             transition: clip-path 2.5s cubic-bezier(0.25, 1, 0.5, 1), filter 2.5s ease-out, opacity 1.5s ease-in; 
+            padding: 20px 0;
         }
         .sub-header-text { font-size: 2rem; position: relative; }
         
-        /* Isolated, Large Invite Word */
         .invite-word { 
-            font-size: 6rem; /* Very Large */
+            font-size: 6rem; 
             display: block; 
             text-align: center;
             font-family: 'Great Vibes', cursive; 
@@ -108,7 +106,6 @@ html_content = """
             color: #4a3b32; 
         }
         
-        /* Rose-Red Wedding Word */
         .wedding-word { color: #ff033e; font-weight: bold; font-style: italic; }
         
         /* 2 Blooming Flowers & Hovering Butterflies */
@@ -117,35 +114,32 @@ html_content = """
         
         .flower { 
             font-size: 4.5rem; 
-            transform: scale(0); /* Starts hidden */
+            transform: scale(0); 
             transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
         }
         .butterfly { 
             font-size: 2.5rem; 
             position: absolute; 
-            bottom: 20px; /* Starts inside flower */
+            bottom: 20px; 
             opacity: 0; 
             transition: all 1.5s ease-in-out; 
         }
 
-        /* Triggered animations when ink spread appears */
-        .visible-ink { opacity: 1 !important; clip-path: circle(150% at center) !important; filter: blur(0px) !important; }
+        /* Triggered animations when ink wrapper is visible */
+        .visible-ink .ink-spread-anim { opacity: 1; clip-path: circle(150% at center); filter: blur(0px); }
         
-        /* 1st Bloom the flowers */
         .visible-ink .flower { 
             transform: scale(1); 
-            animation: continuousBloom 3s infinite alternate ease-in-out 1.5s; /* Wait for scale transition, then continuous */
+            animation: continuousBloom 3s infinite alternate ease-in-out 1.5s; 
         }
         
-        /* 2nd Fly the butterflies up out of the flowers */
         .visible-ink .butterfly { 
-            bottom: 90px; /* Fly up above flower */
+            bottom: 90px; 
             opacity: 1; 
-            transition-delay: 1.2s; /* Wait for flower to bloom first */
-            animation: hoverfly 2.5s infinite ease-in-out alternate 2.7s; /* Start hovering after fly-up */
+            transition-delay: 1.2s; 
+            animation: hoverfly 2.5s infinite ease-in-out alternate 2.7s; 
         }
         
-        /* Asynchronous delay for right plant so they don't look robotic */
         .plant.delayed .flower { transition-delay: 0.4s; }
         .plant.delayed .butterfly { transition-delay: 1.6s; animation-delay: 3.1s; }
 
@@ -165,7 +159,18 @@ html_content = """
             clip-path: path("M 160,90 C 160,90 110,0 20,50 C -50,120 160,300 160,300 C 160,300 370,120 300,50 C 210,0 160,90 160,90 Z");
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
-        .scratch-bg { width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: 'Great Vibes', cursive; font-size: 3.5rem; color: #b30000; }
+        .scratch-bg { width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        /* Adjusted Text Size and Position to fit the heart precisely */
+        .heart-text {
+            font-family: 'Great Vibes', cursive;
+            color: #b30000;
+            font-size: 2.6rem;
+            line-height: 1.1;
+            text-align: center;
+            margin-top: 25px; /* Pushes the text below the top cleft of the heart shape */
+        }
+
         canvas { position: absolute; top: 0; left: 0; z-index: 10; cursor: pointer; touch-action: none; }
 
         /* --- Schedule Table --- */
@@ -205,23 +210,25 @@ html_content = """
        <!-- Typewriter Header -->
        <div class="header-text obs type-fade" data-text="Starting with the name of Allah, The most Beneficial and The most Merciful."></div>
 
-       <!-- UPDATED: Ink Spread Sub-header with blooming garden -->
-       <div class="ink-spread-anim obs ink-trigger">
-           <div class="sub-header-text">
-               We are pleased to
-               <span class="invite-word">Invite</span>
-               you to the <span class="wedding-word">Wedding</span> ceremony
-           </div>
-           
-           <!-- The 2 blooming flowers with butterflies -->
-           <div class="garden-container">
-               <div class="plant">
-                   <div class="butterfly">🦋</div>
-                   <div class="flower">🌸</div>
+       <!-- Ink Spread Sub-header Wrapper (Fixes the Observer bug!) -->
+       <div class="obs ink-trigger" style="min-height: 400px; margin-bottom: 15vh; display: flex; align-items: center; justify-content: center;">
+           <div class="ink-spread-anim">
+               <div class="sub-header-text">
+                   We are pleased to
+                   <span class="invite-word">Invite</span>
+                   you to the <span class="wedding-word">Wedding</span> ceremony
                </div>
-               <div class="plant delayed">
-                   <div class="butterfly">🦋</div>
-                   <div class="flower">🌺</div>
+               
+               <!-- Blooming flowers with butterflies -->
+               <div class="garden-container">
+                   <div class="plant">
+                       <div class="butterfly">🦋</div>
+                       <div class="flower">🌸</div>
+                   </div>
+                   <div class="plant delayed">
+                       <div class="butterfly">🦋</div>
+                       <div class="flower">🌺</div>
+                   </div>
                </div>
            </div>
        </div>
@@ -230,7 +237,11 @@ html_content = """
        <div class="scratch-wrapper obs fade-up">
            <div class="scratch-container">
                <div class="scratch-bg">
-                   Asad <br><span style="font-size: 2rem;">&</span><br> Rimsha
+                   <div class="heart-text">
+                       Asad <br>
+                       <span style="font-size: 1.8rem;">&</span><br>
+                       Rimsha
+                   </div>
                </div>
                <canvas id="scratchCard" width="320" height="320"></canvas>
            </div>
