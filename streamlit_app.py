@@ -32,7 +32,7 @@ html_content = """
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Invitation</title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
@@ -58,6 +58,7 @@ html_content = """
             box-shadow: 0 0 20px rgba(0,0,0,0.7);
             transition: transform 2.5s cubic-bezier(0.8, 0, 0.2, 1);
             position: relative;
+            will-change: transform;
         }
         .curtain-left { border-right: 4px solid #d4af37; }
         .curtain-right { border-left: 4px solid #d4af37; }
@@ -70,6 +71,7 @@ html_content = """
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             z-index: 10000; font-family: 'Great Vibes', cursive;
             transition: opacity 0.5s, transform 0.3s;
+            -webkit-tap-highlight-color: transparent;
         }
         .open-btn:hover { transform: translate(-50%, -50%) scale(1.1); }
         
@@ -78,15 +80,15 @@ html_content = """
         #curtain-wrapper.opened .open-btn { opacity: 0; pointer-events: none; }
 
         /* --- Main Content --- */
-        .content { min-height: 100vh; padding: 100px 20px; text-align: center; overflow-x: hidden; position: relative; z-index: 10; }
+        .content { min-height: 100vh; padding: 10vh 20px; text-align: center; overflow-x: hidden; position: relative; z-index: 10; }
         
         /* Bismillah */
-        .bismillah { font-family: 'Amiri', serif; font-size: 4.5rem; margin-bottom: 25vh; opacity: 0; transform: translateY(30px); transition: all 1.5s ease-out; }
+        .bismillah { font-family: 'Amiri', serif; font-size: 4.5rem; margin-bottom: 20vh; opacity: 0; transform: translateY(30px); transition: all 1.5s ease-out; }
         
         /* Type-in Fade-in */
         .type-fade { 
             font-size: 2.2rem; 
-            margin: 0 auto 25vh auto; 
+            margin: 0 auto 20vh auto; 
             max-width: 800px; 
             padding: 0 15px;
             line-height: 1.5;
@@ -102,17 +104,18 @@ html_content = """
             opacity: 0; 
             transition: clip-path 2.5s cubic-bezier(0.25, 1, 0.5, 1), filter 2.5s ease-out, opacity 1.5s ease-in; 
             padding: 20px 0;
+            will-change: clip-path, filter;
         }
         .sub-header-text { font-size: 2rem; position: relative; }
         
-        .invite-word { font-size: 6rem; display: block; text-align: center; font-family: 'Great Vibes', cursive; margin: 30px 0; color: #4a3b32; }
+        .invite-word { font-size: 6rem; display: block; text-align: center; font-family: 'Great Vibes', cursive; margin: 20px 0; color: #4a3b32; line-height: 1; }
         .wedding-word { color: #ff033e; font-weight: bold; font-style: italic; }
         
         /* --- Detailed Blooming Garden Sequence --- */
-        .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 40px; height: 130px; }
+        .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 30px; height: 130px; }
         .plant { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
         .flower { font-size: 6rem; display: flex; align-items: center; justify-content: center; }
-        .butterfly { font-size: 3rem; position: absolute; bottom: 20px; opacity: 0; transition: all 1.5s ease-in-out; z-index: 10; }
+        .butterfly { font-size: 3rem; position: absolute; bottom: 20px; opacity: 0; transition: all 1.5s ease-in-out; z-index: 10; will-change: transform; }
 
         .visible-ink .ink-spread-anim { opacity: 1; clip-path: circle(150% at center); filter: blur(0px); }
         .visible-ink .butterfly { bottom: 100px; opacity: 1; transition-delay: 2.2s; animation: hoverfly 2.5s infinite ease-in-out alternate 3.7s; }
@@ -136,16 +139,13 @@ html_content = """
         .plant.delayed .flower-center { animation-delay: 2.3s; }
         .plant.delayed .flower svg { animation-delay: 3.9s; }
 
-        @keyframes bloomLayer {
-            0% { transform: scale(0) rotate(-15deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-
+        @keyframes bloomLayer { 0% { transform: scale(0) rotate(-15deg); } 100% { transform: scale(1) rotate(0deg); } }
         @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
         @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
-        /* --- Scratch Card --- */
-        .scratch-wrapper { margin: 0 auto 25vh auto; display: flex; justify-content: center; opacity: 0; transform: translateY(30px); transition: all 1.5s ease-out; }
+        /* --- Scratch Card & Mobile Scaler --- */
+        .scratch-wrapper { margin: 0 auto 20vh auto; display: flex; justify-content: center; opacity: 0; transform: translateY(30px); transition: all 1.5s ease-out; }
+        .scratch-scaler { transform: scale(1); transition: transform 0.3s; }
         .scratch-container {
             position: relative; width: 320px; height: 320px;
             clip-path: path("M 160,90 C 160,90 110,0 20,50 C -50,120 160,300 160,300 C 160,300 370,120 300,50 C 210,0 160,90 160,90 Z");
@@ -156,8 +156,8 @@ html_content = """
         canvas { position: absolute; top: 0; left: 0; z-index: 10; cursor: pointer; touch-action: none; }
 
         /* --- Schedule Table --- */
-        .schedule-box { max-width: 800px; margin: 0 auto 25vh auto; opacity: 0; transform: translateY(50px); transition: all 1.5s; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
+        .schedule-box { max-width: 800px; margin: 0 auto 20vh auto; opacity: 0; transform: translateY(50px); transition: all 1.5s; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 400px; }
         th, td { padding: 15px; text-align: center; border-bottom: 1px solid #d8ccb8; }
         th { font-family: 'Great Vibes', cursive; font-size: 2rem; color: #800000; border-bottom: 2px solid #bba171; }
         td { font-size: 1.2rem; }
@@ -166,7 +166,7 @@ html_content = """
         .footer-text { font-size: 1.5rem; opacity: 0; transform: translateY(50px); transition: all 1.5s; padding-bottom: 100px; font-style: italic; color: #800000; font-weight: bold;}
 
         /* --- Interactive Trigger Class --- */
-        .interactive-emoji { display: inline-block; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .interactive-emoji { display: inline-block; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; will-change: transform; }
         .pop-anim { animation: clickPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
         @keyframes clickPop {
             0% { transform: scale(1) rotate(0deg); filter: brightness(1); }
@@ -176,29 +176,63 @@ html_content = """
         }
 
         /* --- Custom Graphic Animations (Butterflies Flapping) --- */
-        .bf-flap-anim { animation: bfWing 0.3s infinite alternate ease-in-out; }
+        .bf-flap-anim { animation: bfWing 0.3s infinite alternate ease-in-out; transform-origin: 16px 16px; will-change: transform; }
         @keyframes bfWing { 0% { transform: scaleX(1); } 100% { transform: scaleX(0.25); } }
 
         /* --- Parallax & Float Elements --- */
-        .bg-deco { animation: floatDeco 6s infinite ease-in-out alternate; }
-        .fg-deco { animation: floatDeco 8s infinite ease-in-out alternate-reverse; }
+        .bg-deco { animation: floatDeco 6s infinite ease-in-out alternate; will-change: transform; }
+        .fg-deco { animation: floatDeco 8s infinite ease-in-out alternate-reverse; will-change: transform; }
         @keyframes floatDeco { 0% { transform: translateY(0px); } 100% { transform: translateY(-25px); } }
         
-        /* --- Drawn Pencil Birds in Flocks with Wingtip-Flapping --- */
-        .bird-flock { position: fixed; z-index: 1; pointer-events: none; opacity: 0.55; }
+        /* --- Drawn Pencil Birds in Flocks --- */
+        .bird-flock { position: fixed; z-index: 1; pointer-events: none; opacity: 0.55; will-change: transform; }
         .bird-flock .interactive-emoji { pointer-events: auto; }
         .bird-svg { overflow: visible; animation: birdBob 1.2s infinite ease-in-out alternate; }
         .bird-wing { animation: birdFlap 0.5s infinite ease-in-out alternate; } 
         @keyframes birdBob { 0% { transform: translateY(0px); } 100% { transform: translateY(12px); } }
         @keyframes birdFlap {
-            0%   { d: path("M 5 10 Q 30 15 50 30 Q 70 15 95 10"); } /* Tips high up */
-            100% { d: path("M 5 50 Q 30 35 50 30 Q 70 35 95 50"); } /* Tips swooped down */
+            0%   { d: path("M 5 10 Q 30 15 50 30 Q 70 15 95 10"); } 
+            100% { d: path("M 5 50 Q 30 35 50 30 Q 70 35 95 50"); } 
         }
         @keyframes flyRight { 0% { transform: translateX(-15vw) translateY(15vh); } 100% { transform: translateX(115vw) translateY(-15vh); } }
         @keyframes flyLeft { 0% { transform: translateX(115vw) translateY(15vh); } 100% { transform: translateX(-15vw) translateY(-15vh); } }
 
         .visible-up { opacity: 1 !important; transform: translateY(0) !important; }
         .visible-fade { opacity: 1 !important; }
+
+        /* =========================================
+           MOBILE RESPONSIVENESS (Media Queries)
+           ========================================= */
+        @media (max-width: 768px) {
+            .bismillah { font-size: 3rem; margin-bottom: 15vh; }
+            .type-fade { font-size: 1.5rem !important; margin-bottom: 15vh; }
+            .sub-header-text { font-size: 1.5rem; }
+            .invite-word { font-size: 4rem; margin: 15px 0; }
+            .flower { font-size: 4.5rem; }
+            .butterfly { font-size: 2.2rem; }
+            .garden-container { gap: 40px; height: 100px; }
+            
+            /* Scaling down the entire Scratch mechanism natively */
+            .scratch-scaler { transform: scale(0.85); }
+            .scratch-wrapper { margin: 0 auto 15vh auto; }
+            
+            /* Table Adjustments */
+            .schedule-box { padding: 15px; margin-bottom: 15vh; }
+            th { font-size: 1.5rem; padding: 10px; }
+            td { font-size: 1rem; padding: 10px; }
+            
+            .footer-text { font-size: 1.2rem; }
+            .open-btn { font-size: 26px; padding: 15px 35px; }
+        }
+
+        @media (max-width: 480px) {
+            /* Extra small screens (iPhone SE, etc) */
+            .bismillah { font-size: 2.5rem; }
+            .type-fade { font-size: 1.3rem !important; }
+            .invite-word { font-size: 3.5rem; }
+            .scratch-scaler { transform: scale(0.75); } 
+            .garden-container { gap: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -229,7 +263,7 @@ html_content = """
         </g>
         
         <g id="svg-butterfly">
-            <g class="bf-flap-anim" style="transform-origin: 16px 16px;">
+            <g class="bf-flap-anim">
                 <path d="M 15 16 C 5 4 0 10 7 16 C 0 22 5 28 15 16 Z" />
                 <path d="M 17 16 C 27 4 32 10 25 16 C 32 22 27 28 17 16 Z" />
             </g>
@@ -253,7 +287,7 @@ html_content = """
 
        <div class="header-text obs type-fade" data-text="Starting with the name of Allah, The most Beneficial and The most Merciful."></div>
 
-       <div class="obs ink-trigger" style="min-height: 400px; margin-bottom: 15vh; display: flex; align-items: center; justify-content: center;">
+       <div class="obs ink-trigger" style="min-height: 300px; margin-bottom: 15vh; display: flex; align-items: center; justify-content: center;">
            <div class="ink-spread-anim">
                <div class="sub-header-text">
                    We are pleased to
@@ -342,16 +376,19 @@ html_content = """
            </div>
        </div>
 
+       <!-- Wrapped Container for Mobile Scaling -->
        <div class="scratch-wrapper obs fade-up">
-           <div class="scratch-container">
-               <div class="scratch-bg">
-                   <div class="heart-text">
-                       Asad <br>
-                       <span style="font-size: 1.8rem;">&</span><br>
-                       Rimsha
+           <div class="scratch-scaler">
+               <div class="scratch-container">
+                   <div class="scratch-bg">
+                       <div class="heart-text">
+                           Asad <br>
+                           <span style="font-size: 1.8rem;">&</span><br>
+                           Rimsha
+                       </div>
                    </div>
+                   <canvas id="scratchCard" width="320" height="320"></canvas>
                </div>
-               <canvas id="scratchCard" width="320" height="320"></canvas>
            </div>
        </div>
 
@@ -397,8 +434,13 @@ html_content = """
             return `<svg viewBox="0 0 32 32" width="${sizeRem}rem" height="${sizeRem}rem" fill="${color}" style="pointer-events: none;"><use href="#svg-${type}" /></svg>`;
         }
 
-        // A) Parallax Background SVG Decor - INCREASED DENSITY & REDUCED BLUR
-        for(let i=0; i<60; i++) {
+        // Detect Mobile for slight performance density scaling
+        const isMobile = window.innerWidth <= 768;
+        const bgCount = isMobile ? 30 : 60;
+        const fgCount = isMobile ? 12 : 25;
+
+        // A) Parallax Background SVG Decor
+        for(let i=0; i<bgCount; i++) {
             let wrapper = document.createElement('div');
             wrapper.className = 'parallax-bg-wrapper';
             wrapper.style.position = 'absolute';
@@ -417,7 +459,7 @@ html_content = """
             
             inner.innerHTML = generateSvgGraphic(randomSize, randomColor);
             
-            // Reduced Blur for sharper depth
+            // Reduced Blur
             inner.style.filter = 'blur(1.5px)'; 
             inner.style.opacity = '0.55';
             
@@ -426,8 +468,8 @@ html_content = """
             content.appendChild(wrapper);
         }
 
-        // B) Parallax Foreground SVG Decor - INCREASED DENSITY & REDUCED BLUR
-        for(let i=0; i<25; i++) {
+        // B) Parallax Foreground SVG Decor
+        for(let i=0; i<fgCount; i++) {
             let wrapper = document.createElement('div');
             wrapper.className = 'parallax-fg-wrapper';
             wrapper.style.position = 'absolute';
@@ -447,7 +489,6 @@ html_content = """
             
             inner.innerHTML = generateSvgGraphic(randomSize, randomColor);
             
-            // Reduced Blur for crisper foreground elements
             inner.style.filter = 'blur(3px)'; 
             inner.style.opacity = '0.65';
             inner.style.pointerEvents = 'auto'; 
@@ -458,7 +499,7 @@ html_content = """
         }
 
         // C) Organized Bird Flocks with V-formation geometry
-        const numFlocks = 5;
+        const numFlocks = isMobile ? 3 : 5;
         for(let f = 0; f < numFlocks; f++) {
             let flockWrapper = document.createElement('div');
             flockWrapper.className = 'bird-flock';
@@ -491,7 +532,7 @@ html_content = """
                 let flapDelay = '-' + (Math.random() * 0.5).toFixed(2) + 's';
                 
                 inner.innerHTML = `
-                <svg class="bird-svg" viewBox="0 0 100 60" width="${Math.random() * 15 + 35}" height="25" style="pointer-events:none;">
+                <svg class="bird-svg" viewBox="0 0 100 60" width="${Math.random() * 15 + 30}" height="25" style="pointer-events:none;">
                     <path class="bird-wing" style="animation-delay: ${flapDelay};" fill="none" stroke="#4a3b32" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
                 </svg>`;
                 
@@ -505,11 +546,9 @@ html_content = """
         window.addEventListener('scroll', () => {
             const scrollY = window.scrollY;
             
-            // BACKGROUND: Translates Down *almost* at scroll speed. Makes it drift up VERY SLOWLY relative to text.
             document.querySelectorAll('.parallax-bg-wrapper').forEach(el => {
                 el.style.transform = `translateY(${scrollY * 0.85}px)`; 
             });
-            // FOREGROUND: Translates Up rapidly, flying past the text.
             document.querySelectorAll('.parallax-fg-wrapper').forEach(el => {
                 el.style.transform = `translateY(${-scrollY * 0.4}px)`; 
             });
@@ -567,7 +606,7 @@ html_content = """
             }, 30);
         }
 
-        // 7. Scratch Card Logic (Threshold 30%)
+        // 7. Scratch Card Logic (Threshold 30% + Mobile Scaler Fix)
         const canvas = document.getElementById('scratchCard');
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
@@ -582,9 +621,17 @@ html_content = """
 
         function getMousePos(e) {
             const rect = canvas.getBoundingClientRect();
+            // Critical math: accounts for mobile CSS transform: scale() shrinking the element
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: clientX - rect.left, y: clientY - rect.top };
+            
+            return { 
+                x: (clientX - rect.left) * scaleX, 
+                y: (clientY - rect.top) * scaleY 
+            };
         }
 
         function scratch(e) {
@@ -602,6 +649,7 @@ html_content = """
         canvas.addEventListener('mousemove', scratch);
         canvas.addEventListener('mouseup', () => isDrawing = false);
         canvas.addEventListener('mouseleave', () => isDrawing = false);
+        // Mobile touch events natively mapped
         canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); });
         canvas.addEventListener('touchmove', scratch);
         canvas.addEventListener('touchend', () => isDrawing = false);
@@ -621,25 +669,27 @@ html_content = """
                 canvas.style.opacity = 0;
                 setTimeout(() => canvas.style.display = 'none', 800);
                 
-                // Triggers Extended 10-Second Explosions!
-                fireCustomCannon('left');
-                fireCustomCannon('right');
+                // Trigger 15-20s Cinematic Explosion!
+                fireSideCannon('left');
+                fireSideCannon('right');
                 spawnExplosionFlock();
             }
         }
 
-        // 8. Custom SVGs Bursting from BOTH SIDES of the screen! (Extended to 10 Seconds)
-        function fireCustomCannon(side) {
+        // 8. Custom Side-Cannons (Fires dynamically from Left/Right bottom screen)
+        function fireSideCannon(side) {
             const container = document.createElement('div');
             container.style.position = 'fixed';
-            container.style[side] = '0px'; 
-            container.style.top = '60%';   
+            // True side anchors
+            container.style[side] = '-20px'; 
+            container.style.bottom = '10%';   
             container.style.zIndex = '1000';
             container.style.pointerEvents = 'none';
             document.body.appendChild(container);
 
-            // Increased count to 80 per side to fill the 10 seconds beautifully
-            for (let i = 0; i < 80; i++) { 
+            const particleCount = isMobile ? 40 : 80;
+            
+            for (let i = 0; i < particleCount; i++) { 
                 let p = document.createElement('div');
                 p.style.position = 'absolute';
                 
@@ -647,24 +697,25 @@ html_content = """
                 let randomColor = weddingColors[Math.floor(Math.random() * weddingColors.length)];
                 p.innerHTML = generateSvgGraphic(randomSize, randomColor);
                 
-                let angleDeg = side === 'left' ? -(Math.random() * 50 + 25) : -(Math.random() * 50 + 105);
+                // Calculates shooting arc: Right cannons shoot left-up, Left cannons shoot right-up
+                let angleDeg = side === 'left' ? -(Math.random() * 50 + 20) : -(Math.random() * 50 + 110);
                 let angle = angleDeg * (Math.PI / 180);
                 
-                let velocity = Math.random() * 900 + 400; // Increased velocity
+                let velocity = Math.random() * 1000 + 400; 
                 let tx = Math.cos(angle) * velocity;
-                let ty = Math.sin(angle) * velocity;
+                let ty = Math.sin(angle) * velocity; 
                 let rot = (Math.random() - 0.5) * 720; 
 
-                // Micro-delays stream the particles over 1.5 seconds instead of all at once
-                let delay = Math.random() * 1500; 
+                // Micro-delays stream the particles gracefully over 2 seconds
+                let delay = Math.random() * 2000; 
 
                 p.animate([
                     { transform: `translate(0px, 0px) scale(0) rotate(0deg)`, opacity: 0 },
-                    { transform: `translate(0px, 0px) scale(0) rotate(0deg)`, opacity: 1, offset: 0.01 }, // appear
-                    { transform: `translate(${tx * 0.8}px, ${ty * 0.8}px) scale(1) rotate(${rot/2}deg)`, opacity: 1, offset: 0.15 }, 
-                    { transform: `translate(${tx * 1.5}px, ${window.innerHeight + 1000}px) scale(0.6) rotate(${rot}deg)`, opacity: 0 } // Deep long fall
+                    { transform: `translate(0px, 0px) scale(0.5) rotate(0deg)`, opacity: 1, offset: 0.05 },
+                    { transform: `translate(${tx * 0.8}px, ${ty * 0.8}px) scale(1) rotate(${rot/2}deg)`, opacity: 1, offset: 0.25 }, 
+                    { transform: `translate(${tx * 1.5}px, ${window.innerHeight + 1000}px) scale(0.6) rotate(${rot}deg)`, opacity: 0 } // Very Long Fall
                 ], {
-                    duration: Math.random() * 4000 + 7000, // 7 to 11 seconds duration
+                    duration: Math.random() * 5000 + 10000, // 10 to 15 seconds duration
                     delay: delay,
                     easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
                     fill: 'forwards'
@@ -672,10 +723,10 @@ html_content = """
 
                 container.appendChild(p);
             }
-            setTimeout(() => container.remove(), 13000); // Wait till completely finished
+            setTimeout(() => container.remove(), 17000); 
         }
 
-        // 9. Exploding Flock of Birds from the Heart Center (Extended to 10 Seconds)
+        // 9. Slow-Motion Cinematic Flock of Birds (15-20 Seconds)
         function spawnExplosionFlock() {
             const flockContainer = document.createElement('div');
             flockContainer.style.position = 'fixed';
@@ -686,8 +737,8 @@ html_content = """
             flockContainer.style.pointerEvents = 'none';
             document.body.appendChild(flockContainer);
 
-            // Increased count to 45 birds
-            for (let i = 0; i < 45; i++) { 
+            const birdCount = isMobile ? 25 : 45;
+            for (let i = 0; i < birdCount; i++) { 
                 let bird = document.createElement('div');
                 bird.style.position = 'absolute';
                 
@@ -697,27 +748,27 @@ html_content = """
                         <path class="bird-wing" style="animation-delay: ${flapDelay};" fill="none" stroke="#4a3b32" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
                     </svg>`;
                 
-                // Huge explosion trajectory for 10-second flight path
+                // Long, slow, epic flight path
                 let tx = (Math.random() - 0.5) * window.innerWidth * 2.5;
-                let ty = - (Math.random() * window.innerHeight * 1.5 + 800); 
-                let rot = (Math.random() - 0.5) * 60; 
-                
-                let delay = Math.random() * 1000; 
+                let ty = - (Math.random() * window.innerHeight * 1.5 + 400); 
+                let rot = (Math.random() - 0.5) * 40; 
+                let delay = Math.random() * 2000; 
 
                 bird.animate([
                     { transform: `translate(0px, 0px) scale(0) rotate(0deg)`, opacity: 0 },
-                    { transform: `translate(0px, 0px) scale(0.2) rotate(0deg)`, opacity: 1, offset: 0.01 },
-                    { transform: `translate(${tx}px, ${ty}px) scale(1.8) rotate(${rot}deg)`, opacity: 0 }
+                    { transform: `translate(0px, 0px) scale(0.2) rotate(0deg)`, opacity: 1, offset: 0.05 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(1.5) rotate(${rot}deg)`, opacity: 0 }
                 ], {
-                    duration: Math.random() * 4000 + 7000, // 7 to 11 seconds duration
+                    // INCREASED DURATION TO 15 TO 20 SECONDS!
+                    duration: Math.random() * 5000 + 15000, 
                     delay: delay,
-                    easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                    easing: 'ease-out',
                     fill: 'forwards'
                 });
 
                 flockContainer.appendChild(bird);
             }
-            setTimeout(() => flockContainer.remove(), 13000);
+            setTimeout(() => flockContainer.remove(), 25000);
         }
     </script>
 </body>
