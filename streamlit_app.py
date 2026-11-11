@@ -47,21 +47,24 @@ html_content = """
             scroll-behavior: smooth;
         }
 
-        /* --- Curtain Animation --- */
+        /* --- Silky Curtain Animation --- */
         #curtain-wrapper {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 9999; display: flex; transition: opacity 2s ease;
+            z-index: 9999; display: flex; 
         }
         .curtain {
             width: 50%; height: 100%;
             background: linear-gradient(to right, #500000 0%, #800000 20%, #b30000 50%, #800000 80%, #500000 100%);
             box-shadow: 0 0 20px rgba(0,0,0,0.7);
-            transition: transform 2.5s cubic-bezier(0.8, 0, 0.2, 1);
+            /* Complex bezier curve to mimic pulling and gathering of heavy cloth */
+            transition: transform 2.5s cubic-bezier(0.64, 0.04, 0.35, 1), 
+                        border-radius 2.5s ease-in-out, 
+                        box-shadow 2.5s ease;
             position: relative;
-            will-change: transform;
+            will-change: transform, border-radius;
         }
-        .curtain-left { border-right: 4px solid #d4af37; }
-        .curtain-right { border-left: 4px solid #d4af37; }
+        .curtain-left { border-right: 4px solid #d4af37; transform-origin: top left; }
+        .curtain-right { border-left: 4px solid #d4af37; transform-origin: top right; }
         
         .open-btn {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -75,15 +78,41 @@ html_content = """
         }
         .open-btn:hover { transform: translate(-50%, -50%) scale(1.1); }
         
-        #curtain-wrapper.opened .curtain-left { transform: translateX(-100%); }
-        #curtain-wrapper.opened .curtain-right { transform: translateX(100%); }
-        #curtain-wrapper.opened .open-btn { opacity: 0; pointer-events: none; }
+        /* The Silky Drop & Gather geometry triggered on click */
+        #curtain-wrapper.opened {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease 1.8s; /* Fade whole layer smoothly out at the end */
+        }
+        #curtain-wrapper.opened .open-btn { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(0.5); }
+        
+        #curtain-wrapper.opened .curtain-left { 
+            /* Shrinks dramatically to side, drops down 15%, swings out -5deg */
+            transform: scaleX(0.12) translateY(15%) rotateZ(-5deg); 
+            border-bottom-right-radius: 80% 50%; /* Rounds the gathered corner */
+            box-shadow: inset -50px 0 50px rgba(0,0,0,0.8); /* Deep shadow simulates folds */
+        }
+        #curtain-wrapper.opened .curtain-right { 
+            transform: scaleX(0.12) translateY(15%) rotateZ(5deg); 
+            border-bottom-left-radius: 80% 50%;
+            box-shadow: inset 50px 0 50px rgba(0,0,0,0.8);
+        }
 
         /* --- Main Content --- */
         .content { min-height: 100vh; padding: 10vh 20px; text-align: center; overflow-x: hidden; position: relative; z-index: 10; }
         
-        /* Bismillah */
-        .bismillah { font-family: 'Amiri', serif; font-size: 4.5rem; margin-bottom: 20vh; opacity: 0; transform: translateY(30px); transition: all 1.5s ease-out; }
+        /* Bismillah Dynamic Auto-Scaler */
+        .bismillah { 
+            font-family: 'Amiri', serif; 
+            /* Clamp prevents it from ever being larger than the screen */
+            font-size: clamp(2rem, 15vw, 4.5rem); 
+            margin-bottom: 20vh; 
+            opacity: 0; 
+            transform: translateY(30px); 
+            transition: all 1.5s ease-out; 
+            line-height: 1.2;
+            white-space: nowrap; 
+        }
         
         /* Type-in Fade-in */
         .type-fade { 
@@ -201,10 +230,9 @@ html_content = """
         .visible-fade { opacity: 1 !important; }
 
         /* =========================================
-           MOBILE RESPONSIVENESS (Media Queries)
+           MOBILE RESPONSIVENESS
            ========================================= */
         @media (max-width: 768px) {
-            .bismillah { font-size: 3rem; margin-bottom: 15vh; }
             .type-fade { font-size: 1.5rem !important; margin-bottom: 15vh; }
             .sub-header-text { font-size: 1.5rem; }
             .invite-word { font-size: 4rem; margin: 15px 0; }
@@ -226,8 +254,6 @@ html_content = """
         }
 
         @media (max-width: 480px) {
-            /* Extra small screens (iPhone SE, etc) */
-            .bismillah { font-size: 2.5rem; }
             .type-fade { font-size: 1.3rem !important; }
             .invite-word { font-size: 3.5rem; }
             .scratch-scaler { transform: scale(0.75); } 
@@ -422,7 +448,7 @@ html_content = """
         function openCurtains() {
             const wrapper = document.getElementById('curtain-wrapper');
             wrapper.classList.add('opened');
-            setTimeout(() => { wrapper.style.display = 'none'; }, 2500);
+            setTimeout(() => { wrapper.style.display = 'none'; }, 3000);
         }
 
         const content = document.getElementById('main-content');
