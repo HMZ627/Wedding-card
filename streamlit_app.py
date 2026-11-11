@@ -108,7 +108,7 @@ html_content = """
         .invite-word { font-size: 6rem; display: block; text-align: center; font-family: 'Great Vibes', cursive; margin: 30px 0; color: #4a3b32; }
         .wedding-word { color: #ff033e; font-weight: bold; font-style: italic; }
         
-        /* --- NEW Detailed Blooming Garden Sequence --- */
+        /* --- Detailed Blooming Garden Sequence --- */
         .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 40px; height: 130px; }
         .plant { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
         .flower { font-size: 6rem; display: flex; align-items: center; justify-content: center; }
@@ -118,7 +118,6 @@ html_content = """
         .visible-ink .butterfly { bottom: 100px; opacity: 1; transition-delay: 2.2s; animation: hoverfly 2.5s infinite ease-in-out alternate 3.7s; }
         .plant.delayed .butterfly { transition-delay: 2.6s; animation-delay: 4.1s; }
 
-        /* Elegant Nested Blooming Animations for SVG inner layers */
         .flower-layer-1, .flower-layer-2, .flower-layer-3, .flower-center {
             transform-origin: 16px 16px;
             transform: scale(0);
@@ -129,7 +128,6 @@ html_content = """
         .visible-ink .flower-layer-3 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.6s; }
         .visible-ink .flower-center { animation: bloomLayer 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.9s; }
         
-        /* The whole flower breathes gently after blooming */
         .visible-ink .flower svg { animation: continuousBloom 4s infinite alternate ease-in-out 3.5s; }
 
         .plant.delayed .flower-layer-1 { animation-delay: 1.4s; }
@@ -210,7 +208,7 @@ html_content = """
       <defs>
         <path id="svg-heart" d="M16 28.5C16 28.5 4 20 4 10C4 5.6 7.6 2 12 2C14.4 2 16 3.6 16 3.6C16 3.6 17.6 2 20 2C24.4 2 28 5.6 28 10C28 20 16 28.5 16 28.5Z"/>
         
-        <!-- NEW Highly Detailed 3-Layer Botanical Flower for Backgrounds -->
+        <!-- Highly Detailed 3-Layer Botanical Flower -->
         <g id="svg-flower">
             <g stroke="#ffffff" stroke-width="0.5">
                 <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
@@ -263,7 +261,6 @@ html_content = """
                    you to the <span class="wedding-word">Wedding</span> ceremony
                </div>
                
-               <!-- NEW DIRECTLY INJECTED DETAILED FLOWERS (Enables individual layer blooming) -->
                <div class="garden-container">
                    <div class="plant">
                        <div class="butterfly">
@@ -274,7 +271,6 @@ html_content = """
                        <div class="flower">
                            <span class="interactive-emoji">
                                <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffb6c1" style="overflow: visible;">
-                                   <!-- Layer 1 -->
                                    <g class="flower-layer-1" stroke="#ffffff" stroke-width="0.5">
                                        <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
                                        <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
@@ -282,7 +278,6 @@ html_content = """
                                        <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
                                        <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
                                    </g>
-                                   <!-- Layer 2 -->
                                    <g class="flower-layer-2" fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
                                        <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
                                        <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
@@ -290,7 +285,6 @@ html_content = """
                                        <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
                                        <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
                                    </g>
-                                   <!-- Layer 3 -->
                                    <g class="flower-layer-3" fill="#ffffff" opacity="0.6">
                                        <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" />
                                        <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(72 16 16)" />
@@ -627,14 +621,14 @@ html_content = """
                 canvas.style.opacity = 0;
                 setTimeout(() => canvas.style.display = 'none', 800);
                 
-                // Triggers Explosions!
+                // Triggers Extended 10-Second Explosions!
                 fireCustomCannon('left');
                 fireCustomCannon('right');
                 spawnExplosionFlock();
             }
         }
 
-        // 8. Custom SVGs Bursting from BOTH SIDES of the screen!
+        // 8. Custom SVGs Bursting from BOTH SIDES of the screen! (Extended to 10 Seconds)
         function fireCustomCannon(side) {
             const container = document.createElement('div');
             container.style.position = 'fixed';
@@ -644,7 +638,8 @@ html_content = """
             container.style.pointerEvents = 'none';
             document.body.appendChild(container);
 
-            for (let i = 0; i < 35; i++) { 
+            // Increased count to 80 per side to fill the 10 seconds beautifully
+            for (let i = 0; i < 80; i++) { 
                 let p = document.createElement('div');
                 p.style.position = 'absolute';
                 
@@ -655,27 +650,32 @@ html_content = """
                 let angleDeg = side === 'left' ? -(Math.random() * 50 + 25) : -(Math.random() * 50 + 105);
                 let angle = angleDeg * (Math.PI / 180);
                 
-                let velocity = Math.random() * 700 + 300;
+                let velocity = Math.random() * 900 + 400; // Increased velocity
                 let tx = Math.cos(angle) * velocity;
                 let ty = Math.sin(angle) * velocity;
                 let rot = (Math.random() - 0.5) * 720; 
 
+                // Micro-delays stream the particles over 1.5 seconds instead of all at once
+                let delay = Math.random() * 1500; 
+
                 p.animate([
-                    { transform: `translate(0px, 0px) scale(0) rotate(0deg)`, opacity: 1 },
-                    { transform: `translate(${tx * 0.7}px, ${ty * 0.7}px) scale(1) rotate(${rot/2}deg)`, opacity: 1, offset: 0.3 },
-                    { transform: `translate(${tx * 1.2}px, ${ty + 800}px) scale(0.6) rotate(${rot}deg)`, opacity: 0 }
+                    { transform: `translate(0px, 0px) scale(0) rotate(0deg)`, opacity: 0 },
+                    { transform: `translate(0px, 0px) scale(0) rotate(0deg)`, opacity: 1, offset: 0.01 }, // appear
+                    { transform: `translate(${tx * 0.8}px, ${ty * 0.8}px) scale(1) rotate(${rot/2}deg)`, opacity: 1, offset: 0.15 }, 
+                    { transform: `translate(${tx * 1.5}px, ${window.innerHeight + 1000}px) scale(0.6) rotate(${rot}deg)`, opacity: 0 } // Deep long fall
                 ], {
-                    duration: Math.random() * 2000 + 2500,
+                    duration: Math.random() * 4000 + 7000, // 7 to 11 seconds duration
+                    delay: delay,
                     easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
                     fill: 'forwards'
                 });
 
                 container.appendChild(p);
             }
-            setTimeout(() => container.remove(), 5000);
+            setTimeout(() => container.remove(), 13000); // Wait till completely finished
         }
 
-        // 9. Exploding Flock of Birds from the Heart Center
+        // 9. Exploding Flock of Birds from the Heart Center (Extended to 10 Seconds)
         function spawnExplosionFlock() {
             const flockContainer = document.createElement('div');
             flockContainer.style.position = 'fixed';
@@ -686,7 +686,8 @@ html_content = """
             flockContainer.style.pointerEvents = 'none';
             document.body.appendChild(flockContainer);
 
-            for (let i = 0; i < 25; i++) { 
+            // Increased count to 45 birds
+            for (let i = 0; i < 45; i++) { 
                 let bird = document.createElement('div');
                 bird.style.position = 'absolute';
                 
@@ -696,22 +697,27 @@ html_content = """
                         <path class="bird-wing" style="animation-delay: ${flapDelay};" fill="none" stroke="#4a3b32" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
                     </svg>`;
                 
-                let tx = (Math.random() - 0.5) * window.innerWidth * 1.2;
-                let ty = - (Math.random() * window.innerHeight/1.5 + 300); 
+                // Huge explosion trajectory for 10-second flight path
+                let tx = (Math.random() - 0.5) * window.innerWidth * 2.5;
+                let ty = - (Math.random() * window.innerHeight * 1.5 + 800); 
                 let rot = (Math.random() - 0.5) * 60; 
+                
+                let delay = Math.random() * 1000; 
 
                 bird.animate([
-                    { transform: `translate(0px, 0px) scale(0.2) rotate(0deg)`, opacity: 1 },
-                    { transform: `translate(${tx}px, ${ty}px) scale(1.5) rotate(${rot}deg)`, opacity: 0 }
+                    { transform: `translate(0px, 0px) scale(0) rotate(0deg)`, opacity: 0 },
+                    { transform: `translate(0px, 0px) scale(0.2) rotate(0deg)`, opacity: 1, offset: 0.01 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(1.8) rotate(${rot}deg)`, opacity: 0 }
                 ], {
-                    duration: Math.random() * 2000 + 2000,
+                    duration: Math.random() * 4000 + 7000, // 7 to 11 seconds duration
+                    delay: delay,
                     easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
                     fill: 'forwards'
                 });
 
                 flockContainer.appendChild(bird);
             }
-            setTimeout(() => flockContainer.remove(), 5000);
+            setTimeout(() => flockContainer.remove(), 13000);
         }
     </script>
 </body>
