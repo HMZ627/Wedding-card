@@ -85,7 +85,16 @@ html_content = """
         .bismillah { font-family: 'Amiri', serif; font-size: 4.5rem; margin-bottom: 25vh; opacity: 0; transform: translateY(30px); transition: all 1.5s ease-out; }
         
         /* Type-in Fade-in */
-        .type-fade { font-size: 2rem; margin: 0 auto 25vh auto; max-width: 800px; opacity: 0; transition: opacity 1.5s ease-in; min-height: 80px;}
+        .type-fade { 
+            font-size: 2.2rem; 
+            margin: 0 auto 25vh auto; 
+            max-width: 800px; 
+            padding: 0 15px; /* Keeps text away from screen edges on mobile */
+            line-height: 1.5;
+            opacity: 0; 
+            transition: opacity 1.5s ease-in; 
+            min-height: 80px;
+        }
         
         /* --- Ink Spread Section --- */
         .ink-spread-anim { 
@@ -174,7 +183,7 @@ html_content = """
         canvas { position: absolute; top: 0; left: 0; z-index: 10; cursor: pointer; touch-action: none; }
 
         /* --- Schedule Table --- */
-        .schedule-box { max-width: 800px; margin: 0 auto 25vh auto; opacity: 0; transform: translateY(50px); transition: all 1.5s; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; }
+        .schedule-box { max-width: 800px; margin: 0 auto 25vh auto; opacity: 0; transform: translateY(50px); transition: all 1.5s; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 15px; text-align: center; border-bottom: 1px solid #d8ccb8; }
         th { font-family: 'Great Vibes', cursive; font-size: 2rem; color: #800000; border-bottom: 2px solid #bba171; }
@@ -320,26 +329,31 @@ html_content = """
 
         document.querySelectorAll('.obs').forEach(el => observer.observe(el));
 
-        // 4. Typewriter "Fade-In" Logic (UPDATED)
+        // 4. Typewriter "Fade-In" Logic (Fixed Word Wrapping Bug)
         function typeWriterFadeIn(el) {
             if(el.dataset.typed) return; 
             el.dataset.typed = true;
             let text = el.getAttribute('data-text');
             el.innerHTML = '';
             
-            // Create a span for every letter and make it invisible
             let chars = text.split('');
+            let spans = [];
+            
             chars.forEach(char => {
-                let span = document.createElement('span');
-                // preserve spaces properly in HTML
-                span.innerHTML = char === ' ' ? '&nbsp;' : char; 
-                span.style.opacity = '0';
-                span.style.transition = 'opacity 0.5s ease-in-out';
-                el.appendChild(span);
+                if (char === ' ') {
+                    // Injecting a standard text node allows the browser to word-wrap beautifully!
+                    el.appendChild(document.createTextNode(' '));
+                } else {
+                    let span = document.createElement('span');
+                    span.textContent = char;
+                    span.style.opacity = '0';
+                    span.style.transition = 'opacity 0.5s ease-in-out';
+                    el.appendChild(span);
+                    spans.push(span); // Only animate the actual letters
+                }
             });
             
             // Fade them in one by one
-            let spans = el.querySelectorAll('span');
             let i = 0;
             let timer = setInterval(() => {
                 if (i < spans.length) {
@@ -348,7 +362,7 @@ html_content = """
                 } else {
                     clearInterval(timer);
                 }
-            }, 30); // Adjust this number to make the typing faster or slower (30ms per letter)
+            }, 30); // 30ms per letter speed
         }
 
         // 5. Scratch Card Logic
