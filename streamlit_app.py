@@ -8,14 +8,27 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Hide Streamlit's native header, footer and padding for a seamless full-screen app
+# Hide Streamlit's native header, footer, toolbar, and internal badges
 st.markdown(
     """
     <style>
         .block-container { padding: 0rem !important; }
-        header { visibility: hidden !important; }
-        footer { visibility: hidden !important; }
-        #MainMenu { visibility: hidden !important; }
+        #MainMenu, header, footer,
+        [data-testid="stToolbar"],
+        [data-testid="stDecoration"],
+        [data-testid="stStatusWidget"],
+        [data-testid="stHeader"],
+        .stAppDeployButton,
+        .stDeployButton,
+        .viewerBadge_container__1QSob,
+        .viewerBadge_link__1S137,
+        div[class*="viewerBadge"],
+        div[class*="profileContainer"],
+        div[class*="StatusWidget"],
+        a[href*="streamlit.io"] {
+            display: none !important;
+            visibility: hidden !important;
+        }
         iframe {
             height: 100vh !important;
             width: 100vw !important;
@@ -26,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with cloth-mesh curtains, blur-in reveal, scratch card & animations
+# HTML, CSS, JS payload with WebGL glossy silk curtains, blur-in reveal, scratch card & animations
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -52,7 +65,7 @@ html_content = """
             scroll-behavior: smooth;
         }
 
-        /* --- Canvas Silky Cloth Curtain --- */
+        /* --- WebGL / Canvas Silky Cloth Curtain --- */
         #curtain-wrapper {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; pointer-events: auto;
@@ -230,7 +243,7 @@ html_content = """
         .fg-deco { animation: floatDeco 8s infinite ease-in-out alternate-reverse; will-change: transform; }
         @keyframes floatDeco { 0% { transform: translateY(0px); } 100% { transform: translateY(-25px); } }
 
-        /* --- Drawn Pencil Birds in Flocks (blur-in after curtain drops) --- */
+        /* --- Drawn Pencil Birds in Flocks --- */
         .bird-flock {
             position: fixed; z-index: 1; pointer-events: none;
             opacity: 0; filter: blur(12px);
@@ -321,7 +334,7 @@ html_content = """
       </defs>
     </svg>
 
-    <!-- Red Silky Cloth Curtains (2D Cloth Mesh Canvas) -->
+    <!-- Red Glossy Silky Cloth Curtains (WebGL Shader + 2D Gradient Fallback) -->
     <div id="curtain-wrapper">
        <canvas id="curtain-canvas"></canvas>
        <div class="open-btn" onclick="openCurtains()">Open</div>
@@ -467,29 +480,15 @@ html_content = """
 
     <script>
         // ============================================================
-        // 1. REAL-TIME 2D SILKY CLOTH MESH CURTAIN PHYSICS
+        // 1. PER-PIXEL GLOSSY SILK CURTAIN (WebGL Shader + 2D Fallback)
         // ============================================================
         const curtainWrapper = document.getElementById('curtain-wrapper');
         const curtainCanvas = document.getElementById('curtain-canvas');
-        const cCtx = curtainCanvas.getContext('2d');
 
         let cW = 0, cH = 0, cDpr = 1;
         let isCurtainOpening = false;
         let isCurtainDone = false;
         let curtainOpenTime = 0;
-        let curtainAnimId = null;
-
-        function resizeCurtainCanvas() {
-            if (isCurtainDone) return;
-            cW = window.innerWidth;
-            cH = window.innerHeight;
-            cDpr = Math.min(window.devicePixelRatio || 1, 2);
-            curtainCanvas.width = cW * cDpr;
-            curtainCanvas.height = cH * cDpr;
-            cCtx.setTransform(cDpr, 0, 0, cDpr, 0, 0);
-        }
-        resizeCurtainCanvas();
-        window.addEventListener('resize', resizeCurtainCanvas);
 
         function easeInOutCubic(t) {
             return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -498,114 +497,242 @@ html_content = """
             return Math.max(0, Math.min(1, val));
         }
 
-        function drawSilkCurtainHalf(side, timeSec, rawProgress) {
-            const COLS = 26;
-            const ROWS = 14;
-            const numFolds = cW < 600 ? 4.5 : 6.5;
+        // Compute silky vertex coordinates for (side, u, v, timeSec, rawProgress)
+        function computeSilkPoint(side, u, v, timeSec, rawProgress) {
             const halfW = cW * 0.5;
-            const waveAmp = (cW < 600 ? 18 : 34);
+            const waveAmp = (cW < 600 ? 22 : 42);
+            const numFolds = cW < 600 ? 4.5 : 6.5;
 
-            // Build vertex grid (u: 0=outer wall, 1=center seam; v: 0=top, 1=bottom)
-            const pts = [];
-            for (let i = 0; i <= COLS; i++) {
-                const u = i / COLS;
-                pts[i] = [];
-                for (let j = 0; j <= ROWS; j++) {
-                    const v = j / ROWS;
+            const lag = v * 0.22 + (1 - u) * 0.06;
+            const t = clamp01((rawProgress - lag) / 0.72);
+            const ease = easeInOutCubic(t);
 
-                    // Cloth lag: top and center release gracefully before the trailing bottom hem
-                    const lag = v * 0.22 + (1 - u) * 0.06;
-                    const t = clamp01((rawProgress - lag) / (1 - 0.28));
-                    const ease = easeInOutCubic(t);
+            // Dampen breeze right at center seam when closed so zero gap ever shows
+            const seamPin = 1.0 - Math.pow(u, 3.0) * (1.0 - ease);
+            const breezePhase = v * 3.4 - timeSec * 1.35 + u * 4.5 + (side === 1 ? 1.15 : 0.0);
+            const breeze = Math.sin(breezePhase) * (3.5 + 7.5 * v) * seamPin * (1.0 - ease * 0.35);
 
-                    // Ambient gentle breeze ripple before and during drop
-                    const breezePhase = v * 3.5 - timeSec * 1.35 + u * 4.5 + (side === 'right' ? 1.2 : 0);
-                    const breeze = Math.sin(breezePhase) * (3 + 7 * v) * (1 - ease * 0.4);
+            // Slight seam overlap when closed so both halves meet seamlessly
+            const uOverlap = u * (1.0 + 0.008 * (1.0 - ease));
 
-                    // Pleat gathering & outward sweep
-                    const gatherScale = 1 - ease * 0.65;
-                    const sweepOut = ease * (cW * 0.58);
+            const gatherScale = 1.0 - ease * 0.66;
+            const sweepOut = ease * (cW * 0.59);
 
-                    // Travelling S-curve silk wave as cloth sweeps away
-                    const clothWave = Math.sin(v * Math.PI * 2.2 - rawProgress * 7.5 + u * 2.0)
-                                    * Math.sin(ease * Math.PI)
-                                    * waveAmp * (0.25 + 0.75 * v);
+            const clothWave = Math.sin(v * Math.PI * 2.2 - rawProgress * 7.5 + u * 2.0)
+                            * Math.sin(ease * Math.PI)
+                            * waveAmp * (0.25 + 0.75 * v);
 
-                    // Gravity drop: the center fabric sags/drops downward as tension releases
-                    const dropY = Math.pow(ease, 1.35) * (cH * 0.30) * (0.15 + 0.85 * u);
-                    const vertRipple = Math.sin(u * Math.PI * 3.0 + rawProgress * 5.0) * Math.sin(ease * Math.PI) * 10;
+            const dropY = Math.pow(ease, 1.35) * (cH * 0.32) * (0.15 + 0.85 * u);
+            const hemScallop = Math.sin(u * numFolds * Math.PI * 2.0) * 3.5 * v * (1.0 - ease);
+            const vertRipple = Math.sin(u * Math.PI * 3.0 + rawProgress * 5.0) * Math.sin(ease * Math.PI) * 12.0;
 
-                    let xLocal = (u * halfW * gatherScale) - sweepOut + clothWave + breeze;
-                    let x = side === 'left' ? xLocal : (cW - xLocal);
-                    let y = v * cH + dropY + vertRipple;
+            const xLocal = (uOverlap * halfW * gatherScale) - sweepOut + clothWave + breeze;
+            const x = side === 0 ? xLocal : (cW - xLocal);
+            const y = v * cH + dropY + hemScallop + vertRipple;
 
-                    pts[i][j] = { x, y };
+            return { x, y, ease };
+        }
+
+        // Try WebGL first for ultra-smooth, zero-block per-pixel glossy silk shading
+        const gl = curtainCanvas.getContext('webgl', { alpha: true, antialias: true })
+                || curtainCanvas.getContext('experimental-webgl', { alpha: true, antialias: true });
+
+        let glState = null;
+        if (gl) {
+            const vsSource = `
+                attribute vec2 a_pos;
+                attribute vec2 a_uv;
+                attribute vec2 a_meta;
+                varying vec2 v_uv;
+                varying vec2 v_meta;
+                void main() {
+                    gl_Position = vec4(a_pos, 0.0, 1.0);
+                    v_uv = a_uv;
+                    v_meta = a_meta;
+                }
+            `;
+            const fsSource = `
+                precision mediump float;
+                varying vec2 v_uv;
+                varying vec2 v_meta;
+                uniform float u_time;
+                uniform float u_numFolds;
+                uniform float u_alpha;
+
+                void main() {
+                    float u = clamp(v_uv.x, 0.0, 1.0);
+                    float v = clamp(v_uv.y, 0.0, 1.0);
+                    float side = v_meta.x;
+                    float ease = v_meta.y;
+
+                    // Continuous per-pixel silk fold wave (zero blocks!)
+                    float foldPhase = u * u_numFolds * 6.2831853
+                                    + sin(v * 3.3 - u_time * 1.35 + side * 1.15) * 0.48
+                                    + ease * 2.6 * u;
+
+                    float slope = cos(foldPhase);
+                    float ridge = sin(foldPhase);
+
+                    // Stage spotlight + gentle shadow toward hem
+                    float stageGlow = 0.84 + 0.22 * exp(-pow((v - 0.34) * 1.9, 2.0));
+                    float hemShadow = 1.0 - 0.18 * pow(v, 1.8);
+                    float vLight = stageGlow * hemShadow;
+
+                    // Anisotropic silk sheen: sharp specular + broad satin + grazing rim glow
+                    float sharpSpec = pow(max(0.0, slope), 6.5);
+                    float broadSheen = pow(max(0.0, slope), 2.0);
+                    float rimSheen = pow(1.0 - abs(slope), 3.0) * 0.20;
+                    float valleyShadow = pow(max(0.0, -slope), 1.45);
+
+                    // Subtle woven silk thread shimmer
+                    float weave = 0.975 + 0.025 * sin(u * 380.0 + v * 50.0) * sin(v * 240.0);
+
+                    // Rich crimson silk palette
+                    vec3 silkCol = vec3(0.49, 0.03, 0.08);
+                    silkCol -= valleyShadow * vec3(0.37, 0.028, 0.06);
+                    silkCol += broadSheen * vec3(0.30, 0.06, 0.10);
+                    silkCol += rimSheen * vec3(0.36, 0.08, 0.14);
+                    silkCol += sharpSpec * vec3(0.42, 0.24, 0.27);
+                    silkCol += max(0.0, ridge) * 0.04 * vec3(0.3, 0.05, 0.08);
+
+                    // Metallic Gold Zari border along inner center edge (u > 0.962)
+                    float goldMask = smoothstep(0.958, 0.964, u);
+                    float zariPattern = 0.92 + 0.08 * sin(v * 220.0) * cos(u * 420.0);
+                    vec3 goldCol = vec3(0.76, 0.58, 0.18) * zariPattern;
+                    goldCol -= valleyShadow * vec3(0.40, 0.31, 0.11);
+                    goldCol += broadSheen * vec3(0.22, 0.18, 0.08);
+                    goldCol += sharpSpec * vec3(0.34, 0.30, 0.18);
+
+                    vec3 finalCol = mix(silkCol, goldCol, goldMask) * vLight * weave;
+                    gl_FragColor = vec4(clamp(finalCol, 0.0, 1.0), u_alpha);
+                }
+            `;
+
+            function compileShader(type, src) {
+                const s = gl.createShader(type);
+                gl.shaderSource(s, src);
+                gl.compileShader(s);
+                return s;
+            }
+
+            const prog = gl.createProgram();
+            gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, vsSource));
+            gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, fsSource));
+            gl.linkProgram(prog);
+            gl.useProgram(prog);
+
+            const COLS = 44;
+            const ROWS = 26;
+            const vertsPerSide = (COLS + 1) * (ROWS + 1);
+            const totalVerts = vertsPerSide * 2;
+            const vertexData = new Float32Array(totalVerts * 6);
+
+            const indices = [];
+            for (let s = 0; s < 2; s++) {
+                const base = s * vertsPerSide;
+                for (let i = 0; i < COLS; i++) {
+                    for (let j = 0; j < ROWS; j++) {
+                        const v00 = base + i * (ROWS + 1) + j;
+                        const v10 = base + (i + 1) * (ROWS + 1) + j;
+                        const v01 = v00 + 1;
+                        const v11 = v10 + 1;
+                        indices.push(v00, v10, v11, v00, v11, v01);
+                    }
                 }
             }
 
-            // Render shaded silk quads with anisotropic satin sheen
-            for (let i = 0; i < COLS; i++) {
-                const uMid = (i + 0.5) / COLS;
-                const isGoldTrim = uMid > 0.955;
+            const vbo = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+            gl.bufferData(gl.ARRAY_BUFFER, vertexData.byteLength, gl.DYNAMIC_DRAW);
 
+            const ibo = gl.createBuffer();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+            const aPos = gl.getAttribLocation(prog, 'a_pos');
+            const aUv = gl.getAttribLocation(prog, 'a_uv');
+            const aMeta = gl.getAttribLocation(prog, 'a_meta');
+            gl.enableVertexAttribArray(aPos);
+            gl.enableVertexAttribArray(aUv);
+            gl.enableVertexAttribArray(aMeta);
+            gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 24, 0);
+            gl.vertexAttribPointer(aUv, 2, gl.FLOAT, false, 24, 8);
+            gl.vertexAttribPointer(aMeta, 2, gl.FLOAT, false, 24, 16);
+
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+            glState = {
+                COLS, ROWS, vertsPerSide, vertexData,
+                indexCount: indices.length,
+                uTime: gl.getUniformLocation(prog, 'u_time'),
+                uNumFolds: gl.getUniformLocation(prog, 'u_numFolds'),
+                uAlpha: gl.getUniformLocation(prog, 'u_alpha')
+            };
+        }
+
+        const cCtxFallback = !glState ? curtainCanvas.getContext('2d') : null;
+
+        function resizeCurtainCanvas() {
+            if (isCurtainDone) return;
+            cW = window.innerWidth;
+            cH = window.innerHeight;
+            cDpr = Math.min(window.devicePixelRatio || 1, 2);
+            curtainCanvas.width = Math.floor(cW * cDpr);
+            curtainCanvas.height = Math.floor(cH * cDpr);
+            if (glState) {
+                gl.viewport(0, 0, curtainCanvas.width, curtainCanvas.height);
+            } else if (cCtxFallback) {
+                cCtxFallback.setTransform(cDpr, 0, 0, cDpr, 0, 0);
+            }
+        }
+        resizeCurtainCanvas();
+        window.addEventListener('resize', resizeCurtainCanvas);
+
+        function drawSilkFallback2D(timeSec, rawProgress, alpha) {
+            const ctx2 = cCtxFallback;
+            ctx2.clearRect(0, 0, cW, cH);
+            ctx2.globalAlpha = alpha;
+            const ROWS = 48;
+            const numFolds = cW < 600 ? 4.5 : 6.5;
+
+            for (let side = 0; side < 2; side++) {
                 for (let j = 0; j < ROWS; j++) {
-                    const p00 = pts[i][j];
-                    const p10 = pts[i + 1][j];
-                    const p11 = pts[i + 1][j + 1];
-                    const p01 = pts[i][j + 1];
+                    const v0 = j / ROWS;
+                    const v1 = (j + 1) / ROWS;
+                    const vMid = (v0 + v1) * 0.5;
+                    const pStart = computeSilkPoint(side, 0, vMid, timeSec, rawProgress);
+                    const pEnd = computeSilkPoint(side, 1, vMid, timeSec, rawProgress);
+                    const p00 = computeSilkPoint(side, 0, v0, timeSec, rawProgress);
+                    const p10 = computeSilkPoint(side, 1, v0, timeSec, rawProgress);
+                    const p11 = computeSilkPoint(side, 1, v1, timeSec, rawProgress);
+                    const p01 = computeSilkPoint(side, 0, v1, timeSec, rawProgress);
 
-                    // Quick bounds skip if off-screen
-                    const minX = Math.min(p00.x, p10.x, p11.x, p01.x);
-                    const maxX = Math.max(p00.x, p10.x, p11.x, p01.x);
-                    const minY = Math.min(p00.y, p10.y, p11.y, p01.y);
-                    if (maxX < -4 || minX > cW + 4 || minY > cH + 4) continue;
-
-                    const vMid = (j + 0.5) / ROWS;
-                    const lag = vMid * 0.22 + (1 - uMid) * 0.06;
-                    const localEase = easeInOutCubic(clamp01((rawProgress - lag) / (1 - 0.28)));
-
-                    // Calculate dynamic silk pleat normal/lighting
-                    const foldPhase = uMid * numFolds * Math.PI * 2
-                                    + Math.sin(vMid * 3.2 - timeSec * 1.35 + (side === 'right' ? 1.0 : 0)) * 0.4
-                                    + localEase * 2.2 * uMid;
-                    const cosVal = Math.cos(foldPhase);
-                    const vShade = 1.0 - 0.22 * Math.pow(vMid, 1.5);
-
-                    let r, g, b;
-                    if (isGoldTrim) {
-                        // Rich shimmering gold silk border along the center meeting seam
-                        const spec = cosVal > 0 ? Math.pow(cosVal, 2.2) : 0;
-                        const shad = cosVal < 0 ? Math.pow(-cosVal, 1.2) : 0;
-                        r = Math.round((205 + spec * 50 - shad * 85) * vShade);
-                        g = Math.round((165 + spec * 65 - shad * 75) * vShade);
-                        b = Math.round((50 + spec * 80 - shad * 30) * vShade);
-                    } else {
-                        // Crimson silk with bright anisotropic sheen and deep burgundy folds
-                        const spec = cosVal > 0 ? Math.pow(cosVal, 3.0) : 0;
+                    const grad = ctx2.createLinearGradient(pStart.x, pStart.y, pEnd.x, pEnd.y);
+                    const stops = 28;
+                    for (let s = 0; s <= stops; s++) {
+                        const u = s / stops;
+                        const phase = u * numFolds * Math.PI * 2 + Math.sin(vMid * 3.3 - timeSec * 1.35) * 0.45;
+                        const cosVal = Math.cos(phase);
+                        const spec = cosVal > 0 ? Math.pow(cosVal, 4.0) : 0;
                         const shad = cosVal < 0 ? Math.pow(-cosVal, 1.3) : 0;
-                        r = Math.round((138 + spec * 112 - shad * 92) * vShade);
-                        g = Math.round((10 + spec * 68 - shad * 10) * vShade);
-                        b = Math.round((24 + spec * 72 - shad * 18) * vShade);
+                        if (u > 0.96) {
+                            grad.addColorStop(u, `rgb(${Math.round(200+spec*50-shad*75)},${Math.round(160+spec*60-shad*65)},${Math.round(50+spec*70-shad*30)})`);
+                        } else {
+                            grad.addColorStop(u, `rgb(${Math.round(130+spec*115-shad*90)},${Math.round(8+spec*65-shad*8)},${Math.round(22+spec*70-shad*16)})`);
+                        }
                     }
-
-                    cCtx.fillStyle = `rgb(${Math.max(0, Math.min(255, r))},${Math.max(0, Math.min(255, g))},${Math.max(0, Math.min(255, b))})`;
-                    cCtx.beginPath();
-                    // Tiny 0.9px overlap prevents hairline anti-aliasing seams between strips
-                    if (side === 'left') {
-                        cCtx.moveTo(p00.x - 0.9, p00.y - 0.9);
-                        cCtx.lineTo(p10.x + 0.9, p10.y - 0.9);
-                        cCtx.lineTo(p11.x + 0.9, p11.y + 0.9);
-                        cCtx.lineTo(p01.x - 0.9, p01.y + 0.9);
-                    } else {
-                        cCtx.moveTo(p00.x + 0.9, p00.y - 0.9);
-                        cCtx.lineTo(p10.x - 0.9, p10.y - 0.9);
-                        cCtx.lineTo(p11.x - 0.9, p11.y + 0.9);
-                        cCtx.lineTo(p01.x + 0.9, p01.y + 0.9);
-                    }
-                    cCtx.closePath();
-                    cCtx.fill();
+                    ctx2.fillStyle = grad;
+                    ctx2.beginPath();
+                    ctx2.moveTo(p00.x, p00.y - 0.8);
+                    ctx2.lineTo(p10.x, p10.y - 0.8);
+                    ctx2.lineTo(p11.x, p11.y + 0.8);
+                    ctx2.lineTo(p01.x, p01.y + 0.8);
+                    ctx2.closePath();
+                    ctx2.fill();
                 }
             }
+            ctx2.globalAlpha = 1;
         }
 
         function renderCurtainFrame(now) {
@@ -615,32 +742,49 @@ html_content = """
 
             if (isCurtainOpening) {
                 const elapsed = (now - curtainOpenTime) / 1000;
-                const duration = 2.6; // 2.6s silky sweep & drop
-                rawProgress = clamp01(elapsed / duration);
+                rawProgress = clamp01(elapsed / 2.6);
             }
 
-            cCtx.clearRect(0, 0, cW, cH);
+            const alpha = rawProgress > 0.82 ? Math.max(0, 1 - (rawProgress - 0.82) / 0.18) : 1.0;
 
-            // Fade smoothly during final 18% of sweep
-            if (rawProgress > 0.82) {
-                cCtx.globalAlpha = Math.max(0, 1 - (rawProgress - 0.82) / 0.18);
-            } else {
-                cCtx.globalAlpha = 1;
+            if (glState) {
+                const { COLS, ROWS, vertexData, indexCount, uTime, uNumFolds, uAlpha } = glState;
+                let idx = 0;
+                for (let side = 0; side < 2; side++) {
+                    for (let i = 0; i <= COLS; i++) {
+                        const u = i / COLS;
+                        for (let j = 0; j <= ROWS; j++) {
+                            const v = j / ROWS;
+                            const pt = computeSilkPoint(side, u, v, timeSec, rawProgress);
+                            vertexData[idx++] = (pt.x / cW) * 2.0 - 1.0;
+                            vertexData[idx++] = 1.0 - (pt.y / cH) * 2.0;
+                            vertexData[idx++] = u;
+                            vertexData[idx++] = v;
+                            vertexData[idx++] = side;
+                            vertexData[idx++] = pt.ease;
+                        }
+                    }
+                }
+                gl.clearColor(0, 0, 0, 0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.uniform1f(uTime, timeSec);
+                gl.uniform1f(uNumFolds, cW < 600 ? 4.5 : 6.5);
+                gl.uniform1f(uAlpha, alpha);
+                gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData);
+                gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_SHORT, 0);
+            } else if (cCtxFallback) {
+                drawSilkFallback2D(timeSec, rawProgress, alpha);
             }
-
-            drawSilkCurtainHalf('left', timeSec, rawProgress);
-            drawSilkCurtainHalf('right', timeSec, rawProgress);
-            cCtx.globalAlpha = 1;
 
             if (rawProgress >= 1) {
                 isCurtainDone = true;
                 curtainWrapper.style.display = 'none';
                 return;
             }
-            curtainAnimId = requestAnimationFrame(renderCurtainFrame);
+            requestAnimationFrame(renderCurtainFrame);
         }
 
-        curtainAnimId = requestAnimationFrame(renderCurtainFrame);
+        requestAnimationFrame(renderCurtainFrame);
 
         // ============================================================
         // 2. AUTO-FIT BISMILLAH FOR MOBILE SCREENS
@@ -649,7 +793,7 @@ html_content = """
             const el = document.querySelector('.bismillah');
             if (!el) return;
             el.style.fontSize = '';
-            const maxWidth = window.innerWidth - 48; // 24px breathing space on each side
+            const maxWidth = window.innerWidth - 48;
             const naturalWidth = el.scrollWidth;
             if (naturalWidth > maxWidth && naturalWidth > 0) {
                 const currentFontSize = parseFloat(window.getComputedStyle(el).fontSize);
@@ -692,10 +836,8 @@ html_content = """
                 mainContent.classList.add('site-revealed');
                 document.body.classList.add('birds-revealed');
 
-                // Begin observing scroll elements right as the reveal begins
                 document.querySelectorAll('.obs').forEach(el => observer.observe(el));
 
-                // Cleanly remove root filter after reveal transition finishes so text stays razor-sharp
                 setTimeout(() => {
                     mainContent.style.filter = 'none';
                     mainContent.style.transform = 'none';
