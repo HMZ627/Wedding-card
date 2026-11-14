@@ -68,7 +68,7 @@ html_content = """
         /* --- WebGL / Canvas Silky Cloth Curtain --- */
         #curtain-wrapper {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 9999; pointer-events: auto;
+            z-index: 9999; pointer-events: auto; overflow: hidden;
         }
         #curtain-canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -480,7 +480,7 @@ html_content = """
 
     <script>
         // ============================================================
-        // 1. PER-PIXEL GLOSSY SILK CURTAIN (WebGL Shader + 2D Fallback)
+        // 1. PER-PIXEL GLOSSY SILK CURTAIN (Overscanned Top & Outer Edges)
         // ============================================================
         const curtainWrapper = document.getElementById('curtain-wrapper');
         const curtainCanvas = document.getElementById('curtain-canvas');
@@ -497,43 +497,45 @@ html_content = """
             return Math.max(0, Math.min(1, val));
         }
 
-        // Compute silky vertex coordinates for (side, u, v, timeSec, rawProgress)
+        // Curtain extends well above top (-0.45*H) and past outer side (-0.25*W)
+        // so neither top edge nor outer edge can EVER enter the screen during opening!
         function computeSilkPoint(side, u, v, timeSec, rawProgress) {
-            const halfW = cW * 0.5;
             const waveAmp = (cW < 600 ? 22 : 42);
-            const numFolds = cW < 600 ? 4.5 : 6.5;
+            const numFolds = cW < 600 ? 6.8 : 9.8;
 
-            const lag = v * 0.22 + (1 - u) * 0.06;
-            const t = clamp01((rawProgress - lag) / 0.72);
+            const lag = v * 0.22 + (1 - u) * 0.05;
+            const t = clamp01((rawProgress - lag) / 0.73);
             const ease = easeInOutCubic(t);
 
-            // Dampen breeze right at center seam when closed so zero gap ever shows
-            const seamPin = 1.0 - Math.pow(u, 3.0) * (1.0 - ease);
-            const breezePhase = v * 3.4 - timeSec * 1.35 + u * 4.5 + (side === 1 ? 1.15 : 0.0);
+            // Outer edge (u=0) stays anchored far off-screen (-0.25*W -> -0.45*W)
+            const outerX = -0.25 * cW - ease * (0.20 * cW);
+            // Inner gold edge (u=1) starts slightly past center (0.504*W) and sweeps off-screen (-0.12*W)
+            const innerX = (0.504 * cW) * (1.0 - ease * 1.12) - ease * (0.06 * cW);
+
+            // Dampen breeze at outer anchor (u=0) and at closed center seam (u=1, ease=0)
+            const seamPin = u * (1.0 - Math.pow(u, 3.0) * (1.0 - ease));
+            const breezePhase = v * 3.8 - timeSec * 1.35 + u * 5.0 + (side === 1 ? 1.15 : 0.0);
             const breeze = Math.sin(breezePhase) * (3.5 + 7.5 * v) * seamPin * (1.0 - ease * 0.35);
 
-            // Slight seam overlap when closed so both halves meet seamlessly
-            const uOverlap = u * (1.0 + 0.008 * (1.0 - ease));
-
-            const gatherScale = 1.0 - ease * 0.66;
-            const sweepOut = ease * (cW * 0.59);
-
-            const clothWave = Math.sin(v * Math.PI * 2.2 - rawProgress * 7.5 + u * 2.0)
+            // Travelling S-curve silk wave as cloth sweeps outward
+            const clothWave = Math.sin(v * Math.PI * 2.4 - rawProgress * 7.5 + u * 2.2)
                             * Math.sin(ease * Math.PI)
-                            * waveAmp * (0.25 + 0.75 * v);
+                            * waveAmp * u * (0.25 + 0.75 * v);
 
-            const dropY = Math.pow(ease, 1.35) * (cH * 0.32) * (0.15 + 0.85 * u);
+            // Extra-tall vertical base: v=0 is -0.45*cH above screen, v=1 is 1.03*cH below bottom
+            const yBase = -0.45 * cH + v * (1.48 * cH);
+            // Center drops down up to 0.28*cH; even at v=0, y <= -0.17*cH (always off-screen above!)
+            const dropY = Math.pow(ease, 1.35) * (cH * 0.28) * (0.15 + 0.85 * u);
             const hemScallop = Math.sin(u * numFolds * Math.PI * 2.0) * 3.5 * v * (1.0 - ease);
-            const vertRipple = Math.sin(u * Math.PI * 3.0 + rawProgress * 5.0) * Math.sin(ease * Math.PI) * 12.0;
+            const vertRipple = Math.sin(u * Math.PI * 3.0 + rawProgress * 5.0) * Math.sin(ease * Math.PI) * 10.0 * v;
 
-            const xLocal = (uOverlap * halfW * gatherScale) - sweepOut + clothWave + breeze;
+            const xLocal = outerX + u * (innerX - outerX) + clothWave + breeze;
             const x = side === 0 ? xLocal : (cW - xLocal);
-            const y = v * cH + dropY + hemScallop + vertRipple;
+            const y = yBase + dropY + hemScallop + vertRipple;
 
             return { x, y, ease };
         }
 
-        // Try WebGL first for ultra-smooth, zero-block per-pixel glossy silk shading
         const gl = curtainCanvas.getContext('webgl', { alpha: true, antialias: true })
                 || curtainCanvas.getContext('experimental-webgl', { alpha: true, antialias: true });
 
@@ -565,17 +567,18 @@ html_content = """
                     float side = v_meta.x;
                     float ease = v_meta.y;
 
-                    // Continuous per-pixel silk fold wave (zero blocks!)
+                    // Continuous per-pixel silk fold wave
                     float foldPhase = u * u_numFolds * 6.2831853
-                                    + sin(v * 3.3 - u_time * 1.35 + side * 1.15) * 0.48
+                                    + sin(v * 3.6 - u_time * 1.35 + side * 1.15) * 0.48
                                     + ease * 2.6 * u;
 
                     float slope = cos(foldPhase);
                     float ridge = sin(foldPhase);
 
-                    // Stage spotlight + gentle shadow toward hem
-                    float stageGlow = 0.84 + 0.22 * exp(-pow((v - 0.34) * 1.9, 2.0));
-                    float hemShadow = 1.0 - 0.18 * pow(v, 1.8);
+                    // Stage spotlight aligned to visible screen area (v ~ 0.30..0.98)
+                    float vScreen = clamp((v - 0.30) / 0.68, 0.0, 1.0);
+                    float stageGlow = 0.84 + 0.22 * exp(-pow((vScreen - 0.34) * 1.9, 2.0));
+                    float hemShadow = 1.0 - 0.18 * pow(vScreen, 1.8);
                     float vLight = stageGlow * hemShadow;
 
                     // Anisotropic silk sheen: sharp specular + broad satin + grazing rim glow
@@ -585,7 +588,7 @@ html_content = """
                     float valleyShadow = pow(max(0.0, -slope), 1.45);
 
                     // Subtle woven silk thread shimmer
-                    float weave = 0.975 + 0.025 * sin(u * 380.0 + v * 50.0) * sin(v * 240.0);
+                    float weave = 0.975 + 0.025 * sin(u * 540.0 + v * 65.0) * sin(v * 320.0);
 
                     // Rich crimson silk palette
                     vec3 silkCol = vec3(0.49, 0.03, 0.08);
@@ -595,9 +598,9 @@ html_content = """
                     silkCol += sharpSpec * vec3(0.42, 0.24, 0.27);
                     silkCol += max(0.0, ridge) * 0.04 * vec3(0.3, 0.05, 0.08);
 
-                    // Metallic Gold Zari border along inner center edge (u > 0.962)
-                    float goldMask = smoothstep(0.958, 0.964, u);
-                    float zariPattern = 0.92 + 0.08 * sin(v * 220.0) * cos(u * 420.0);
+                    // Metallic Gold Zari border along inner center edge
+                    float goldMask = smoothstep(0.970, 0.974, u);
+                    float zariPattern = 0.92 + 0.08 * sin(v * 280.0) * cos(u * 600.0);
                     vec3 goldCol = vec3(0.76, 0.58, 0.18) * zariPattern;
                     goldCol -= valleyShadow * vec3(0.40, 0.31, 0.11);
                     goldCol += broadSheen * vec3(0.22, 0.18, 0.08);
@@ -621,8 +624,8 @@ html_content = """
             gl.linkProgram(prog);
             gl.useProgram(prog);
 
-            const COLS = 44;
-            const ROWS = 26;
+            const COLS = 48;
+            const ROWS = 28;
             const vertsPerSide = (COLS + 1) * (ROWS + 1);
             const totalVerts = vertsPerSide * 2;
             const vertexData = new Float32Array(totalVerts * 6);
@@ -694,7 +697,7 @@ html_content = """
             ctx2.clearRect(0, 0, cW, cH);
             ctx2.globalAlpha = alpha;
             const ROWS = 48;
-            const numFolds = cW < 600 ? 4.5 : 6.5;
+            const numFolds = cW < 600 ? 6.8 : 9.8;
 
             for (let side = 0; side < 2; side++) {
                 for (let j = 0; j < ROWS; j++) {
@@ -709,14 +712,14 @@ html_content = """
                     const p01 = computeSilkPoint(side, 0, v1, timeSec, rawProgress);
 
                     const grad = ctx2.createLinearGradient(pStart.x, pStart.y, pEnd.x, pEnd.y);
-                    const stops = 28;
+                    const stops = 36;
                     for (let s = 0; s <= stops; s++) {
                         const u = s / stops;
-                        const phase = u * numFolds * Math.PI * 2 + Math.sin(vMid * 3.3 - timeSec * 1.35) * 0.45;
+                        const phase = u * numFolds * Math.PI * 2 + Math.sin(vMid * 3.6 - timeSec * 1.35) * 0.45;
                         const cosVal = Math.cos(phase);
                         const spec = cosVal > 0 ? Math.pow(cosVal, 4.0) : 0;
                         const shad = cosVal < 0 ? Math.pow(-cosVal, 1.3) : 0;
-                        if (u > 0.96) {
+                        if (u > 0.972) {
                             grad.addColorStop(u, `rgb(${Math.round(200+spec*50-shad*75)},${Math.round(160+spec*60-shad*65)},${Math.round(50+spec*70-shad*30)})`);
                         } else {
                             grad.addColorStop(u, `rgb(${Math.round(130+spec*115-shad*90)},${Math.round(8+spec*65-shad*8)},${Math.round(22+spec*70-shad*16)})`);
@@ -768,7 +771,7 @@ html_content = """
                 gl.clearColor(0, 0, 0, 0);
                 gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.uniform1f(uTime, timeSec);
-                gl.uniform1f(uNumFolds, cW < 600 ? 4.5 : 6.5);
+                gl.uniform1f(uNumFolds, cW < 600 ? 6.8 : 9.8);
                 gl.uniform1f(uAlpha, alpha);
                 gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData);
                 gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_SHORT, 0);
