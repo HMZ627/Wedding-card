@@ -47,7 +47,7 @@ html_content = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Invitation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Amiri:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         /* --- Base & Vintage Old Paper Background --- */
         body {
@@ -211,7 +211,16 @@ html_content = """
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
         .scratch-bg { width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .heart-text { font-family: 'Great Vibes', cursive; color: #b30000; font-size: 2.6rem; line-height: 1.1; text-align: center; margin-top: 25px; }
+        .heart-text {
+            font-family: 'Alex Brush', cursive;
+            color: #9e001c;
+            font-size: 2.85rem;
+            line-height: 1.08;
+            letter-spacing: 0.5px;
+            text-align: center;
+            margin-top: 24px;
+            text-shadow: 0 1px 2px rgba(158, 0, 28, 0.12);
+        }
         canvas#scratchCard { position: absolute; top: 0; left: 0; z-index: 10; cursor: pointer; touch-action: none; }
 
         /* --- Schedule Table --- */
@@ -334,7 +343,7 @@ html_content = """
       </defs>
     </svg>
 
-    <!-- Red Glossy Silky Cloth Curtains (WebGL Shader + 2D Gradient Fallback) -->
+    <!-- Red Glossy Silky Cloth Curtains (Pure Silk, No Yellow Boundary) -->
     <div id="curtain-wrapper">
        <canvas id="curtain-canvas"></canvas>
        <div class="open-btn" onclick="openCurtains()">Open</div>
@@ -444,7 +453,7 @@ html_content = """
                    <div class="scratch-bg">
                        <div class="heart-text">
                            Asad <br>
-                           <span style="font-size: 1.8rem;">&</span><br>
+                           <span style="font-size: 1.9rem;">&amp;</span><br>
                            Rimsha
                        </div>
                    </div>
@@ -480,7 +489,7 @@ html_content = """
 
     <script>
         // ============================================================
-        // 1. PER-PIXEL GLOSSY SILK CURTAIN (Overscanned Top & Outer Edges)
+        // 1. PER-PIXEL GLOSSY SILK CURTAIN (Overscanned, Pure Red Silk)
         // ============================================================
         const curtainWrapper = document.getElementById('curtain-wrapper');
         const curtainCanvas = document.getElementById('curtain-canvas');
@@ -497,8 +506,6 @@ html_content = """
             return Math.max(0, Math.min(1, val));
         }
 
-        // Curtain extends well above top (-0.45*H) and past outer side (-0.25*W)
-        // so neither top edge nor outer edge can EVER enter the screen during opening!
         function computeSilkPoint(side, u, v, timeSec, rawProgress) {
             const waveAmp = (cW < 600 ? 22 : 42);
             const numFolds = cW < 600 ? 6.8 : 9.8;
@@ -507,24 +514,18 @@ html_content = """
             const t = clamp01((rawProgress - lag) / 0.73);
             const ease = easeInOutCubic(t);
 
-            // Outer edge (u=0) stays anchored far off-screen (-0.25*W -> -0.45*W)
             const outerX = -0.25 * cW - ease * (0.20 * cW);
-            // Inner gold edge (u=1) starts slightly past center (0.504*W) and sweeps off-screen (-0.12*W)
             const innerX = (0.504 * cW) * (1.0 - ease * 1.12) - ease * (0.06 * cW);
 
-            // Dampen breeze at outer anchor (u=0) and at closed center seam (u=1, ease=0)
             const seamPin = u * (1.0 - Math.pow(u, 3.0) * (1.0 - ease));
             const breezePhase = v * 3.8 - timeSec * 1.35 + u * 5.0 + (side === 1 ? 1.15 : 0.0);
             const breeze = Math.sin(breezePhase) * (3.5 + 7.5 * v) * seamPin * (1.0 - ease * 0.35);
 
-            // Travelling S-curve silk wave as cloth sweeps outward
             const clothWave = Math.sin(v * Math.PI * 2.4 - rawProgress * 7.5 + u * 2.2)
                             * Math.sin(ease * Math.PI)
                             * waveAmp * u * (0.25 + 0.75 * v);
 
-            // Extra-tall vertical base: v=0 is -0.45*cH above screen, v=1 is 1.03*cH below bottom
             const yBase = -0.45 * cH + v * (1.48 * cH);
-            // Center drops down up to 0.28*cH; even at v=0, y <= -0.17*cH (always off-screen above!)
             const dropY = Math.pow(ease, 1.35) * (cH * 0.28) * (0.15 + 0.85 * u);
             const hemScallop = Math.sin(u * numFolds * Math.PI * 2.0) * 3.5 * v * (1.0 - ease);
             const vertRipple = Math.sin(u * Math.PI * 3.0 + rawProgress * 5.0) * Math.sin(ease * Math.PI) * 10.0 * v;
@@ -590,7 +591,7 @@ html_content = """
                     // Subtle woven silk thread shimmer
                     float weave = 0.975 + 0.025 * sin(u * 540.0 + v * 65.0) * sin(v * 320.0);
 
-                    // Rich crimson silk palette
+                    // Pure rich crimson silk palette (no yellow boundary)
                     vec3 silkCol = vec3(0.49, 0.03, 0.08);
                     silkCol -= valleyShadow * vec3(0.37, 0.028, 0.06);
                     silkCol += broadSheen * vec3(0.30, 0.06, 0.10);
@@ -598,15 +599,7 @@ html_content = """
                     silkCol += sharpSpec * vec3(0.42, 0.24, 0.27);
                     silkCol += max(0.0, ridge) * 0.04 * vec3(0.3, 0.05, 0.08);
 
-                    // Metallic Gold Zari border along inner center edge
-                    float goldMask = smoothstep(0.970, 0.974, u);
-                    float zariPattern = 0.92 + 0.08 * sin(v * 280.0) * cos(u * 600.0);
-                    vec3 goldCol = vec3(0.76, 0.58, 0.18) * zariPattern;
-                    goldCol -= valleyShadow * vec3(0.40, 0.31, 0.11);
-                    goldCol += broadSheen * vec3(0.22, 0.18, 0.08);
-                    goldCol += sharpSpec * vec3(0.34, 0.30, 0.18);
-
-                    vec3 finalCol = mix(silkCol, goldCol, goldMask) * vLight * weave;
+                    vec3 finalCol = silkCol * vLight * weave;
                     gl_FragColor = vec4(clamp(finalCol, 0.0, 1.0), u_alpha);
                 }
             `;
@@ -719,11 +712,7 @@ html_content = """
                         const cosVal = Math.cos(phase);
                         const spec = cosVal > 0 ? Math.pow(cosVal, 4.0) : 0;
                         const shad = cosVal < 0 ? Math.pow(-cosVal, 1.3) : 0;
-                        if (u > 0.972) {
-                            grad.addColorStop(u, `rgb(${Math.round(200+spec*50-shad*75)},${Math.round(160+spec*60-shad*65)},${Math.round(50+spec*70-shad*30)})`);
-                        } else {
-                            grad.addColorStop(u, `rgb(${Math.round(130+spec*115-shad*90)},${Math.round(8+spec*65-shad*8)},${Math.round(22+spec*70-shad*16)})`);
-                        }
+                        grad.addColorStop(u, `rgb(${Math.round(130+spec*115-shad*90)},${Math.round(8+spec*65-shad*8)},${Math.round(22+spec*70-shad*16)})`);
                     }
                     ctx2.fillStyle = grad;
                     ctx2.beginPath();
