@@ -39,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with WebGL glossy silk curtains, blur-in reveal, scratch card & animations
+# HTML, CSS, JS payload with WebGL glossy silk curtains, 60fps sprite parallax, scratch card & animations
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -62,7 +62,23 @@ html_content = """
                 url('https://www.transparenttextures.com/patterns/aged-paper.png');
             color: #4a3b32;
             overflow-x: hidden;
-            scroll-behavior: smooth;
+        }
+
+        /* --- High-FPS Fixed Parallax Decor Canvases --- */
+        .decor-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            filter: blur(18px);
+            transition: opacity 1.8s ease-out, filter 1.8s ease-out;
+        }
+        #bg-decor-canvas { z-index: 1; }
+        #fg-decor-canvas { z-index: 50; }
+        .decor-canvas.decor-revealed {
+            opacity: 1;
+            filter: blur(0px);
         }
 
         /* --- WebGL / Canvas Silky Cloth Curtain --- */
@@ -107,7 +123,6 @@ html_content = """
             filter: blur(22px);
             transform: scale(0.98);
             transition: opacity 1.8s ease-out, filter 1.8s ease-out, transform 1.8s ease-out;
-            will-change: opacity, filter, transform;
         }
         .content.site-revealed {
             opacity: 1;
@@ -163,7 +178,6 @@ html_content = """
             opacity: 0;
             transition: clip-path 2.5s cubic-bezier(0.25, 1, 0.5, 1), filter 2.5s ease-out, opacity 1.5s ease-in;
             padding: 20px 0;
-            will-change: clip-path, filter;
         }
         .sub-header-text { font-size: 2rem; position: relative; }
 
@@ -174,7 +188,7 @@ html_content = """
         .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 30px; height: 130px; }
         .plant { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
         .flower { font-size: 6rem; display: flex; align-items: center; justify-content: center; }
-        .butterfly { font-size: 3rem; position: absolute; bottom: 20px; opacity: 0; transition: all 1.5s ease-in-out; z-index: 10; will-change: transform; }
+        .butterfly { font-size: 3rem; position: absolute; bottom: 20px; opacity: 0; transition: all 1.5s ease-in-out; z-index: 10; }
 
         .visible-ink .ink-spread-anim { opacity: 1; clip-path: circle(150% at center); filter: blur(0px); }
         .visible-ink .butterfly { bottom: 100px; opacity: 1; transition-delay: 2.2s; animation: hoverfly 2.5s infinite ease-in-out alternate 3.7s; }
@@ -233,8 +247,8 @@ html_content = """
         /* --- Footer --- */
         .footer-text { font-size: 1.5rem; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: all 1.5s ease-out; padding-bottom: 100px; font-style: italic; color: #800000; font-weight: bold; }
 
-        /* --- Interactive Trigger Class --- */
-        .interactive-emoji { display: inline-block; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; will-change: transform; }
+        /* --- Interactive Trigger Class (for Garden SVGs) --- */
+        .interactive-emoji { display: inline-block; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
         .pop-anim { animation: clickPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
         @keyframes clickPop {
             0% { transform: scale(1) rotate(0deg); filter: brightness(1); }
@@ -243,27 +257,11 @@ html_content = """
             100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
         }
 
-        /* --- Custom Graphic Animations (Butterflies Flapping) --- */
-        .bf-flap-anim { animation: bfWing 0.3s infinite alternate ease-in-out; transform-origin: 16px 16px; will-change: transform; }
+        /* --- Garden Butterfly Wing Flapping --- */
+        .bf-flap-anim { animation: bfWing 0.3s infinite alternate ease-in-out; transform-origin: 16px 16px; }
         @keyframes bfWing { 0% { transform: scaleX(1); } 100% { transform: scaleX(0.25); } }
 
-        /* --- Parallax & Float Elements --- */
-        .bg-deco { animation: floatDeco 6s infinite ease-in-out alternate; will-change: transform; }
-        .fg-deco { animation: floatDeco 8s infinite ease-in-out alternate-reverse; will-change: transform; }
-        @keyframes floatDeco { 0% { transform: translateY(0px); } 100% { transform: translateY(-25px); } }
-
-        /* --- Drawn Pencil Birds in Flocks --- */
-        .bird-flock {
-            position: fixed; z-index: 1; pointer-events: none;
-            opacity: 0; filter: blur(12px);
-            transition: opacity 1.8s ease-out, filter 1.8s ease-out;
-            will-change: transform, opacity;
-        }
-        body.birds-revealed .bird-flock {
-            opacity: 0.55;
-            filter: blur(0px);
-        }
-        .bird-flock .interactive-emoji { pointer-events: auto; }
+        /* --- Explosion Bird SVG Classes --- */
         .bird-svg { overflow: visible; animation: birdBob 1.2s infinite ease-in-out alternate; }
         .bird-wing { animation: birdFlap 0.5s infinite ease-in-out alternate; }
         @keyframes birdBob { 0% { transform: translateY(0px); } 100% { transform: translateY(12px); } }
@@ -271,8 +269,6 @@ html_content = """
             0%   { d: path("M 5 10 Q 30 15 50 30 Q 70 15 95 10"); }
             100% { d: path("M 5 50 Q 30 35 50 30 Q 70 35 95 50"); }
         }
-        @keyframes flyRight { 0% { transform: translateX(-15vw) translateY(15vh); } 100% { transform: translateX(115vw) translateY(-15vh); } }
-        @keyframes flyLeft { 0% { transform: translateX(115vw) translateY(15vh); } 100% { transform: translateX(-15vw) translateY(-15vh); } }
 
         .visible-up { opacity: 1 !important; filter: blur(0px) !important; transform: translateY(0) !important; }
 
@@ -308,7 +304,7 @@ html_content = """
 </head>
 <body>
 
-    <!-- MASTER SVG DEFINITIONS -->
+    <!-- MASTER SVG DEFINITIONS (Used for Garden & Side Cannons) -->
     <svg width="0" height="0" style="position:absolute; pointer-events: none;">
       <defs>
         <path id="svg-heart" d="M16 28.5C16 28.5 4 20 4 10C4 5.6 7.6 2 12 2C14.4 2 16 3.6 16 3.6C16 3.6 17.6 2 20 2C24.4 2 28 5.6 28 10C28 20 16 28.5 16 28.5Z"/>
@@ -342,6 +338,10 @@ html_content = """
         <path id="svg-sparkle" d="M16 2 Q16 16 2 16 Q16 16 16 30 Q16 16 30 16 Q16 16 16 2 Z"/>
       </defs>
     </svg>
+
+    <!-- 60fps Pre-Baked Sprite Parallax Canvases (Background & Foreground) -->
+    <canvas id="bg-decor-canvas" class="decor-canvas"></canvas>
+    <canvas id="fg-decor-canvas" class="decor-canvas"></canvas>
 
     <!-- Red Glossy Silky Cloth Curtains (Pure Silk, No Yellow Boundary) -->
     <div id="curtain-wrapper">
@@ -568,7 +568,6 @@ html_content = """
                     float side = v_meta.x;
                     float ease = v_meta.y;
 
-                    // Continuous per-pixel silk fold wave
                     float foldPhase = u * u_numFolds * 6.2831853
                                     + sin(v * 3.6 - u_time * 1.35 + side * 1.15) * 0.48
                                     + ease * 2.6 * u;
@@ -576,22 +575,17 @@ html_content = """
                     float slope = cos(foldPhase);
                     float ridge = sin(foldPhase);
 
-                    // Stage spotlight aligned to visible screen area (v ~ 0.30..0.98)
                     float vScreen = clamp((v - 0.30) / 0.68, 0.0, 1.0);
                     float stageGlow = 0.84 + 0.22 * exp(-pow((vScreen - 0.34) * 1.9, 2.0));
                     float hemShadow = 1.0 - 0.18 * pow(vScreen, 1.8);
                     float vLight = stageGlow * hemShadow;
 
-                    // Anisotropic silk sheen: sharp specular + broad satin + grazing rim glow
                     float sharpSpec = pow(max(0.0, slope), 6.5);
                     float broadSheen = pow(max(0.0, slope), 2.0);
                     float rimSheen = pow(1.0 - abs(slope), 3.0) * 0.20;
                     float valleyShadow = pow(max(0.0, -slope), 1.45);
-
-                    // Subtle woven silk thread shimmer
                     float weave = 0.975 + 0.025 * sin(u * 540.0 + v * 65.0) * sin(v * 320.0);
 
-                    // Pure rich crimson silk palette (no yellow boundary)
                     vec3 silkCol = vec3(0.49, 0.03, 0.08);
                     silkCol -= valleyShadow * vec3(0.37, 0.028, 0.06);
                     silkCol += broadSheen * vec3(0.30, 0.06, 0.10);
@@ -800,7 +794,336 @@ html_content = """
         }
 
         // ============================================================
-        // 3. SCROLL OBSERVER & 1-SECOND POST-DROP BLUR-IN REVEAL
+        // 3. 60FPS PRE-BAKED SPRITE PARALLAX + BIRD FLOCK ENGINE
+        // ============================================================
+        const bgDecorCanvas = document.getElementById('bg-decor-canvas');
+        const fgDecorCanvas = document.getElementById('fg-decor-canvas');
+        const bgCtx = bgDecorCanvas.getContext('2d');
+        const fgCtx = fgDecorCanvas.getContext('2d');
+
+        const shapeTypes = ['heart', 'flower', 'butterfly', 'sparkle'];
+        const weddingColors = ['#ff033e', '#ffb6c1', '#d4af37', '#e6a8d7', '#ffdab9', '#ffffff', '#ffd700'];
+
+        function generateSvgGraphic(sizeRem, color) {
+            let type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+            return `<svg viewBox="0 0 32 32" width="${sizeRem}rem" height="${sizeRem}rem" fill="${color}" style="pointer-events: none;"><use href="#svg-${type}" /></svg>`;
+        }
+
+        // Draw crisp vector shape in 32x32 space onto an offscreen canvas
+        function drawVectorShape(ctx, type, color) {
+            ctx.save();
+            ctx.fillStyle = color;
+
+            if (type === 'heart') {
+                const p = new Path2D("M16 28.5C16 28.5 4 20 4 10C4 5.6 7.6 2 12 2C14.4 2 16 3.6 16 3.6C16 3.6 17.6 2 20 2C24.4 2 28 5.6 28 10C28 20 16 28.5 16 28.5Z");
+                ctx.fill(p);
+            } else if (type === 'sparkle') {
+                const p = new Path2D("M16 2 Q16 16 2 16 Q16 16 16 30 Q16 16 30 16 Q16 16 16 2 Z");
+                ctx.fill(p);
+            } else if (type === 'butterfly') {
+                const leftW = new Path2D("M 15 16 C 5 4 0 10 7 16 C 0 22 5 28 15 16 Z");
+                const rightW = new Path2D("M 17 16 C 27 4 32 10 25 16 C 32 22 27 28 17 16 Z");
+                ctx.fill(leftW);
+                ctx.fill(rightW);
+                ctx.fillStyle = '#4a3b32';
+                ctx.beginPath();
+                ctx.roundRect ? ctx.roundRect(15, 8, 2, 16, 1) : ctx.rect(15, 8, 2, 16);
+                ctx.fill();
+            } else if (type === 'flower') {
+                const petal = new Path2D("M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z");
+                const innerPetal = new Path2D("M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z");
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+                ctx.lineWidth = 0.5;
+                for (let k = 0; k < 5; k++) {
+                    ctx.save();
+                    ctx.translate(16, 16);
+                    ctx.rotate((k * 72 * Math.PI) / 180);
+                    ctx.translate(-16, -16);
+                    ctx.fill(petal);
+                    ctx.stroke(petal);
+                    ctx.restore();
+                }
+
+                ctx.fillStyle = 'rgba(255,255,255,0.42)';
+                for (let k = 0; k < 5; k++) {
+                    ctx.save();
+                    ctx.translate(16, 16);
+                    ctx.rotate(((k * 72 + 36) * Math.PI) / 180);
+                    ctx.translate(-16, -16);
+                    ctx.fill(innerPetal);
+                    ctx.restore();
+                }
+
+                ctx.fillStyle = '#ffd700';
+                ctx.beginPath();
+                ctx.arc(16, 16, 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                ctx.beginPath();
+                ctx.arc(16, 16, 1.4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        // Pre-bake blurred sprite cache once at startup (zero live CSS blur cost!)
+        const spriteCache = {};
+        function getBlurredSprite(type, color, blurPx) {
+            const key = `${type}|${color}|${blurPx}`;
+            if (spriteCache[key]) return spriteCache[key];
+
+            const size = 112; // 64px shape centered with 24px blur margin
+            const raw = document.createElement('canvas');
+            raw.width = size;
+            raw.height = size;
+            const rCtx = raw.getContext('2d');
+            rCtx.translate(24, 24);
+            rCtx.scale(2, 2);
+            drawVectorShape(rCtx, type, color);
+
+            const out = document.createElement('canvas');
+            out.width = size;
+            out.height = size;
+            const oCtx = out.getContext('2d');
+
+            if ('filter' in oCtx) {
+                oCtx.filter = `blur(${blurPx}px)`;
+                oCtx.drawImage(raw, 0, 0);
+            } else {
+                // Smooth soft-alpha multi-tap fallback if ctx.filter is unavailable
+                oCtx.globalAlpha = 0.14;
+                const r = blurPx * 1.1;
+                for (let a = 0; a < 8; a++) {
+                    const ang = (a * Math.PI) / 4;
+                    oCtx.drawImage(raw, Math.cos(ang) * r, Math.sin(ang) * r);
+                }
+                oCtx.globalAlpha = 0.35;
+                oCtx.drawImage(raw, 0, 0);
+            }
+
+            spriteCache[key] = out;
+            return out;
+        }
+
+        const isMobile = window.innerWidth <= 768;
+        const bgCount = isMobile ? 30 : 60;
+        const fgCount = isMobile ? 12 : 25;
+
+        let dW = 0, dH = 0, dDpr = 1;
+        function resizeDecorCanvases() {
+            dW = window.innerWidth;
+            dH = window.innerHeight;
+            dDpr = Math.min(window.devicePixelRatio || 1, 2);
+            bgDecorCanvas.width = Math.floor(dW * dDpr);
+            bgDecorCanvas.height = Math.floor(dH * dDpr);
+            fgDecorCanvas.width = Math.floor(dW * dDpr);
+            fgDecorCanvas.height = Math.floor(dH * dDpr);
+            bgCtx.setTransform(dDpr, 0, 0, dDpr, 0, 0);
+            fgCtx.setTransform(dDpr, 0, 0, dDpr, 0, 0);
+        }
+        resizeDecorCanvases();
+        window.addEventListener('resize', resizeDecorCanvases);
+
+        function makeParticle(isFg) {
+            const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+            const color = weddingColors[Math.floor(Math.random() * weddingColors.length)];
+            const sizePx = isFg ? (Math.random() * 32 + 40) : (Math.random() * 24 + 18);
+            const blurPx = isFg ? 3.2 : 1.6;
+            return {
+                type,
+                sprite: getBlurredSprite(type, color, blurPx),
+                xFrac: Math.random() * 0.94 + 0.03,
+                yFrac: Math.random(),
+                sizePx,
+                alpha: isFg ? 0.65 : 0.55,
+                phase: Math.random() * Math.PI * 2,
+                floatSpeed: isFg ? 0.78 : 1.05,
+                floatAmp: isFg ? 18 : 14,
+                swayAmp: isFg ? 10 : 6,
+                flapPhase: Math.random() * Math.PI * 2,
+                popStart: 0,
+                lastX: -999,
+                lastY: -999
+            };
+        }
+
+        const bgParticles = [];
+        for (let i = 0; i < bgCount; i++) bgParticles.push(makeParticle(false));
+
+        const fgParticles = [];
+        for (let i = 0; i < fgCount; i++) fgParticles.push(makeParticle(true));
+
+        // Pre-populate organized V-formation pencil bird flocks on the background canvas
+        const numFlocks = isMobile ? 3 : 5;
+        const birdFlocks = [];
+        for (let f = 0; f < numFlocks; f++) {
+            const isRight = Math.random() > 0.5;
+            const duration = Math.random() * 25 + 30; // 30-55s calm glide
+            const yBaseFrac = Math.random() * 0.65 + 0.12;
+            const birdsInFlock = Math.floor(Math.random() * 3) + 3;
+            const birds = [];
+            for (let b = 0; b < birdsInFlock; b++) {
+                const xOff = isRight ? -(b * 35 + Math.random() * 10) : (b * 35 + Math.random() * 10);
+                const yOff = (b % 2 === 0 ? 1 : -1) * (Math.ceil(b / 2) * 20) + (Math.random() * 10 - 5);
+                birds.push({
+                    xOff,
+                    yOff,
+                    scale: (Math.random() * 15 + 30) / 52,
+                    flapPhase: Math.random() * Math.PI * 2,
+                    popStart: 0,
+                    lastX: -999,
+                    lastY: -999
+                });
+            }
+            birdFlocks.push({
+                isRight,
+                duration,
+                timeOffset: Math.random() * duration,
+                yBaseFrac,
+                birds
+            });
+        }
+
+        let decorLoopActive = false;
+        function renderDecorFrame(now) {
+            if (!decorLoopActive) return;
+            const timeSec = now / 1000;
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+
+            bgCtx.clearRect(0, 0, dW, dH);
+            fgCtx.clearRect(0, 0, dW, dH);
+
+            // 1. Draw Background Parallax Sprites (0.15x scroll speed -> drifts up VERY slowly)
+            const bgWrapH = dH + 180;
+            for (let i = 0; i < bgParticles.length; i++) {
+                const p = bgParticles[i];
+                const rawY = p.yFrac * bgWrapH - scrollY * 0.15;
+                const wrappedY = ((rawY % bgWrapH) + bgWrapH) % bgWrapH - 90;
+                const y = wrappedY + Math.sin(timeSec * p.floatSpeed + p.phase) * p.floatAmp;
+                const x = p.xFrac * dW + Math.cos(timeSec * 0.65 + p.phase) * p.swayAmp;
+
+                let popScale = 1, popRot = 0;
+                if (p.popStart > 0) {
+                    const pt = (now - p.popStart) / 600;
+                    if (pt < 1) {
+                        popScale = 1 + Math.sin(pt * Math.PI) * 0.65;
+                        popRot = Math.sin(pt * Math.PI * 2) * 0.28;
+                    } else {
+                        p.popStart = 0;
+                    }
+                }
+
+                p.lastX = x;
+                p.lastY = y;
+
+                // Sprite canvas has 64/112 shape-to-canvas ratio
+                const drawSize = (p.sizePx * (112 / 64));
+                const flapX = p.type === 'butterfly' ? (0.625 + 0.375 * Math.sin(timeSec * 10.5 + p.flapPhase)) : 1;
+
+                bgCtx.save();
+                bgCtx.globalAlpha = p.alpha;
+                bgCtx.translate(x, y);
+                if (popRot !== 0) bgCtx.rotate(popRot);
+                bgCtx.scale(popScale * flapX, popScale);
+                bgCtx.drawImage(p.sprite, -drawSize * 0.5, -drawSize * 0.5, drawSize, drawSize);
+                bgCtx.restore();
+            }
+
+            // 2. Draw V-Formation Pencil Bird Flocks on Background Canvas
+            for (let f = 0; f < birdFlocks.length; f++) {
+                const fl = birdFlocks[f];
+                const prog = ((timeSec + fl.timeOffset) % fl.duration) / fl.duration;
+                const fx = fl.isRight
+                    ? (-0.15 * dW + prog * (1.30 * dW))
+                    : (1.15 * dW - prog * (1.30 * dW));
+                const fy = (fl.yBaseFrac * dH) + (0.15 * dH) - prog * (0.30 * dH);
+                const tilt = fl.isRight ? -0.17 : 0.17;
+
+                for (let b = 0; b < fl.birds.length; b++) {
+                    const bd = fl.birds[b];
+                    const bx = fx + bd.xOff;
+                    const by = fy + bd.yOff + Math.sin(timeSec * 2.6 + bd.flapPhase) * 6;
+
+                    let popScale = 1, popRot = 0;
+                    if (bd.popStart > 0) {
+                        const pt = (now - bd.popStart) / 600;
+                        if (pt < 1) {
+                            popScale = 1 + Math.sin(pt * Math.PI) * 0.65;
+                            popRot = Math.sin(pt * Math.PI * 2) * 0.28;
+                        } else {
+                            bd.popStart = 0;
+                        }
+                    }
+
+                    bd.lastX = bx;
+                    bd.lastY = by;
+
+                    if (bx < -80 || bx > dW + 80 || by < -80 || by > dH + 80) continue;
+
+                    const flap = Math.sin(timeSec * 6.3 + bd.flapPhase) * 0.5 + 0.5;
+                    const tipY = -12 + flap * 26;
+                    const ctrlY = -8 + flap * 13;
+
+                    bgCtx.save();
+                    bgCtx.globalAlpha = 0.55;
+                    bgCtx.translate(bx, by);
+                    bgCtx.rotate(tilt + popRot);
+                    bgCtx.scale(bd.scale * popScale, bd.scale * popScale);
+                    bgCtx.strokeStyle = '#4a3b32';
+                    bgCtx.lineWidth = 3.2;
+                    bgCtx.lineCap = 'round';
+                    bgCtx.lineJoin = 'round';
+                    bgCtx.beginPath();
+                    bgCtx.moveTo(-26, tipY);
+                    bgCtx.quadraticCurveTo(-12, ctrlY, 0, 2);
+                    bgCtx.quadraticCurveTo(12, ctrlY, 26, tipY);
+                    bgCtx.stroke();
+                    bgCtx.restore();
+                }
+            }
+
+            // 3. Draw Foreground Parallax Sprites (1.40x scroll speed -> glides swiftly past text)
+            const fgWrapH = dH + 220;
+            for (let i = 0; i < fgParticles.length; i++) {
+                const p = fgParticles[i];
+                const rawY = p.yFrac * fgWrapH - scrollY * 1.40;
+                const wrappedY = ((rawY % fgWrapH) + fgWrapH) % fgWrapH - 110;
+                const y = wrappedY + Math.sin(timeSec * p.floatSpeed + p.phase) * p.floatAmp;
+                const x = p.xFrac * dW + Math.cos(timeSec * 0.55 + p.phase) * p.swayAmp;
+
+                let popScale = 1, popRot = 0;
+                if (p.popStart > 0) {
+                    const pt = (now - p.popStart) / 600;
+                    if (pt < 1) {
+                        popScale = 1 + Math.sin(pt * Math.PI) * 0.65;
+                        popRot = Math.sin(pt * Math.PI * 2) * 0.28;
+                    } else {
+                        p.popStart = 0;
+                    }
+                }
+
+                p.lastX = x;
+                p.lastY = y;
+
+                const drawSize = (p.sizePx * (112 / 64));
+                const flapX = p.type === 'butterfly' ? (0.625 + 0.375 * Math.sin(timeSec * 10.5 + p.flapPhase)) : 1;
+
+                fgCtx.save();
+                fgCtx.globalAlpha = p.alpha;
+                fgCtx.translate(x, y);
+                if (popRot !== 0) fgCtx.rotate(popRot);
+                fgCtx.scale(popScale * flapX, popScale);
+                fgCtx.drawImage(p.sprite, -drawSize * 0.5, -drawSize * 0.5, drawSize, drawSize);
+                fgCtx.restore();
+            }
+
+            requestAnimationFrame(renderDecorFrame);
+        }
+
+        // ============================================================
+        // 4. SCROLL OBSERVER & 1-SECOND POST-DROP BLUR-IN REVEAL
         // ============================================================
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -826,155 +1149,82 @@ html_content = """
                 fitBismillah();
                 const mainContent = document.getElementById('main-content');
                 mainContent.classList.add('site-revealed');
-                document.body.classList.add('birds-revealed');
+
+                bgDecorCanvas.classList.add('decor-revealed');
+                fgDecorCanvas.classList.add('decor-revealed');
+                if (!decorLoopActive) {
+                    decorLoopActive = true;
+                    requestAnimationFrame(renderDecorFrame);
+                }
 
                 document.querySelectorAll('.obs').forEach(el => observer.observe(el));
 
+                // Clear root filter once reveal finishes for crisp rendering & zero compositing overhead
                 setTimeout(() => {
                     mainContent.style.filter = 'none';
                     mainContent.style.transform = 'none';
+                    bgDecorCanvas.style.filter = 'none';
+                    fgDecorCanvas.style.filter = 'none';
                 }, 1900);
             }, 1000);
         }
 
         // ============================================================
-        // 4. PARALLAX DECOR & BIRD FLOCK GENERATORS
+        // 5. INTERACTIVE TAP / CLICK HANDLER (Garden SVGs + Canvas Decor + Birds)
         // ============================================================
-        const content = document.getElementById('main-content');
-        const shapeTypes = ['heart', 'flower', 'butterfly', 'sparkle'];
-        const weddingColors = ['#ff033e', '#ffb6c1', '#d4af37', '#e6a8d7', '#ffdab9', '#ffffff', '#ffd700'];
-
-        function generateSvgGraphic(sizeRem, color) {
-            let type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-            return `<svg viewBox="0 0 32 32" width="${sizeRem}rem" height="${sizeRem}rem" fill="${color}" style="pointer-events: none;"><use href="#svg-${type}" /></svg>`;
-        }
-
-        const isMobile = window.innerWidth <= 768;
-        const bgCount = isMobile ? 30 : 60;
-        const fgCount = isMobile ? 12 : 25;
-
-        // A) Parallax Background SVG Decor
-        for(let i=0; i<bgCount; i++) {
-            let wrapper = document.createElement('div');
-            wrapper.className = 'parallax-bg-wrapper';
-            wrapper.style.position = 'absolute';
-            wrapper.style.left = Math.random() * 95 + 'vw';
-            wrapper.style.top = Math.random() * 100 + '%';
-            wrapper.style.zIndex = '0';
-
-            let el = document.createElement('div');
-            el.className = 'bg-deco';
-            el.style.animationDelay = (Math.random() * 3) + 's';
-
-            let inner = document.createElement('span');
-            inner.className = 'interactive-emoji';
-            let randomSize = Math.random() * 1.5 + 1;
-            let randomColor = weddingColors[Math.floor(Math.random() * weddingColors.length)];
-
-            inner.innerHTML = generateSvgGraphic(randomSize, randomColor);
-            inner.style.filter = 'blur(1.5px)';
-            inner.style.opacity = '0.55';
-
-            el.appendChild(inner);
-            wrapper.appendChild(el);
-            content.appendChild(wrapper);
-        }
-
-        // B) Parallax Foreground SVG Decor
-        for(let i=0; i<fgCount; i++) {
-            let wrapper = document.createElement('div');
-            wrapper.className = 'parallax-fg-wrapper';
-            wrapper.style.position = 'absolute';
-            wrapper.style.left = Math.random() * 95 + 'vw';
-            wrapper.style.top = Math.random() * 100 + '%';
-            wrapper.style.zIndex = '50';
-            wrapper.style.pointerEvents = 'none';
-
-            let el = document.createElement('div');
-            el.className = 'fg-deco';
-            el.style.animationDelay = (Math.random() * 3) + 's';
-
-            let inner = document.createElement('span');
-            inner.className = 'interactive-emoji';
-            let randomSize = Math.random() * 2 + 2.5;
-            let randomColor = weddingColors[Math.floor(Math.random() * weddingColors.length)];
-
-            inner.innerHTML = generateSvgGraphic(randomSize, randomColor);
-            inner.style.filter = 'blur(3px)';
-            inner.style.opacity = '0.65';
-            inner.style.pointerEvents = 'auto';
-
-            el.appendChild(inner);
-            wrapper.appendChild(el);
-            content.appendChild(wrapper);
-        }
-
-        // C) Organized Bird Flocks with V-formation geometry
-        const numFlocks = isMobile ? 3 : 5;
-        for(let f = 0; f < numFlocks; f++) {
-            let flockWrapper = document.createElement('div');
-            flockWrapper.className = 'bird-flock';
-
-            let isRight = Math.random() > 0.5;
-            let animName = isRight ? 'flyRight' : 'flyLeft';
-            let animDuration = Math.random() * 25 + 30;
-
-            flockWrapper.style.animation = `${animName} ${animDuration}s linear infinite`;
-            flockWrapper.style.animationDelay = '-' + (Math.random() * 25) + 's';
-            flockWrapper.style.top = (Math.random() * 65 + 10) + 'vh';
-
-            let birdsInFlock = Math.floor(Math.random() * 3) + 3;
-
-            for(let b = 0; b < birdsInFlock; b++) {
-                let birdNode = document.createElement('div');
-                birdNode.style.position = 'absolute';
-
-                let xOffset = isRight ? -(b * 35 + Math.random()*10) : (b * 35 + Math.random()*10);
-                let yOffset = (b % 2 === 0 ? 1 : -1) * (Math.ceil(b/2) * 20) + (Math.random()*10 - 5);
-
-                birdNode.style.left = xOffset + 'px';
-                birdNode.style.top = yOffset + 'px';
-
-                let inner = document.createElement('div');
-                inner.className = 'interactive-emoji';
-                let tilt = isRight ? 'rotate(-10deg)' : 'rotate(10deg)';
-                inner.style.transform = tilt;
-
-                let flapDelay = '-' + (Math.random() * 0.5).toFixed(2) + 's';
-
-                inner.innerHTML = `
-                <svg class="bird-svg" viewBox="0 0 100 60" width="${Math.random() * 15 + 30}" height="25" style="pointer-events:none;">
-                    <path class="bird-wing" style="animation-delay: ${flapDelay};" fill="none" stroke="#4a3b32" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
-                </svg>`;
-
-                birdNode.appendChild(inner);
-                flockWrapper.appendChild(birdNode);
-            }
-            document.body.appendChild(flockWrapper);
-        }
-
-        // 5. Parallax Scroll Math Integration
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            document.querySelectorAll('.parallax-bg-wrapper').forEach(el => {
-                el.style.transform = `translateY(${scrollY * 0.85}px)`;
-            });
-            document.querySelectorAll('.parallax-fg-wrapper').forEach(el => {
-                el.style.transform = `translateY(${-scrollY * 0.4}px)`;
-            });
-        });
-
-        // 6. Interactive Click/Tap Event Listener
         document.addEventListener('click', function(e) {
+            if (!isCurtainOpening) return;
+
+            // Garden Flowers & Butterflies
             const target = e.target.closest('.interactive-emoji');
-            if(target) {
+            if (target) {
                 target.classList.remove('pop-anim');
                 void target.offsetWidth;
                 target.classList.add('pop-anim');
+                return;
+            }
+
+            if (e.target.closest('#scratchCard')) return;
+
+            // Hit-test foreground particles, birds, then background particles
+            const cx = e.clientX;
+            const cy = e.clientY;
+            const now = performance.now();
+
+            for (let i = fgParticles.length - 1; i >= 0; i--) {
+                const p = fgParticles[i];
+                const dx = cx - p.lastX, dy = cy - p.lastY;
+                const rad = Math.max(24, p.sizePx * 0.65);
+                if (dx * dx + dy * dy <= rad * rad) {
+                    p.popStart = now;
+                    return;
+                }
+            }
+            for (let f = 0; f < birdFlocks.length; f++) {
+                const birds = birdFlocks[f].birds;
+                for (let b = 0; b < birds.length; b++) {
+                    const bd = birds[b];
+                    const dx = cx - bd.lastX, dy = cy - bd.lastY;
+                    if (dx * dx + dy * dy <= 32 * 32) {
+                        bd.popStart = now;
+                        return;
+                    }
+                }
+            }
+            for (let i = bgParticles.length - 1; i >= 0; i--) {
+                const p = bgParticles[i];
+                const dx = cx - p.lastX, dy = cy - p.lastY;
+                const rad = Math.max(22, p.sizePx * 0.7);
+                if (dx * dx + dy * dy <= rad * rad) {
+                    p.popStart = now;
+                    return;
+                }
             }
         });
 
-        // 7. Typewriter "Fade-In" Logic
+        // ============================================================
+        // 6. TYPEWRITER "FADE-IN" LOGIC
+        // ============================================================
         function typeWriterFadeIn(el) {
             if(el.dataset.typed) return;
             el.dataset.typed = true;
@@ -1001,7 +1251,9 @@ html_content = """
             }, 30);
         }
 
-        // 8. Scratch Card Logic (Threshold 30% + Mobile Scaler Fix)
+        // ============================================================
+        // 7. SCRATCH CARD LOGIC (Threshold 30% + Mobile Scaler Fix)
+        // ============================================================
         const canvas = document.getElementById('scratchCard');
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
@@ -1068,7 +1320,9 @@ html_content = """
             }
         }
 
-        // 9. Custom Side-Cannons (Fires dynamically from Left/Right bottom screen)
+        // ============================================================
+        // 8. CUSTOM SIDE-CANNONS (Left & Right Bottom Screen)
+        // ============================================================
         function fireSideCannon(side) {
             const container = document.createElement('div');
             container.style.position = 'fixed';
@@ -1114,7 +1368,9 @@ html_content = """
             setTimeout(() => container.remove(), 17000);
         }
 
-        // 10. Slow-Motion Cinematic Flock of Birds (15-20 Seconds)
+        // ============================================================
+        // 9. SLOW-MOTION CINEMATIC FLOCK OF BIRDS (15-20 Seconds)
+        // ============================================================
         function spawnExplosionFlock() {
             const flockContainer = document.createElement('div');
             flockContainer.style.position = 'fixed';
