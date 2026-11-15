@@ -39,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with WebGL silk curtains, pre-warmed GPU split-curtain, Red Part 2 theme & 60fps parallax
+# HTML, CSS, JS payload with WebGL silk curtains, 60fps WAAPI split-curtain, Red Part 2 theme & sprite parallax
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -66,7 +66,7 @@ html_content = """
             color: #4a3b32;
         }
 
-        /* --- Royal Crimson Red Theme Backdrop (Revealed Under Split Curtains!) --- */
+        /* --- Royal Crimson Red Theme Backdrop --- */
         #red-theme-backdrop {
             position: fixed;
             inset: 0;
@@ -81,7 +81,11 @@ html_content = """
                 radial-gradient(ellipse at center, transparent 38%, rgba(26, 0, 4, 0.68) 100%),
                 url('https://www.transparenttextures.com/patterns/aged-paper.png');
             background-blend-mode: normal, normal, normal, normal, multiply;
+            transition: opacity 0.9s ease-in-out;
             will-change: opacity;
+        }
+        #red-theme-backdrop.red-active {
+            opacity: 1;
         }
 
         /* --- High-FPS Fixed Parallax Decor Canvases --- */
@@ -151,31 +155,30 @@ html_content = """
 
         /* --- Part 1 Container (Styled by Class so Split Clones Match Exactly!) --- */
         .part1-container {
-            padding: 10vh 20px 6vh 20px;
+            padding: 10vh 20px 8vh 20px;
             position: relative;
             z-index: 20;
             box-sizing: border-box;
             width: 100%;
         }
 
-        /* Bismillah Responsive Wrapper */
+        /* Bismillah Calligraphy (Restored original ﷽ ligature + auto-fit) */
         .bismillah-wrap {
             width: 100%;
             display: flex;
             justify-content: center;
-            margin-bottom: 12vh;
+            margin-bottom: 18vh;
         }
         .bismillah {
             display: inline-block;
             font-family: 'Amiri', serif;
-            font-size: clamp(1.5rem, 7.8vw, 3.6rem);
+            font-size: clamp(1.8rem, 11vw, 4.5rem);
             opacity: 0;
             filter: blur(14px);
             transform: translateY(25px);
             transition: opacity 1.6s ease-out, filter 1.6s ease-out, transform 1.6s ease-out;
-            line-height: 1.5;
+            line-height: 1.4;
             white-space: nowrap;
-            direction: rtl;
         }
         .bismillah.visible-up {
             opacity: 1 !important;
@@ -299,7 +302,7 @@ html_content = """
 
         /* --- Scratch Card & Mobile Scaler --- */
         .scratch-wrapper {
-            margin: 0 auto 30px auto;
+            margin: 0 auto 24px auto;
             display: flex; justify-content: center;
             opacity: 0; filter: blur(12px); transform: translateY(30px);
             transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
@@ -323,7 +326,7 @@ html_content = """
         }
         canvas#scratchCard { position: absolute; top: 0; left: 0; z-index: 10; cursor: pointer; touch-action: none; }
 
-        /* --- Scroll Unlock Prompt Below Heart (Smooth Blur-In & Blurred-Out-Fade-Out!) --- */
+        /* --- Scroll Unlock Prompt Below Heart --- */
         .unlock-hint {
             font-size: 1.15rem;
             font-style: italic;
@@ -345,15 +348,15 @@ html_content = """
             opacity: 1;
             filter: blur(0px);
             transform: translateY(0px);
-            transition: opacity 0.65s ease-out, filter 0.65s ease-out, transform 0.65s ease-out;
+            transition: opacity 0.45s ease-out, filter 0.45s ease-out, transform 0.45s ease-out;
         }
         .unlock-hint.blur-out-away,
         .clone-unlock-hint.blur-out-away {
             animation: none !important;
             opacity: 0 !important;
             filter: blur(14px) !important;
-            transform: translateY(14px) scale(0.95) !important;
-            transition: opacity 0.65s ease-out, filter 0.65s ease-out, transform 0.65s ease-out !important;
+            transform: translateY(14px) scale(0.94) !important;
+            transition: opacity 0.45s ease-out, filter 0.45s ease-out, transform 0.45s ease-out !important;
         }
         @keyframes hintPulse {
             0%, 100% { transform: translateY(0px); opacity: 0.78; }
@@ -385,7 +388,7 @@ html_content = """
                 radial-gradient(circle at 25% 75%, rgba(168, 124, 72, 0.13) 0%, transparent 50%),
                 radial-gradient(circle at 80% 85%, rgba(120, 75, 40, 0.14) 0%, transparent 45%),
                 url('https://www.transparenttextures.com/patterns/aged-paper.png');
-            will-change: transform;
+            will-change: transform, opacity;
             backface-visibility: hidden;
         }
         #split-left {
@@ -405,7 +408,6 @@ html_content = """
             pointer-events: none;
         }
 
-        /* Soft shadow fold along the center split seam */
         #split-left::after {
             content: ''; position: absolute; top: 0; right: 0; width: 22px; height: 100%;
             background: linear-gradient(to right, transparent, rgba(74, 59, 50, 0.22));
@@ -418,7 +420,7 @@ html_content = """
         }
 
         /* =========================================================
-           PART 2 SECTION (Royal Red Theme — Champagne Gold & Ivory Typography)
+           PART 2 SECTION (Natural Flow — Zero Sticky Trap!)
            ========================================================= */
         #part2-section {
             display: none;
@@ -427,25 +429,28 @@ html_content = """
             padding: 0 20px;
             color: #fdf5e6;
         }
-        #split-scroll-track {
-            position: relative;
-            width: 100%;
-        }
-        #couple-sticky-frame {
-            position: sticky;
-            top: 0;
-            height: 100vh;
+        #couple-stage-wrap {
+            min-height: 92vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            will-change: opacity, transform;
         }
+
+        /* Blur-in-Fade-in animation for Bride & Groom names when split triggers! */
         .couple-details {
             max-width: 780px;
             padding: 20px 10px;
             margin: 0 auto;
+            opacity: 0;
+            filter: blur(22px);
+            transform: scale(0.94) translateY(18px);
+            transition: opacity 1.6s ease-out, filter 1.6s ease-out, transform 1.6s ease-out;
+            will-change: opacity, filter, transform;
+        }
+        .couple-details.couple-revealed {
+            opacity: 1;
+            filter: blur(0px);
+            transform: scale(1) translateY(0);
         }
         .couple-name-big {
             font-family: 'Alex Brush', cursive;
@@ -627,7 +632,7 @@ html_content = """
       </defs>
     </svg>
 
-    <!-- Royal Red Theme Backdrop (Fades in beneath the splitting old-paper curtains) -->
+    <!-- Royal Red Theme Backdrop -->
     <div id="red-theme-backdrop"></div>
 
     <!-- 60fps Pre-Baked Sprite Parallax Canvases (Background & Foreground) -->
@@ -640,7 +645,7 @@ html_content = """
        <div class="open-btn" onclick="openCurtains()">Open</div>
     </div>
 
-    <!-- Split-Page Curtain Overlay (Pre-warmed when heart is scratched for 0ms start!) -->
+    <!-- Pre-Warmed Split-Page Curtain Overlay -->
     <div id="split-stage">
         <div id="split-left" class="split-half">
             <div id="split-left-inner" class="split-inner"></div>
@@ -655,9 +660,9 @@ html_content = """
 
        <!-- PART 1: Upper Page up to Scratched Heart -->
        <div id="part1-wrapper" class="part1-container">
-           <!-- Bismillah -->
+           <!-- Restored Original Bismillah Calligraphy -->
            <div class="bismillah-wrap">
-               <div class="bismillah obs fade-up">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+               <div class="bismillah obs fade-up">﷽</div>
            </div>
 
            <!-- Type-in Fade-in Translation -->
@@ -784,17 +789,15 @@ html_content = """
            </div>
        </div>
 
-       <!-- PART 2: Royal Red Theme (Unlocked After Scratching, Revealed Beneath Splitting Part 1) -->
+       <!-- PART 2: Royal Red Theme (Natural Flow — Zero Sticky Trap!) -->
        <div id="part2-section">
-           <div id="split-scroll-track">
-               <div id="couple-sticky-frame">
-                   <div class="couple-details">
-                       <div class="couple-name-big">Rimsha Fatima</div>
-                       <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Marhoom)</div>
-                       <div class="couple-with">with</div>
-                       <div class="couple-name-big">Mr. Asad</div>
-                       <div class="couple-lineage">S/O [Groom's Father's Name]</div>
-                   </div>
+           <div id="couple-stage-wrap">
+               <div id="couple-details" class="couple-details">
+                   <div class="couple-name-big">Rimsha Fatima</div>
+                   <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Marhoom)</div>
+                   <div class="couple-with">with</div>
+                   <div class="couple-name-big">Mr. Asad</div>
+                   <div class="couple-lineage">S/O [Groom's Father's Name]</div>
                </div>
            </div>
 
@@ -1141,7 +1144,7 @@ html_content = """
         }
 
         // ============================================================
-        // 3. 60FPS PRE-BAKED SPRITE PARALLAX + BIRD FLOCK + SPLIT CURTAIN ENGINE
+        // 3. 60FPS PRE-BAKED SPRITE PARALLAX + BIRD FLOCK ENGINE
         // ============================================================
         const redBackdrop = document.getElementById('red-theme-backdrop');
         const bgDecorCanvas = document.getElementById('bg-decor-canvas');
@@ -1329,11 +1332,12 @@ html_content = """
             });
         }
 
-        // --- Scroll-Driven Page Split State (Smooth Damped Lerp + Pre-Warmed GPU!) ---
+        // ============================================================
+        // 4. TRIGGERED 60FPS SPLIT-CURTAIN REVEAL (Zero Stutter & Free Scroll-Back)
+        // ============================================================
         const part1Wrapper = document.getElementById('part1-wrapper');
         const part2Section = document.getElementById('part2-section');
-        const splitScrollTrack = document.getElementById('split-scroll-track');
-        const coupleStickyFrame = document.getElementById('couple-sticky-frame');
+        const coupleDetails = document.getElementById('couple-details');
         const splitStage = document.getElementById('split-stage');
         const splitLeft = document.getElementById('split-left');
         const splitRight = document.getElementById('split-right');
@@ -1341,31 +1345,23 @@ html_content = """
         const splitRightInner = document.getElementById('split-right-inner');
 
         let splitPrepared = false;
-        let splitStartY = 0;
-        let splitTravel = 700;
-        let visualP = 0;
+        let splitTriggered = false;
+        let splitFinished = false;
+        let splitTriggerY = 0;
         let redBlend = 0;
         let clonedHintEls = [];
 
-        function syncSplitMetrics() {
+        function syncCloneWidths() {
             if (!splitPrepared) return;
-            const vh = window.innerHeight;
             const cw = document.documentElement.clientWidth;
-            splitTravel = Math.round(vh * 0.95);
-            splitStartY = Math.max(0, part1Wrapper.offsetHeight - vh);
-            part2Section.style.marginTop = `-${vh}px`;
-            splitScrollTrack.style.height = `${splitTravel + vh}px`;
-
             splitLeftInner.style.width = `${cw}px`;
             splitRightInner.style.width = `${cw}px`;
             splitRightInner.style.left = `${-cw / 2}px`;
-            splitLeftInner.style.transform = `translate3d(0, ${-splitStartY}px, 0)`;
-            splitRightInner.style.transform = `translate3d(0, ${-splitStartY}px, 0)`;
         }
 
         window.addEventListener('resize', () => {
             resizeDecorCanvases();
-            syncSplitMetrics();
+            syncCloneWidths();
         });
 
         function buildSplitClones() {
@@ -1374,11 +1370,9 @@ html_content = """
                 clone.removeAttribute('id');
                 clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
 
-                // Remove scratch canvas from clone so only revealed "Asad & Rimsha" heart appears
                 const c = clone.querySelector('canvas');
                 if (c) c.remove();
 
-                // Lock all already-visible Part 1 elements cleanly so nothing restarts or vanishes!
                 clone.querySelectorAll('.obs').forEach(el => {
                     el.style.transition = 'none';
                     if (el.classList.contains('fade-up')) el.classList.add('visible-up');
@@ -1386,7 +1380,6 @@ html_content = """
                     if (el.classList.contains('type-fade')) el.classList.add('visible-fade');
                 });
 
-                // Lock ink-spread & garden flowers/butterflies in their bloomed state (no animation restart!)
                 const inkAnim = clone.querySelector('.ink-spread-anim');
                 if (inkAnim) {
                     inkAnim.style.transition = 'none';
@@ -1409,7 +1402,6 @@ html_content = """
                     bf.style.opacity = '1';
                 });
 
-                // Keep "Scroll down to reveal" visible in clones so it blurs-out-fades-out smoothly!
                 const hint = clone.querySelector('.unlock-hint');
                 if (hint) {
                     hint.classList.remove('active');
@@ -1422,94 +1414,86 @@ html_content = """
             splitLeftInner.appendChild(makeSafeClone());
             splitRightInner.appendChild(makeSafeClone());
             clonedHintEls = Array.from(splitStage.querySelectorAll('.clone-unlock-hint'));
+            syncCloneWidths();
         }
 
-        function setHintBlurOut(shouldBlurOut) {
+        function triggerSplitCurtain() {
+            if (splitTriggered) return;
+            splitTriggered = true;
+
+            const curY = window.scrollY || window.pageYOffset || 0;
+            syncCloneWidths();
+            splitLeftInner.style.transform = `translate3d(0, ${-curY}px, 0)`;
+            splitRightInner.style.transform = `translate3d(0, ${-curY}px, 0)`;
+
+            // Hand off seamlessly from real Part 1 to pre-warmed splitStage (0ms jump!)
+            splitStage.style.zIndex = '25';
+            splitStage.style.opacity = '1';
+            part1Wrapper.style.opacity = '0';
+            part1Wrapper.style.visibility = 'hidden';
+
+            // BEAT 1 (0ms): Smoothly blur-out-fade-out "Scroll down to reveal" first!
             const realHint = document.getElementById('unlock-hint');
-            if (shouldBlurOut) {
-                if (realHint) realHint.classList.add('blur-out-away');
-                clonedHintEls.forEach(el => el.classList.add('blur-out-away'));
-            } else {
-                if (realHint) realHint.classList.remove('blur-out-away');
-                clonedHintEls.forEach(el => el.classList.remove('blur-out-away'));
-            }
+            if (realHint) realHint.classList.add('blur-out-away');
+            clonedHintEls.forEach(el => el.classList.add('blur-out-away'));
+
+            // BEAT 2 (260ms): Behind the still-closed curtains, position Couple Details at center & launch silky WAAPI fall!
+            setTimeout(() => {
+                const part2Top = part1Wrapper.offsetHeight;
+                window.scrollTo({ top: part2Top, behavior: 'auto' });
+
+                // Fade in Royal Red theme smoothly
+                redBackdrop.classList.add('red-active');
+
+                // Pure GPU Web Animations API on both halves -> silky locked 60fps!
+                const animOpts = {
+                    duration: 1850,
+                    easing: 'cubic-bezier(0.32, 0.04, 0.25, 1)',
+                    fill: 'forwards'
+                };
+                splitLeft.animate([
+                    { transform: 'translate3d(0, 0, 0) rotate(0deg) scaleX(1)', opacity: 1 },
+                    { transform: 'translate3d(-16vw, 18vh, 0) rotate(-4deg) scaleX(0.92)', opacity: 1, offset: 0.45 },
+                    { transform: 'translate3d(-44vw, 64vh, 0) rotate(-11deg) scaleX(0.82)', opacity: 0 }
+                ], animOpts);
+
+                splitRight.animate([
+                    { transform: 'translate3d(0, 0, 0) rotate(0deg) scaleX(1)', opacity: 1 },
+                    { transform: 'translate3d(16vw, 18vh, 0) rotate(4deg) scaleX(0.92)', opacity: 1, offset: 0.45 },
+                    { transform: 'translate3d(44vw, 64vh, 0) rotate(11deg) scaleX(0.82)', opacity: 0 }
+                ], animOpts);
+
+                // BEAT 3 (480ms): Blur-in-Fade-in the Bride & Groom Names + Father's Names underneath!
+                setTimeout(() => {
+                    coupleDetails.classList.add('couple-revealed');
+                }, 220);
+
+                // Cleanup split overlay & restore Part 1 above so scrolling back up works freely!
+                setTimeout(() => {
+                    splitFinished = true;
+                    splitStage.style.display = 'none';
+                    part1Wrapper.style.opacity = '1';
+                    part1Wrapper.style.visibility = 'visible';
+                    if (realHint) realHint.classList.remove('blur-out-away');
+                }, 1900);
+            }, 260);
         }
 
-        function updateSplitCurtains(scrollY) {
+        function checkScrollTriggers(scrollY) {
             if (!splitPrepared) return;
 
-            const targetP = clamp01((scrollY - splitStartY) / splitTravel);
-            visualP += (targetP - visualP) * 0.18;
-            if (Math.abs(targetP - visualP) < 0.0005) visualP = targetP;
+            if (!splitTriggered && scrollY >= splitTriggerY) {
+                triggerSplitCurtain();
+            }
 
-            if (visualP <= 0.0005 && targetP === 0) {
-                visualP = 0;
-                redBlend = 0;
-                part1Wrapper.style.opacity = '1';
-                part1Wrapper.style.visibility = 'visible';
-                part1Wrapper.style.pointerEvents = 'auto';
-
-                // Restore "Scroll down to reveal" smoothly if scrolled back to top
-                setHintBlurOut(false);
-
-                splitStage.style.zIndex = '19';
-                splitStage.style.opacity = '0.001';
-                splitLeft.style.transform = 'translate3d(0, 0, 0)';
-                splitRight.style.transform = 'translate3d(0, 0, 0)';
-
-                redBackdrop.style.opacity = '0';
-                coupleStickyFrame.style.visibility = 'hidden';
-                coupleStickyFrame.style.opacity = '0';
-                part2Section.style.pointerEvents = 'none';
-            } else if (visualP < 0.999) {
-                const ease = easeInOutCubic(visualP);
-
-                part1Wrapper.style.opacity = '0';
-                part1Wrapper.style.visibility = 'hidden';
-                part1Wrapper.style.pointerEvents = 'none';
-
-                // Smoothly blur-out-fade-out "Scroll down to reveal" instead of snapping it off!
-                setHintBlurOut(true);
-
-                splitStage.style.zIndex = '25';
-                const stageAlpha = visualP > 0.72 ? Math.max(0, 1 - (visualP - 0.72) / 0.28) : 1;
-                splitStage.style.opacity = stageAlpha;
-
-                redBlend = clamp01(visualP / 0.16);
-                redBackdrop.style.opacity = redBlend;
-
-                part2Section.style.pointerEvents = 'auto';
-
-                const tx = ease * 42;
-                const ty = Math.pow(ease, 1.2) * 58;
-                const rotZ = ease * 10;
-                const sx = 1 - ease * 0.18;
-
-                splitLeft.style.transform = `translate3d(${-tx}vw, ${ty}vh, 0) rotate(${-rotZ}deg) scaleX(${sx})`;
-                splitRight.style.transform = `translate3d(${tx}vw, ${ty}vh, 0) rotate(${rotZ}deg) scaleX(${sx})`;
-
-                const cp = clamp01((visualP - 0.04) / 0.50);
-                const cEase = easeInOutCubic(cp);
-                coupleStickyFrame.style.visibility = 'visible';
-                coupleStickyFrame.style.opacity = cEase;
-                coupleStickyFrame.style.transform = `scale3d(${(0.92 + 0.08 * cEase).toFixed(3)}, ${(0.92 + 0.08 * cEase).toFixed(3)}, 1)`;
-            } else {
-                visualP = 1;
-                redBlend = 1;
-                part1Wrapper.style.opacity = '0';
-                part1Wrapper.style.visibility = 'hidden';
-                part1Wrapper.style.pointerEvents = 'none';
-
-                setHintBlurOut(true);
-
-                splitStage.style.zIndex = '-1';
-                splitStage.style.opacity = '0';
-
-                redBackdrop.style.opacity = '1';
-                part2Section.style.pointerEvents = 'auto';
-                coupleStickyFrame.style.visibility = 'visible';
-                coupleStickyFrame.style.opacity = '1';
-                coupleStickyFrame.style.transform = 'none';
+            if (splitFinished) {
+                const p2Top = part1Wrapper.offsetHeight;
+                const threshold = p2Top - window.innerHeight * 0.42;
+                if (scrollY < threshold) {
+                    redBackdrop.classList.remove('red-active');
+                } else {
+                    redBackdrop.classList.add('red-active');
+                }
             }
         }
 
@@ -1519,7 +1503,11 @@ html_content = """
             const timeSec = now / 1000;
             const scrollY = window.scrollY || window.pageYOffset || 0;
 
-            updateSplitCurtains(scrollY);
+            checkScrollTriggers(scrollY);
+
+            // Smoothly interpolate bird color toward champagne gold whenever Red Theme is active
+            const targetRed = redBackdrop.classList.contains('red-active') ? 1 : 0;
+            redBlend += (targetRed - redBlend) * 0.06;
 
             bgCtx.clearRect(0, 0, dW, dH);
             fgCtx.clearRect(0, 0, dW, dH);
@@ -1559,7 +1547,7 @@ html_content = """
                 bgCtx.restore();
             }
 
-            // 2. V-Formation Pencil Bird Flocks (Smoothly shift to champagne gold on Red Theme!)
+            // 2. V-Formation Pencil Bird Flocks
             const br = Math.round(74 + redBlend * (245 - 74));
             const bg = Math.round(59 + redBlend * (222 - 59));
             const bb = Math.round(50 + redBlend * (179 - 50));
@@ -1656,7 +1644,7 @@ html_content = """
         }
 
         // ============================================================
-        // 4. SCROLL OBSERVER & 1-SECOND POST-DROP BLUR-IN REVEAL
+        // 5. SCROLL OBSERVER & 1-SECOND POST-DROP BLUR-IN REVEAL
         // ============================================================
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -1701,7 +1689,7 @@ html_content = """
         }
 
         // ============================================================
-        // 5. INTERACTIVE TAP / CLICK HANDLER
+        // 6. INTERACTIVE TAP / CLICK HANDLER
         // ============================================================
         document.addEventListener('click', function(e) {
             if (!isCurtainOpening) return;
@@ -1752,7 +1740,7 @@ html_content = """
         });
 
         // ============================================================
-        // 6. TYPEWRITER "FADE-IN" LOGIC
+        // 7. TYPEWRITER "FADE-IN" LOGIC
         // ============================================================
         function typeWriterFadeIn(el) {
             if(el.dataset.typed) return;
@@ -1781,7 +1769,7 @@ html_content = """
         }
 
         // ============================================================
-        // 7. SCRATCH CARD LOGIC (Unlocks Part 2 + Pre-Warms Split Stage!)
+        // 8. SCRATCH CARD LOGIC (Unlocks Part 2 + Pre-Warms Split Stage!)
         // ============================================================
         const canvas = document.getElementById('scratchCard');
         const ctx = canvas.getContext('2d');
@@ -1833,9 +1821,12 @@ html_content = """
             buildSplitClones();
             part2Section.style.display = 'block';
             splitPrepared = true;
-            syncSplitMetrics();
 
-            // Pre-warm splitStage on GPU immediately so frame 1 of scroll has 0ms stutter!
+            const curY = window.scrollY || window.pageYOffset || 0;
+            const part1BottomScroll = Math.max(0, part1Wrapper.offsetHeight - window.innerHeight);
+            splitTriggerY = Math.max(curY, part1BottomScroll) + 18;
+
+            // Pre-warm splitStage on GPU immediately so split starts with 0ms stutter!
             splitStage.style.display = 'block';
             splitStage.style.zIndex = '19';
             splitStage.style.opacity = '0.001';
@@ -1868,7 +1859,7 @@ html_content = """
         }
 
         // ============================================================
-        // 8. CUSTOM SIDE-CANNONS (Left & Right Bottom Screen)
+        // 9. CUSTOM SIDE-CANNONS (Left & Right Bottom Screen)
         // ============================================================
         function fireSideCannon(side) {
             const container = document.createElement('div');
@@ -1916,7 +1907,7 @@ html_content = """
         }
 
         // ============================================================
-        // 9. SLOW-MOTION CINEMATIC FLOCK OF BIRDS (15-20 Seconds)
+        // 10. SLOW-MOTION CINEMATIC FLOCK OF BIRDS (15-20 Seconds)
         // ============================================================
         function spawnExplosionFlock() {
             const flockContainer = document.createElement('div');
