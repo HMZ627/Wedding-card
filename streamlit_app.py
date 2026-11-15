@@ -39,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with WebGL silk curtains, smooth GPU split-curtain reveal, 60fps parallax & animations
+# HTML, CSS, JS payload with WebGL silk curtains, pre-warmed GPU split-curtain, Red Part 2 theme & 60fps parallax
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -49,7 +49,7 @@ html_content = """
     <title>Wedding Invitation</title>
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Amiri:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* --- Base & Vintage Old Paper Background --- */
+        /* --- Base & Vintage Old Paper Background (Part 1) --- */
         html, body {
             margin: 0; padding: 0;
             overflow-x: clip;
@@ -64,6 +64,24 @@ html_content = """
                 radial-gradient(circle at 80% 85%, rgba(120, 75, 40, 0.14) 0%, transparent 45%),
                 url('https://www.transparenttextures.com/patterns/aged-paper.png');
             color: #4a3b32;
+        }
+
+        /* --- Royal Crimson Red Theme Backdrop (Revealed Under Split Curtains!) --- */
+        #red-theme-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0;
+            background-color: #5c0612;
+            background-image:
+                radial-gradient(circle at 50% 25%, rgba(185, 22, 48, 0.45) 0%, transparent 58%),
+                radial-gradient(circle at 18% 75%, rgba(45, 0, 7, 0.55) 0%, transparent 50%),
+                radial-gradient(circle at 85% 80%, rgba(45, 0, 7, 0.55) 0%, transparent 50%),
+                radial-gradient(ellipse at center, transparent 38%, rgba(26, 0, 4, 0.68) 100%),
+                url('https://www.transparenttextures.com/patterns/aged-paper.png');
+            background-blend-mode: normal, normal, normal, normal, multiply;
+            will-change: opacity;
         }
 
         /* --- High-FPS Fixed Parallax Decor Canvases --- */
@@ -279,7 +297,7 @@ html_content = """
         @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
         @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
-        /* --- Scratch Card & Mobile Scaler (Explicit transitions, NOT 'all', so hiding is instant!) --- */
+        /* --- Scratch Card & Mobile Scaler --- */
         .scratch-wrapper {
             margin: 0 auto 30px auto;
             display: flex; justify-content: center;
@@ -325,16 +343,16 @@ html_content = """
         }
 
         /* =========================================================
-           60FPS GPU SPLIT-PAGE CURTAIN STAGE (Fixed Overlay)
+           PRE-WARMED 60FPS GPU SPLIT-PAGE CURTAIN STAGE
            ========================================================= */
         #split-stage {
             position: fixed;
             inset: 0;
-            z-index: 25;
+            z-index: -1;
             display: none;
+            opacity: 0;
             pointer-events: none;
             overflow: hidden;
-            perspective: 1400px;
         }
         .split-half {
             position: absolute;
@@ -349,47 +367,47 @@ html_content = """
                 radial-gradient(circle at 25% 75%, rgba(168, 124, 72, 0.13) 0%, transparent 50%),
                 radial-gradient(circle at 80% 85%, rgba(120, 75, 40, 0.14) 0%, transparent 45%),
                 url('https://www.transparenttextures.com/patterns/aged-paper.png');
-            will-change: transform, opacity;
+            will-change: transform;
             backface-visibility: hidden;
         }
         #split-left {
             left: 0;
             transform-origin: top left;
-            box-shadow: 8px 18px 36px rgba(74, 59, 50, 0.24);
+            box-shadow: 8px 18px 36px rgba(25, 0, 4, 0.45);
         }
         #split-right {
             right: 0;
             transform-origin: top right;
-            box-shadow: -8px 18px 36px rgba(74, 59, 50, 0.24);
+            box-shadow: -8px 18px 36px rgba(25, 0, 4, 0.45);
         }
         .split-inner {
             position: absolute;
             top: 0;
             left: 0;
             pointer-events: none;
-            will-change: transform;
         }
 
         /* Soft shadow fold along the center split seam */
         #split-left::after {
             content: ''; position: absolute; top: 0; right: 0; width: 22px; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(74, 59, 50, 0.20));
+            background: linear-gradient(to right, transparent, rgba(74, 59, 50, 0.22));
             pointer-events: none;
         }
         #split-right::after {
             content: ''; position: absolute; top: 0; left: 0; width: 22px; height: 100%;
-            background: linear-gradient(to left, transparent, rgba(74, 59, 50, 0.20));
+            background: linear-gradient(to left, transparent, rgba(74, 59, 50, 0.22));
             pointer-events: none;
         }
 
         /* =========================================================
-           PART 2 SECTION (Hidden until heart is scratched!)
+           PART 2 SECTION (Royal Red Theme — Champagne Gold & Ivory Typography)
            ========================================================= */
         #part2-section {
             display: none;
             position: relative;
             z-index: 12;
             padding: 0 20px;
+            color: #fdf5e6;
         }
         #split-scroll-track {
             position: relative;
@@ -410,39 +428,49 @@ html_content = """
             max-width: 780px;
             padding: 20px 10px;
             margin: 0 auto;
-            filter: blur(12px);
-            transition: filter 1.1s ease-out;
-        }
-        #couple-sticky-frame.couple-clear .couple-details {
-            filter: blur(0px);
         }
         .couple-name-big {
             font-family: 'Alex Brush', cursive;
-            font-size: clamp(2.9rem, 8.5vw, 4.4rem);
-            color: #9e001c;
+            font-size: clamp(3rem, 8.8vw, 4.6rem);
+            color: #fbe59c;
             line-height: 1.15;
             margin: 4px 0;
+            text-shadow: 0 3px 14px rgba(0, 0, 0, 0.45);
         }
         .couple-lineage {
             font-size: 1.3rem;
-            color: #5c473b;
+            color: #f4e2c7;
             margin-bottom: 14px;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
         }
         .couple-with {
             font-family: 'Great Vibes', cursive;
-            font-size: 2.5rem;
-            color: #800000;
+            font-size: 2.6rem;
+            color: #f5d376;
             margin: 8px 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
         }
 
-        /* --- Schedule Table (Kept Same) --- */
-        .schedule-box { max-width: 800px; margin: 4vh auto 18vh auto; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; overflow-x: auto; }
+        /* --- Schedule Table (Same Layout, Restyled for Royal Red Theme) --- */
+        .schedule-box {
+            max-width: 800px;
+            margin: 4vh auto 18vh auto;
+            opacity: 0; filter: blur(12px); transform: translateY(50px);
+            transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
+            background: rgba(34, 0, 6, 0.42);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px dashed rgba(245, 211, 118, 0.65);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32);
+            overflow-x: auto;
+        }
         table { width: 100%; border-collapse: collapse; min-width: 400px; }
-        th, td { padding: 15px; text-align: center; border-bottom: 1px solid #d8ccb8; }
-        th { font-family: 'Great Vibes', cursive; font-size: 2rem; color: #800000; border-bottom: 2px solid #bba171; }
-        td { font-size: 1.15rem; }
+        th, td { padding: 15px; text-align: center; border-bottom: 1px solid rgba(253, 245, 230, 0.22); }
+        th { font-family: 'Great Vibes', cursive; font-size: 2rem; color: #f5d376; border-bottom: 2px solid rgba(245, 211, 118, 0.55); }
+        td { font-size: 1.15rem; color: #fdf5e6; }
+        .venue-sub { font-size: 0.9rem; color: #e6cfb3; }
 
-        /* --- RSVP & Best Compliments --- */
+        /* --- RSVP & Best Compliments (Red Theme) --- */
         .rsvp-box {
             max-width: 720px;
             margin: 0 auto 14vh auto;
@@ -452,20 +480,33 @@ html_content = """
             transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
             line-height: 1.75;
             font-size: 1.25rem;
+            color: #f4e2c7;
         }
         .rsvp-heading {
             font-family: 'Great Vibes', cursive;
-            font-size: 2.4rem;
-            color: #800000;
+            font-size: 2.5rem;
+            color: #f5d376;
             margin: 18px 0 4px 0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
         }
         .rsvp-detail {
             font-weight: 600;
-            color: #4a3b32;
+            color: #fff8ec;
         }
 
-        /* --- Footer --- */
-        .footer-text { font-size: 1.5rem; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out; padding-bottom: 100px; font-style: italic; color: #800000; font-weight: bold; max-width: 750px; margin: 0 auto; }
+        /* --- Footer (Red Theme) --- */
+        .footer-text {
+            font-size: 1.55rem;
+            opacity: 0; filter: blur(12px); transform: translateY(50px);
+            transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
+            padding-bottom: 100px;
+            font-style: italic;
+            color: #fbe59c;
+            font-weight: bold;
+            max-width: 750px;
+            margin: 0 auto;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        }
 
         /* --- Interactive Trigger Class (for Garden SVGs) --- */
         .interactive-emoji { display: inline-block; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -568,6 +609,9 @@ html_content = """
       </defs>
     </svg>
 
+    <!-- Royal Red Theme Backdrop (Fades in beneath the splitting old-paper curtains) -->
+    <div id="red-theme-backdrop"></div>
+
     <!-- 60fps Pre-Baked Sprite Parallax Canvases (Background & Foreground) -->
     <canvas id="bg-decor-canvas" class="decor-canvas"></canvas>
     <canvas id="fg-decor-canvas" class="decor-canvas"></canvas>
@@ -578,7 +622,7 @@ html_content = """
        <div class="open-btn" onclick="openCurtains()">Open</div>
     </div>
 
-    <!-- Split-Page Curtain Overlay (Activated when scrolling down after scratching!) -->
+    <!-- Split-Page Curtain Overlay (Pre-warmed when heart is scratched for 0ms start!) -->
     <div id="split-stage">
         <div id="split-left" class="split-half">
             <div id="split-left-inner" class="split-inner"></div>
@@ -722,7 +766,7 @@ html_content = """
            </div>
        </div>
 
-       <!-- PART 2: Unlocked ONLY After Scratching, Revealed Beneath Splitting Part 1 Curtains -->
+       <!-- PART 2: Royal Red Theme (Unlocked After Scratching, Revealed Beneath Splitting Part 1) -->
        <div id="part2-section">
            <div id="split-scroll-track">
                <div id="couple-sticky-frame">
@@ -736,7 +780,7 @@ html_content = """
                </div>
            </div>
 
-           <!-- Schedule Table (Same Layout with Updated Timings) -->
+           <!-- Schedule Table (Same Layout, Restyled for Royal Red Theme) -->
            <div class="schedule-box obs fade-up">
                <table>
                    <tr><th>Event</th><th>Date</th><th>Time</th><th>Location</th></tr>
@@ -750,7 +794,7 @@ html_content = """
                        <td><b>BARAAT</b></td>
                        <td>Friday, 25th December 2026</td>
                        <td>11:00 AM onwards</td>
-                       <td>Grand Al-Noor Marriage Hall (JTS)<br><span style="font-size: 0.9rem; color: #666;">(Near Faridia Park, Tariq Bin Ziad Colony, Sahiwal)</span></td>
+                       <td>Grand Al-Noor Marriage Hall (JTS)<br><span class="venue-sub">(Near Faridia Park, Tariq Bin Ziad Colony, Sahiwal)</span></td>
                    </tr>
                </table>
            </div>
@@ -1081,6 +1125,7 @@ html_content = """
         // ============================================================
         // 3. 60FPS PRE-BAKED SPRITE PARALLAX + BIRD FLOCK + SPLIT CURTAIN ENGINE
         // ============================================================
+        const redBackdrop = document.getElementById('red-theme-backdrop');
         const bgDecorCanvas = document.getElementById('bg-decor-canvas');
         const fgDecorCanvas = document.getElementById('fg-decor-canvas');
         const bgCtx = bgDecorCanvas.getContext('2d');
@@ -1266,7 +1311,7 @@ html_content = """
             });
         }
 
-        // --- Scroll-Driven Page Split State ---
+        // --- Scroll-Driven Page Split State (Smooth Damped Lerp + Pre-Warmed GPU!) ---
         const part1Wrapper = document.getElementById('part1-wrapper');
         const part2Section = document.getElementById('part2-section');
         const splitScrollTrack = document.getElementById('split-scroll-track');
@@ -1280,7 +1325,8 @@ html_content = """
         let splitPrepared = false;
         let splitStartY = 0;
         let splitTravel = 700;
-        let splitMode = 'none'; // 'top', 'splitting', 'done'
+        let visualP = 0;
+        let redBlend = 0;
 
         function syncSplitMetrics() {
             if (!splitPrepared) return;
@@ -1291,7 +1337,6 @@ html_content = """
             part2Section.style.marginTop = `-${vh}px`;
             splitScrollTrack.style.height = `${splitTravel + vh}px`;
 
-            // Exact pixel width match (accounts for scrollbar width on desktop)
             splitLeftInner.style.width = `${cw}px`;
             splitRightInner.style.width = `${cw}px`;
             splitRightInner.style.left = `${-cw / 2}px`;
@@ -1309,10 +1354,8 @@ html_content = """
                 const clone = part1Wrapper.cloneNode(true);
                 clone.removeAttribute('id');
                 clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
-                // Remove scratch canvas from clone so only revealed "Asad & Rimsha" heart appears
                 const c = clone.querySelector('canvas');
                 if (c) c.remove();
-                // Lock animations cleanly visible with zero transition lag inside clones
                 clone.querySelectorAll('.obs').forEach(el => {
                     el.style.transition = 'none';
                     if (el.classList.contains('fade-up')) el.classList.add('visible-up');
@@ -1332,70 +1375,74 @@ html_content = """
         function updateSplitCurtains(scrollY) {
             if (!splitPrepared) return;
 
-            if (scrollY <= splitStartY) {
-                if (splitMode !== 'top') {
-                    splitMode = 'top';
-                    part1Wrapper.style.opacity = '1';
-                    part1Wrapper.style.visibility = 'visible';
-                    part1Wrapper.style.pointerEvents = 'auto';
-                    splitStage.style.display = 'none';
-                    coupleStickyFrame.style.visibility = 'hidden';
-                    coupleStickyFrame.style.opacity = '0';
-                    coupleStickyFrame.classList.remove('couple-clear');
-                    part2Section.style.pointerEvents = 'none';
-                }
-            } else if (scrollY < splitStartY + splitTravel) {
-                const p = clamp01((scrollY - splitStartY) / splitTravel);
-                const ease = easeInOutCubic(p);
+            const targetP = clamp01((scrollY - splitStartY) / splitTravel);
+            // Smooth exponential damping eliminates mouse-wheel stepping at the start!
+            visualP += (targetP - visualP) * 0.18;
+            if (Math.abs(targetP - visualP) < 0.0005) visualP = targetP;
 
-                if (splitMode !== 'splitting') {
-                    splitMode = 'splitting';
-                    part1Wrapper.style.opacity = '0';
-                    part1Wrapper.style.visibility = 'hidden';
-                    part1Wrapper.style.pointerEvents = 'none';
-                    splitStage.style.display = 'block';
-                    coupleStickyFrame.style.visibility = 'visible';
-                    part2Section.style.pointerEvents = 'auto';
-                }
+            if (visualP <= 0.0005 && targetP === 0) {
+                visualP = 0;
+                redBlend = 0;
+                part1Wrapper.style.opacity = '1';
+                part1Wrapper.style.visibility = 'visible';
+                part1Wrapper.style.pointerEvents = 'auto';
 
-                // Pure GPU transforms (no border-radius or per-frame blur!) -> locked 60fps
+                // Keep splitStage pre-warmed behind Part 1 so frame 1 of scrolling has ZERO hitch!
+                splitStage.style.zIndex = '19';
+                splitStage.style.opacity = '0.001';
+                splitLeft.style.transform = 'translate3d(0, 0, 0)';
+                splitRight.style.transform = 'translate3d(0, 0, 0)';
+
+                redBackdrop.style.opacity = '0';
+                coupleStickyFrame.style.visibility = 'hidden';
+                coupleStickyFrame.style.opacity = '0';
+                part2Section.style.pointerEvents = 'none';
+            } else if (visualP < 0.999) {
+                const ease = easeInOutCubic(visualP);
+
+                part1Wrapper.style.opacity = '0';
+                part1Wrapper.style.visibility = 'hidden';
+                part1Wrapper.style.pointerEvents = 'none';
+
+                splitStage.style.zIndex = '25';
+                const stageAlpha = visualP > 0.72 ? Math.max(0, 1 - (visualP - 0.72) / 0.28) : 1;
+                splitStage.style.opacity = stageAlpha;
+
+                // Fade in the Royal Red backdrop smoothly right as the beige curtains crack open
+                redBlend = clamp01(visualP / 0.16);
+                redBackdrop.style.opacity = redBlend;
+
+                part2Section.style.pointerEvents = 'auto';
+
+                // Pure 2D GPU transforms (zero 3D perspective/blur stalls!)
                 const tx = ease * 42;
-                const ty = Math.pow(ease, 1.25) * 62;
-                const rotZ = ease * 11;
-                const rotY = ease * 18;
-                const skew = ease * 4;
-                const sx = 1 - ease * 0.22;
-                const alpha = p > 0.72 ? Math.max(0, 1 - (p - 0.72) / 0.28) : 1;
+                const ty = Math.pow(ease, 1.2) * 58;
+                const rotZ = ease * 10;
+                const sx = 1 - ease * 0.18;
 
-                splitLeft.style.transform = `translate3d(${-tx}vw, ${ty}vh, 0) rotateZ(${-rotZ}deg) rotateY(${rotY}deg) skewY(${skew}deg) scaleX(${sx})`;
-                splitLeft.style.opacity = alpha;
+                splitLeft.style.transform = `translate3d(${-tx}vw, ${ty}vh, 0) rotate(${-rotZ}deg) scaleX(${sx})`;
+                splitRight.style.transform = `translate3d(${tx}vw, ${ty}vh, 0) rotate(${rotZ}deg) scaleX(${sx})`;
 
-                splitRight.style.transform = `translate3d(${tx}vw, ${ty}vh, 0) rotateZ(${rotZ}deg) rotateY(${-rotY}deg) skewY(${-skew}deg) scaleX(${sx})`;
-                splitRight.style.opacity = alpha;
-
-                // Smoothly reveal couple details underneath via GPU opacity + scale3d + one-shot blur-in
-                const cp = clamp01((p - 0.05) / 0.55);
+                const cp = clamp01((visualP - 0.04) / 0.50);
                 const cEase = easeInOutCubic(cp);
+                coupleStickyFrame.style.visibility = 'visible';
                 coupleStickyFrame.style.opacity = cEase;
                 coupleStickyFrame.style.transform = `scale3d(${(0.92 + 0.08 * cEase).toFixed(3)}, ${(0.92 + 0.08 * cEase).toFixed(3)}, 1)`;
-                if (p > 0.08) {
-                    coupleStickyFrame.classList.add('couple-clear');
-                } else {
-                    coupleStickyFrame.classList.remove('couple-clear');
-                }
             } else {
-                if (splitMode !== 'done') {
-                    splitMode = 'done';
-                    part1Wrapper.style.opacity = '0';
-                    part1Wrapper.style.visibility = 'hidden';
-                    part1Wrapper.style.pointerEvents = 'none';
-                    splitStage.style.display = 'none';
-                    part2Section.style.pointerEvents = 'auto';
-                    coupleStickyFrame.style.visibility = 'visible';
-                    coupleStickyFrame.style.opacity = '1';
-                    coupleStickyFrame.style.transform = 'none';
-                    coupleStickyFrame.classList.add('couple-clear');
-                }
+                visualP = 1;
+                redBlend = 1;
+                part1Wrapper.style.opacity = '0';
+                part1Wrapper.style.visibility = 'hidden';
+                part1Wrapper.style.pointerEvents = 'none';
+
+                splitStage.style.zIndex = '-1';
+                splitStage.style.opacity = '0';
+
+                redBackdrop.style.opacity = '1';
+                part2Section.style.pointerEvents = 'auto';
+                coupleStickyFrame.style.visibility = 'visible';
+                coupleStickyFrame.style.opacity = '1';
+                coupleStickyFrame.style.transform = 'none';
             }
         }
 
@@ -1445,7 +1492,12 @@ html_content = """
                 bgCtx.restore();
             }
 
-            // 2. V-Formation Pencil Bird Flocks
+            // 2. V-Formation Pencil Bird Flocks (Smoothly shift from dark brown to champagne gold on Red Theme!)
+            const br = Math.round(74 + redBlend * (245 - 74));
+            const bg = Math.round(59 + redBlend * (222 - 59));
+            const bb = Math.round(50 + redBlend * (179 - 50));
+            const birdColor = `rgb(${br},${bg},${bb})`;
+
             for (let f = 0; f < birdFlocks.length; f++) {
                 const fl = birdFlocks[f];
                 const prog = ((timeSec + fl.timeOffset) % fl.duration) / fl.duration;
@@ -1485,7 +1537,7 @@ html_content = """
                     bgCtx.translate(bx, by);
                     bgCtx.rotate(tilt + popRot);
                     bgCtx.scale(bd.scale * popScale, bd.scale * popScale);
-                    bgCtx.strokeStyle = '#4a3b32';
+                    bgCtx.strokeStyle = birdColor;
                     bgCtx.lineWidth = 3.2;
                     bgCtx.lineCap = 'round';
                     bgCtx.lineJoin = 'round';
@@ -1558,7 +1610,6 @@ html_content = """
             curtainOpenTime = performance.now();
             curtainWrapper.classList.add('opened');
 
-            // Exactly 1 second after curtain begins dropping: reveal everything with blur-in-fade-in!
             setTimeout(() => {
                 fitBismillah();
                 const mainContent = document.getElementById('main-content');
@@ -1571,7 +1622,6 @@ html_content = """
                     requestAnimationFrame(renderDecorFrame);
                 }
 
-                // Observe only Part 1 elements initially (Part 2 stays locked until heart is scratched!)
                 part1Wrapper.querySelectorAll('.obs').forEach(el => observer.observe(el));
 
                 setTimeout(() => {
@@ -1664,7 +1714,7 @@ html_content = """
         }
 
         // ============================================================
-        // 7. SCRATCH CARD LOGIC (Unlocks Part 2 + Split Curtain Reveal!)
+        // 7. SCRATCH CARD LOGIC (Unlocks Part 2 + Pre-Warms Split Stage!)
         // ============================================================
         const canvas = document.getElementById('scratchCard');
         const ctx = canvas.getContext('2d');
@@ -1717,6 +1767,12 @@ html_content = """
             part2Section.style.display = 'block';
             splitPrepared = true;
             syncSplitMetrics();
+
+            // Pre-warm splitStage on GPU immediately so frame 1 of scroll has 0ms stutter!
+            splitStage.style.display = 'block';
+            splitStage.style.zIndex = '19';
+            splitStage.style.opacity = '0.001';
+
             document.getElementById('unlock-hint').classList.add('active');
             part2Section.querySelectorAll('.obs').forEach(el => observer.observe(el));
         }
