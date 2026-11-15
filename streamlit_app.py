@@ -323,7 +323,7 @@ html_content = """
         }
         canvas#scratchCard { position: absolute; top: 0; left: 0; z-index: 10; cursor: pointer; touch-action: none; }
 
-        /* --- Scroll Unlock Prompt Below Heart --- */
+        /* --- Scroll Unlock Prompt Below Heart (Smooth Blur-In & Blurred-Out-Fade-Out!) --- */
         .unlock-hint {
             font-size: 1.15rem;
             font-style: italic;
@@ -331,14 +331,32 @@ html_content = """
             margin: 12px auto 0 auto;
             min-height: 36px;
             opacity: 0;
-            transition: opacity 1s ease;
+            filter: blur(10px);
+            transform: translateY(8px);
+            transition: opacity 0.8s ease-out, filter 0.8s ease-out, transform 0.8s ease-out;
         }
         .unlock-hint.active {
             opacity: 1;
-            animation: hintPulse 2s infinite ease-in-out;
+            filter: blur(0px);
+            transform: translateY(0px);
+            animation: hintPulse 2s infinite ease-in-out 0.8s;
+        }
+        .clone-unlock-hint {
+            opacity: 1;
+            filter: blur(0px);
+            transform: translateY(0px);
+            transition: opacity 0.65s ease-out, filter 0.65s ease-out, transform 0.65s ease-out;
+        }
+        .unlock-hint.blur-out-away,
+        .clone-unlock-hint.blur-out-away {
+            animation: none !important;
+            opacity: 0 !important;
+            filter: blur(14px) !important;
+            transform: translateY(14px) scale(0.95) !important;
+            transition: opacity 0.65s ease-out, filter 0.65s ease-out, transform 0.65s ease-out !important;
         }
         @keyframes hintPulse {
-            0%, 100% { transform: translateY(0px); opacity: 0.75; }
+            0%, 100% { transform: translateY(0px); opacity: 0.78; }
             50% { transform: translateY(6px); opacity: 1; }
         }
 
@@ -1327,6 +1345,7 @@ html_content = """
         let splitTravel = 700;
         let visualP = 0;
         let redBlend = 0;
+        let clonedHintEls = [];
 
         function syncSplitMetrics() {
             if (!splitPrepared) return;
@@ -1354,29 +1373,72 @@ html_content = """
                 const clone = part1Wrapper.cloneNode(true);
                 clone.removeAttribute('id');
                 clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+
+                // Remove scratch canvas from clone so only revealed "Asad & Rimsha" heart appears
                 const c = clone.querySelector('canvas');
                 if (c) c.remove();
+
+                // Lock all already-visible Part 1 elements cleanly so nothing restarts or vanishes!
                 clone.querySelectorAll('.obs').forEach(el => {
                     el.style.transition = 'none';
                     if (el.classList.contains('fade-up')) el.classList.add('visible-up');
                     if (el.classList.contains('ink-trigger')) el.classList.add('visible-ink');
                     if (el.classList.contains('type-fade')) el.classList.add('visible-fade');
                 });
+
+                // Lock ink-spread & garden flowers/butterflies in their bloomed state (no animation restart!)
+                const inkAnim = clone.querySelector('.ink-spread-anim');
+                if (inkAnim) {
+                    inkAnim.style.transition = 'none';
+                    inkAnim.style.opacity = '1';
+                    inkAnim.style.clipPath = 'none';
+                    inkAnim.style.filter = 'none';
+                }
+                clone.querySelectorAll('.flower-layer-1, .flower-layer-2, .flower-layer-3, .flower-center').forEach(layer => {
+                    layer.style.animation = 'none';
+                    layer.style.transform = 'scale(1)';
+                });
+                clone.querySelectorAll('.flower svg').forEach(svg => {
+                    svg.style.animation = 'none';
+                    svg.style.transform = 'scale(1)';
+                });
+                clone.querySelectorAll('.butterfly').forEach(bf => {
+                    bf.style.transition = 'none';
+                    bf.style.animation = 'none';
+                    bf.style.bottom = '100px';
+                    bf.style.opacity = '1';
+                });
+
+                // Keep "Scroll down to reveal" visible in clones so it blurs-out-fades-out smoothly!
                 const hint = clone.querySelector('.unlock-hint');
-                if (hint) hint.style.display = 'none';
+                if (hint) {
+                    hint.classList.remove('active');
+                    hint.classList.add('clone-unlock-hint');
+                }
                 return clone;
             }
             splitLeftInner.innerHTML = '';
             splitRightInner.innerHTML = '';
             splitLeftInner.appendChild(makeSafeClone());
             splitRightInner.appendChild(makeSafeClone());
+            clonedHintEls = Array.from(splitStage.querySelectorAll('.clone-unlock-hint'));
+        }
+
+        function setHintBlurOut(shouldBlurOut) {
+            const realHint = document.getElementById('unlock-hint');
+            if (shouldBlurOut) {
+                if (realHint) realHint.classList.add('blur-out-away');
+                clonedHintEls.forEach(el => el.classList.add('blur-out-away'));
+            } else {
+                if (realHint) realHint.classList.remove('blur-out-away');
+                clonedHintEls.forEach(el => el.classList.remove('blur-out-away'));
+            }
         }
 
         function updateSplitCurtains(scrollY) {
             if (!splitPrepared) return;
 
             const targetP = clamp01((scrollY - splitStartY) / splitTravel);
-            // Smooth exponential damping eliminates mouse-wheel stepping at the start!
             visualP += (targetP - visualP) * 0.18;
             if (Math.abs(targetP - visualP) < 0.0005) visualP = targetP;
 
@@ -1387,7 +1449,9 @@ html_content = """
                 part1Wrapper.style.visibility = 'visible';
                 part1Wrapper.style.pointerEvents = 'auto';
 
-                // Keep splitStage pre-warmed behind Part 1 so frame 1 of scrolling has ZERO hitch!
+                // Restore "Scroll down to reveal" smoothly if scrolled back to top
+                setHintBlurOut(false);
+
                 splitStage.style.zIndex = '19';
                 splitStage.style.opacity = '0.001';
                 splitLeft.style.transform = 'translate3d(0, 0, 0)';
@@ -1404,17 +1468,18 @@ html_content = """
                 part1Wrapper.style.visibility = 'hidden';
                 part1Wrapper.style.pointerEvents = 'none';
 
+                // Smoothly blur-out-fade-out "Scroll down to reveal" instead of snapping it off!
+                setHintBlurOut(true);
+
                 splitStage.style.zIndex = '25';
                 const stageAlpha = visualP > 0.72 ? Math.max(0, 1 - (visualP - 0.72) / 0.28) : 1;
                 splitStage.style.opacity = stageAlpha;
 
-                // Fade in the Royal Red backdrop smoothly right as the beige curtains crack open
                 redBlend = clamp01(visualP / 0.16);
                 redBackdrop.style.opacity = redBlend;
 
                 part2Section.style.pointerEvents = 'auto';
 
-                // Pure 2D GPU transforms (zero 3D perspective/blur stalls!)
                 const tx = ease * 42;
                 const ty = Math.pow(ease, 1.2) * 58;
                 const rotZ = ease * 10;
@@ -1434,6 +1499,8 @@ html_content = """
                 part1Wrapper.style.opacity = '0';
                 part1Wrapper.style.visibility = 'hidden';
                 part1Wrapper.style.pointerEvents = 'none';
+
+                setHintBlurOut(true);
 
                 splitStage.style.zIndex = '-1';
                 splitStage.style.opacity = '0';
@@ -1492,7 +1559,7 @@ html_content = """
                 bgCtx.restore();
             }
 
-            // 2. V-Formation Pencil Bird Flocks (Smoothly shift from dark brown to champagne gold on Red Theme!)
+            // 2. V-Formation Pencil Bird Flocks (Smoothly shift to champagne gold on Red Theme!)
             const br = Math.round(74 + redBlend * (245 - 74));
             const bg = Math.round(59 + redBlend * (222 - 59));
             const bb = Math.round(50 + redBlend * (179 - 50));
@@ -1788,8 +1855,9 @@ html_content = """
 
             if (transparentPixels / (totalPixels/10) > 0.30 && !isRevealed) {
                 isRevealed = true;
-                canvas.style.transition = 'opacity 0.8s';
+                canvas.style.transition = 'opacity 0.8s ease-out, filter 0.8s ease-out';
                 canvas.style.opacity = 0;
+                canvas.style.filter = 'blur(10px)';
                 setTimeout(() => canvas.style.display = 'none', 800);
 
                 unlockRestOfInvitation();
