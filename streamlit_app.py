@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 
 # Configure the page setting
 st.set_page_config(
-    page_title="Wedding Invitation - Asad & Rimsha",
+    page_title="Wedding Invitation - Rimsha Fatima & Mr. Asad",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -46,8 +46,8 @@ html_content = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Invitation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Amiri:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <title>Wedding Invitation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Amiri:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         /* --- Base & Vintage Old Paper Background --- */
         body {
@@ -135,18 +135,19 @@ html_content = """
             width: 100%;
             display: flex;
             justify-content: center;
-            margin-bottom: 20vh;
+            margin-bottom: 12vh;
         }
         .bismillah {
             display: inline-block;
             font-family: 'Amiri', serif;
-            font-size: clamp(1.8rem, 11vw, 4.5rem);
+            font-size: clamp(1.5rem, 7.8vw, 3.6rem);
             opacity: 0;
             filter: blur(14px);
             transform: translateY(25px);
             transition: opacity 1.6s ease-out, filter 1.6s ease-out, transform 1.6s ease-out;
-            line-height: 1.4;
+            line-height: 1.5;
             white-space: nowrap;
+            direction: rtl;
         }
         .bismillah.visible-up {
             opacity: 1 !important;
@@ -156,33 +157,85 @@ html_content = """
 
         /* Type-in Fade-in */
         .type-fade {
-            font-size: 2.2rem;
-            margin: 0 auto 20vh auto;
-            max-width: 800px;
+            font-size: 1.95rem;
+            margin: 0 auto 18vh auto;
+            max-width: 820px;
             padding: 0 15px;
             line-height: 1.5;
+            font-style: italic;
             opacity: 0;
             filter: blur(8px);
             transition: opacity 1.5s ease-in, filter 1.5s ease-out;
-            min-height: 80px;
+            min-height: 70px;
         }
         .type-fade.visible-fade {
             opacity: 1 !important;
             filter: blur(0px) !important;
         }
 
-        /* --- Ink Spread Section --- */
+        /* --- Hadith Section --- */
+        .hadith-box {
+            margin: 0 auto 20vh auto;
+            max-width: 780px;
+            opacity: 0;
+            filter: blur(12px);
+            transform: translateY(30px);
+            transition: all 1.5s ease-out;
+        }
+        .hadith-arabic {
+            font-family: 'Amiri', serif;
+            font-size: clamp(1.9rem, 7vw, 3.2rem);
+            color: #800000;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            direction: rtl;
+        }
+        .hadith-trans {
+            font-size: 1.45rem;
+            font-style: italic;
+            color: #4a3b32;
+        }
+
+        /* --- Ink Spread Hosts & Invitation Section --- */
         .ink-spread-anim {
             clip-path: circle(0% at center);
             filter: blur(20px);
             opacity: 0;
             transition: clip-path 2.5s cubic-bezier(0.25, 1, 0.5, 1), filter 2.5s ease-out, opacity 1.5s ease-in;
             padding: 20px 0;
+            max-width: 860px;
+            margin: 0 auto;
         }
-        .sub-header-text { font-size: 2rem; position: relative; }
-
-        .invite-word { font-size: 6rem; display: block; text-align: center; font-family: 'Great Vibes', cursive; margin: 20px 0; color: #4a3b32; line-height: 1; }
-        .wedding-word { color: #ff033e; font-weight: bold; font-style: italic; }
+        .sub-header-text {
+            font-size: 1.65rem;
+            line-height: 1.75;
+            position: relative;
+        }
+        .blessings-line {
+            font-style: italic;
+            font-size: 1.4rem;
+            color: #6b5344;
+            margin-bottom: 14px;
+            display: block;
+        }
+        .hosts-names {
+            font-size: 1.95rem;
+            font-weight: 700;
+            color: #800000;
+            display: block;
+            margin: 12px 0;
+            line-height: 1.5;
+        }
+        .hosts-sub {
+            font-weight: 400;
+            font-size: 1.35rem;
+            color: #5c473b;
+        }
+        .wedding-word {
+            color: #ff033e;
+            font-weight: bold;
+            font-style: italic;
+        }
 
         /* --- Detailed Blooming Garden Sequence --- */
         .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 30px; height: 130px; }
@@ -216,7 +269,35 @@ html_content = """
         @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
         @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
-        /* --- Scratch Card & Mobile Scaler --- */
+        /* --- Couple Formal Details --- */
+        .couple-details {
+            margin: 0 auto 12vh auto;
+            max-width: 780px;
+            opacity: 0;
+            filter: blur(12px);
+            transform: translateY(30px);
+            transition: all 1.5s ease-out;
+        }
+        .couple-name-big {
+            font-family: 'Alex Brush', cursive;
+            font-size: clamp(2.8rem, 8vw, 4.2rem);
+            color: #9e001c;
+            line-height: 1.15;
+            margin: 4px 0;
+        }
+        .couple-lineage {
+            font-size: 1.25rem;
+            color: #5c473b;
+            margin-bottom: 14px;
+        }
+        .couple-with {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.4rem;
+            color: #800000;
+            margin: 8px 0;
+        }
+
+        /* --- Scratch Card & Mobile Scaler (Kept Same) --- */
         .scratch-wrapper { margin: 0 auto 20vh auto; display: flex; justify-content: center; opacity: 0; filter: blur(12px); transform: translateY(30px); transition: all 1.5s ease-out; }
         .scratch-scaler { transform: scale(1); transition: transform 0.3s; }
         .scratch-container {
@@ -237,15 +318,37 @@ html_content = """
         }
         canvas#scratchCard { position: absolute; top: 0; left: 0; z-index: 10; cursor: pointer; touch-action: none; }
 
-        /* --- Schedule Table --- */
-        .schedule-box { max-width: 800px; margin: 0 auto 20vh auto; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: all 1.5s ease-out; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; overflow-x: auto; }
+        /* --- Schedule Table (Kept Same) --- */
+        .schedule-box { max-width: 800px; margin: 0 auto 18vh auto; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: all 1.5s ease-out; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 400px; }
         th, td { padding: 15px; text-align: center; border-bottom: 1px solid #d8ccb8; }
         th { font-family: 'Great Vibes', cursive; font-size: 2rem; color: #800000; border-bottom: 2px solid #bba171; }
-        td { font-size: 1.2rem; }
+        td { font-size: 1.15rem; }
+
+        /* --- RSVP & Best Compliments --- */
+        .rsvp-box {
+            max-width: 720px;
+            margin: 0 auto 14vh auto;
+            opacity: 0;
+            filter: blur(12px);
+            transform: translateY(40px);
+            transition: all 1.5s ease-out;
+            line-height: 1.75;
+            font-size: 1.25rem;
+        }
+        .rsvp-heading {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.4rem;
+            color: #800000;
+            margin: 18px 0 4px 0;
+        }
+        .rsvp-detail {
+            font-weight: 600;
+            color: #4a3b32;
+        }
 
         /* --- Footer --- */
-        .footer-text { font-size: 1.5rem; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: all 1.5s ease-out; padding-bottom: 100px; font-style: italic; color: #800000; font-weight: bold; }
+        .footer-text { font-size: 1.5rem; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: all 1.5s ease-out; padding-bottom: 100px; font-style: italic; color: #800000; font-weight: bold; max-width: 750px; margin: 0 auto; }
 
         /* --- Interactive Trigger Class (for Garden SVGs) --- */
         .interactive-emoji { display: inline-block; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -276,27 +379,36 @@ html_content = """
            MOBILE RESPONSIVENESS
            ========================================= */
         @media (max-width: 768px) {
-            .type-fade { font-size: 1.5rem !important; margin-bottom: 15vh; }
-            .sub-header-text { font-size: 1.5rem; }
-            .invite-word { font-size: 4rem; margin: 15px 0; }
+            .type-fade { font-size: 1.35rem !important; margin-bottom: 14vh; }
+            .hadith-trans { font-size: 1.15rem; }
+            .sub-header-text { font-size: 1.25rem; }
+            .blessings-line { font-size: 1.15rem; }
+            .hosts-names { font-size: 1.4rem; }
+            .hosts-sub { font-size: 1.05rem; }
             .flower { font-size: 4.5rem; }
             .butterfly { font-size: 2.2rem; }
             .garden-container { gap: 40px; height: 100px; }
 
+            .couple-lineage { font-size: 1.05rem; }
+            .couple-with { font-size: 2rem; }
+
             .scratch-scaler { transform: scale(0.85); }
-            .scratch-wrapper { margin: 0 auto 15vh auto; }
+            .scratch-wrapper { margin: 0 auto 14vh auto; }
 
-            .schedule-box { padding: 15px; margin-bottom: 15vh; }
+            .schedule-box { padding: 15px; margin-bottom: 14vh; }
             th { font-size: 1.5rem; padding: 10px; }
-            td { font-size: 1rem; padding: 10px; }
+            td { font-size: 0.95rem; padding: 10px; }
 
+            .rsvp-box { font-size: 1.1rem; }
+            .rsvp-heading { font-size: 2rem; }
             .footer-text { font-size: 1.2rem; }
             .open-btn { font-size: 28px; padding: 14px 36px; }
         }
 
         @media (max-width: 480px) {
-            .type-fade { font-size: 1.3rem !important; }
-            .invite-word { font-size: 3.5rem; }
+            .type-fade { font-size: 1.2rem !important; }
+            .sub-header-text { font-size: 1.12rem; }
+            .hosts-names { font-size: 1.25rem; }
             .scratch-scaler { transform: scale(0.75); }
             .garden-container { gap: 20px; }
         }
@@ -352,18 +464,31 @@ html_content = """
     <!-- Website Content -->
     <div class="content" id="main-content">
 
+       <!-- Bismillah -->
        <div class="bismillah-wrap">
-           <div class="bismillah obs fade-up">﷽</div>
+           <div class="bismillah obs fade-up">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
        </div>
 
-       <div class="header-text obs type-fade" data-text="Starting with the name of Allah, The most Beneficial and The most Merciful."></div>
+       <!-- Type-in Fade-in Translation -->
+       <div class="header-text obs type-fade" data-text="&quot;In the name of Allah, the Most Gracious, the Most Merciful&quot;"></div>
 
-       <div class="obs ink-trigger" style="min-height: 300px; margin-bottom: 15vh; display: flex; align-items: center; justify-content: center;">
+       <!-- Hadith -->
+       <div class="hadith-box obs fade-up">
+           <div class="hadith-arabic">النِّكَاحُ مِنْ سُنَّتِي</div>
+           <div class="hadith-trans">"Nikah is my Sunnah" — (Sahih Muslim)</div>
+       </div>
+
+       <!-- Ink Spread Hosts & Invitation Request + Blooming Garden -->
+       <div class="obs ink-trigger" style="min-height: 360px; margin-bottom: 16vh; display: flex; align-items: center; justify-content: center;">
            <div class="ink-spread-anim">
                <div class="sub-header-text">
-                   We are pleased to
-                   <span class="invite-word">Invite</span>
-                   you to the <span class="wedding-word">Wedding</span> ceremony
+                   <span class="blessings-line">With the blessings of Almighty Allah,</span>
+                   <span class="hosts-names">
+                       Mrs. Mehnaz Ahmer <span class="hosts-sub">(W/O Late Mr. Ahmer Mukhtar)</span><br>
+                       &amp; Mr. Ali Ahmer
+                   </span>
+                   cordially request the pleasure of your company<br>
+                   at the <span class="wedding-word">wedding</span> ceremonies of their beloved daughter &amp; sister
                </div>
 
                <div class="garden-container">
@@ -447,6 +572,16 @@ html_content = """
            </div>
        </div>
 
+       <!-- Couple Formal Details -->
+       <div class="couple-details obs fade-up">
+           <div class="couple-name-big">Rimsha Fatima</div>
+           <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Marhoom)</div>
+           <div class="couple-with">with</div>
+           <div class="couple-name-big">Mr. Asad</div>
+           <div class="couple-lineage">S/O [Groom's Father's Name]</div>
+       </div>
+
+       <!-- Scratched Heart (Kept Same) -->
        <div class="scratch-wrapper obs fade-up">
            <div class="scratch-scaler">
                <div class="scratch-container">
@@ -462,28 +597,38 @@ html_content = """
            </div>
        </div>
 
-       <div class="header-text obs type-fade" data-text="Show your kind love by participating in the event"></div>
-
+       <!-- Schedule Table (Kept Same Layout with Updated Timings) -->
        <div class="schedule-box obs fade-up">
            <table>
                <tr><th>Event</th><th>Date</th><th>Time</th><th>Location</th></tr>
                <tr>
                    <td><b>MEHNDI</b></td>
-                   <td>24-12-2026</td>
-                   <td>6:00 PM</td>
-                   <td>Farid Town Sahiwal</td>
+                   <td>Thursday, 24th December 2026</td>
+                   <td>07:00 PM onwards</td>
+                   <td>Farid Town, Sahiwal</td>
                </tr>
                <tr>
                    <td><b>BARAAT</b></td>
-                   <td>25-12-2026</td>
-                   <td>10:00 AM</td>
-                   <td>Grand Al-Noor Marraige Hall (JTS)<br><span style="font-size: 0.9rem; color: #666;">(Near Faridia Park, Tariq Bin Ziad colony)</span></td>
+                   <td>Friday, 25th December 2026</td>
+                   <td>11:00 AM onwards</td>
+                   <td>Grand Al-Noor Marriage Hall (JTS)<br><span style="font-size: 0.9rem; color: #666;">(Near Faridia Park, Tariq Bin Ziad Colony, Sahiwal)</span></td>
                </tr>
            </table>
        </div>
 
+       <!-- RSVP & Compliments -->
+       <div class="rsvp-box obs fade-up">
+           <div class="rsvp-heading">RSVP:</div>
+           <div class="rsvp-detail">Mr. Ali Ahmer</div>
+           <div>[Phone Number]</div>
+
+           <div class="rsvp-heading" style="margin-top: 28px;">With Best Compliments From:</div>
+           <div class="rsvp-detail">All Relatives &amp; Friends</div>
+       </div>
+
+       <!-- Footer Quote -->
        <div class="footer-text obs fade-up">
-           May Allah Bless you and your family with Rehmaat and Barakaat
+           "Your presence and duas are the only gifts we desire."
        </div>
     </div>
 
@@ -809,7 +954,6 @@ html_content = """
             return `<svg viewBox="0 0 32 32" width="${sizeRem}rem" height="${sizeRem}rem" fill="${color}" style="pointer-events: none;"><use href="#svg-${type}" /></svg>`;
         }
 
-        // Draw crisp vector shape in 32x32 space onto an offscreen canvas
         function drawVectorShape(ctx, type, color) {
             ctx.save();
             ctx.fillStyle = color;
@@ -868,13 +1012,12 @@ html_content = """
             ctx.restore();
         }
 
-        // Pre-bake blurred sprite cache once at startup (zero live CSS blur cost!)
         const spriteCache = {};
         function getBlurredSprite(type, color, blurPx) {
             const key = `${type}|${color}|${blurPx}`;
             if (spriteCache[key]) return spriteCache[key];
 
-            const size = 112; // 64px shape centered with 24px blur margin
+            const size = 112;
             const raw = document.createElement('canvas');
             raw.width = size;
             raw.height = size;
@@ -892,7 +1035,6 @@ html_content = """
                 oCtx.filter = `blur(${blurPx}px)`;
                 oCtx.drawImage(raw, 0, 0);
             } else {
-                // Smooth soft-alpha multi-tap fallback if ctx.filter is unavailable
                 oCtx.globalAlpha = 0.14;
                 const r = blurPx * 1.1;
                 for (let a = 0; a < 8; a++) {
@@ -955,12 +1097,11 @@ html_content = """
         const fgParticles = [];
         for (let i = 0; i < fgCount; i++) fgParticles.push(makeParticle(true));
 
-        // Pre-populate organized V-formation pencil bird flocks on the background canvas
         const numFlocks = isMobile ? 3 : 5;
         const birdFlocks = [];
         for (let f = 0; f < numFlocks; f++) {
             const isRight = Math.random() > 0.5;
-            const duration = Math.random() * 25 + 30; // 30-55s calm glide
+            const duration = Math.random() * 25 + 30;
             const yBaseFrac = Math.random() * 0.65 + 0.12;
             const birdsInFlock = Math.floor(Math.random() * 3) + 3;
             const birds = [];
@@ -995,7 +1136,7 @@ html_content = """
             bgCtx.clearRect(0, 0, dW, dH);
             fgCtx.clearRect(0, 0, dW, dH);
 
-            // 1. Draw Background Parallax Sprites (0.15x scroll speed -> drifts up VERY slowly)
+            // 1. Background Parallax Sprites (0.15x scroll speed)
             const bgWrapH = dH + 180;
             for (let i = 0; i < bgParticles.length; i++) {
                 const p = bgParticles[i];
@@ -1018,7 +1159,6 @@ html_content = """
                 p.lastX = x;
                 p.lastY = y;
 
-                // Sprite canvas has 64/112 shape-to-canvas ratio
                 const drawSize = (p.sizePx * (112 / 64));
                 const flapX = p.type === 'butterfly' ? (0.625 + 0.375 * Math.sin(timeSec * 10.5 + p.flapPhase)) : 1;
 
@@ -1031,7 +1171,7 @@ html_content = """
                 bgCtx.restore();
             }
 
-            // 2. Draw V-Formation Pencil Bird Flocks on Background Canvas
+            // 2. V-Formation Pencil Bird Flocks
             for (let f = 0; f < birdFlocks.length; f++) {
                 const fl = birdFlocks[f];
                 const prog = ((timeSec + fl.timeOffset) % fl.duration) / fl.duration;
@@ -1084,7 +1224,7 @@ html_content = """
                 }
             }
 
-            // 3. Draw Foreground Parallax Sprites (1.40x scroll speed -> glides swiftly past text)
+            // 3. Foreground Parallax Sprites (1.40x scroll speed)
             const fgWrapH = dH + 220;
             for (let i = 0; i < fgParticles.length; i++) {
                 const p = fgParticles[i];
@@ -1159,7 +1299,6 @@ html_content = """
 
                 document.querySelectorAll('.obs').forEach(el => observer.observe(el));
 
-                // Clear root filter once reveal finishes for crisp rendering & zero compositing overhead
                 setTimeout(() => {
                     mainContent.style.filter = 'none';
                     mainContent.style.transform = 'none';
@@ -1170,12 +1309,11 @@ html_content = """
         }
 
         // ============================================================
-        // 5. INTERACTIVE TAP / CLICK HANDLER (Garden SVGs + Canvas Decor + Birds)
+        // 5. INTERACTIVE TAP / CLICK HANDLER
         // ============================================================
         document.addEventListener('click', function(e) {
             if (!isCurtainOpening) return;
 
-            // Garden Flowers & Butterflies
             const target = e.target.closest('.interactive-emoji');
             if (target) {
                 target.classList.remove('pop-anim');
@@ -1186,7 +1324,6 @@ html_content = """
 
             if (e.target.closest('#scratchCard')) return;
 
-            // Hit-test foreground particles, birds, then background particles
             const cx = e.clientX;
             const cy = e.clientY;
             const now = performance.now();
