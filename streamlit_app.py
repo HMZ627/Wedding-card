@@ -39,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with WebGL silk curtains, 60fps WAAPI split-curtain, Red Part 2 theme & sprite parallax
+# HTML, CSS, JS payload with WebGL silk curtains, behind-heart bird flock, bidirectional blur-in scroll & Red Part 2
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -135,13 +135,12 @@ html_content = """
             transform: translate(-50%, -35%) scale(0.75);
         }
 
-        /* --- Post-Curtain Blur-In-Fade-In Reveal --- */
+        /* --- Post-Curtain Blur-In-Fade-In Reveal (No z-index so children stack directly!) --- */
         .content {
             min-height: 100vh;
             padding: 0;
             text-align: center;
             position: relative;
-            z-index: 10;
             opacity: 0;
             filter: blur(22px);
             transform: scale(0.98);
@@ -153,7 +152,7 @@ html_content = """
             transform: scale(1);
         }
 
-        /* --- Part 1 Container (Styled by Class so Split Clones Match Exactly!) --- */
+        /* --- Part 1 Container (z-index 20 sits IN FRONT of behind-heart birds at z-index 16!) --- */
         .part1-container {
             padding: 10vh 20px 8vh 20px;
             position: relative;
@@ -162,7 +161,7 @@ html_content = """
             width: 100%;
         }
 
-        /* Bismillah Calligraphy (Restored original ﷽ ligature + auto-fit) */
+        /* Bismillah Calligraphy (Original ﷽ + auto-fit) */
         .bismillah-wrap {
             width: 100%;
             display: flex;
@@ -174,9 +173,9 @@ html_content = """
             font-family: 'Amiri', serif;
             font-size: clamp(1.8rem, 11vw, 4.5rem);
             opacity: 0;
-            filter: blur(14px);
-            transform: translateY(25px);
-            transition: opacity 1.6s ease-out, filter 1.6s ease-out, transform 1.6s ease-out;
+            filter: blur(16px);
+            transform: translateY(24px);
+            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
             line-height: 1.4;
             white-space: nowrap;
         }
@@ -186,7 +185,7 @@ html_content = """
             transform: translateY(0) !important;
         }
 
-        /* Type-in Fade-in */
+        /* Type-in Fade-in + Bidirectional Blur-in-Fade-in */
         .type-fade {
             font-size: 1.95rem;
             margin: 0 auto 18vh auto;
@@ -195,13 +194,15 @@ html_content = """
             line-height: 1.5;
             font-style: italic;
             opacity: 0;
-            filter: blur(8px);
-            transition: opacity 1.5s ease-in, filter 1.5s ease-out;
+            filter: blur(16px);
+            transform: translateY(22px);
+            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
             min-height: 70px;
         }
         .type-fade.visible-fade {
             opacity: 1 !important;
             filter: blur(0px) !important;
+            transform: translateY(0) !important;
         }
 
         /* --- Hadith Section --- */
@@ -209,9 +210,9 @@ html_content = """
             margin: 0 auto 20vh auto;
             max-width: 780px;
             opacity: 0;
-            filter: blur(12px);
-            transform: translateY(30px);
-            transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
+            filter: blur(16px);
+            transform: translateY(24px);
+            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
         }
         .hadith-arabic {
             font-family: 'Amiri', serif;
@@ -232,7 +233,7 @@ html_content = """
             clip-path: circle(0% at center);
             filter: blur(20px);
             opacity: 0;
-            transition: clip-path 2.5s cubic-bezier(0.25, 1, 0.5, 1), filter 2.5s ease-out, opacity 1.5s ease-in;
+            transition: clip-path 2.0s cubic-bezier(0.25, 1, 0.5, 1), filter 1.6s ease-out, opacity 1.2s ease-in;
             padding: 20px 0;
             max-width: 860px;
             margin: 0 auto;
@@ -275,26 +276,26 @@ html_content = """
         .butterfly { font-size: 3rem; position: absolute; bottom: 20px; opacity: 0; transition: bottom 1.5s ease-in-out, opacity 1.5s ease-in-out; z-index: 10; }
 
         .visible-ink .ink-spread-anim { opacity: 1; clip-path: circle(150% at center); filter: blur(0px); }
-        .visible-ink .butterfly { bottom: 100px; opacity: 1; transition-delay: 2.2s; animation: hoverfly 2.5s infinite ease-in-out alternate 3.7s; }
-        .plant.delayed .butterfly { transition-delay: 2.6s; animation-delay: 4.1s; }
+        .visible-ink .butterfly { bottom: 100px; opacity: 1; transition-delay: 2.0s; animation: hoverfly 2.5s infinite ease-in-out alternate 3.5s; }
+        .plant.delayed .butterfly { transition-delay: 2.4s; animation-delay: 3.9s; }
 
         .flower-layer-1, .flower-layer-2, .flower-layer-3, .flower-center {
             transform-origin: 16px 16px;
             transform: scale(0);
         }
 
-        .visible-ink .flower-layer-1 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1s; }
-        .visible-ink .flower-layer-2 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.3s; }
-        .visible-ink .flower-layer-3 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.6s; }
-        .visible-ink .flower-center { animation: bloomLayer 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.9s; }
+        .visible-ink .flower-layer-1 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.8s; }
+        .visible-ink .flower-layer-2 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.1s; }
+        .visible-ink .flower-layer-3 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.4s; }
+        .visible-ink .flower-center { animation: bloomLayer 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.7s; }
 
-        .visible-ink .flower svg { animation: continuousBloom 4s infinite alternate ease-in-out 3.5s; }
+        .visible-ink .flower svg { animation: continuousBloom 4s infinite alternate ease-in-out 3.2s; }
 
-        .plant.delayed .flower-layer-1 { animation-delay: 1.4s; }
-        .plant.delayed .flower-layer-2 { animation-delay: 1.7s; }
-        .plant.delayed .flower-layer-3 { animation-delay: 2.0s; }
-        .plant.delayed .flower-center { animation-delay: 2.3s; }
-        .plant.delayed .flower svg { animation-delay: 3.9s; }
+        .plant.delayed .flower-layer-1 { animation-delay: 1.2s; }
+        .plant.delayed .flower-layer-2 { animation-delay: 1.5s; }
+        .plant.delayed .flower-layer-3 { animation-delay: 1.8s; }
+        .plant.delayed .flower-center { animation-delay: 2.1s; }
+        .plant.delayed .flower svg { animation-delay: 3.6s; }
 
         @keyframes bloomLayer { 0% { transform: scale(0) rotate(-15deg); } 100% { transform: scale(1) rotate(0deg); } }
         @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
@@ -304,8 +305,8 @@ html_content = """
         .scratch-wrapper {
             margin: 0 auto 24px auto;
             display: flex; justify-content: center;
-            opacity: 0; filter: blur(12px); transform: translateY(30px);
-            transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
+            opacity: 0; filter: blur(16px); transform: translateY(24px);
+            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
         }
         .scratch-scaler { transform: scale(1); transition: transform 0.3s; }
         .scratch-container {
@@ -436,15 +437,15 @@ html_content = """
             justify-content: center;
         }
 
-        /* Blur-in-Fade-in animation for Bride & Groom names when split triggers! */
+        /* Blur-in-Fade-in animation for Bride & Groom names (also bidirectional on scroll!) */
         .couple-details {
             max-width: 780px;
             padding: 20px 10px;
             margin: 0 auto;
             opacity: 0;
             filter: blur(22px);
-            transform: scale(0.94) translateY(18px);
-            transition: opacity 1.6s ease-out, filter 1.6s ease-out, transform 1.6s ease-out;
+            transform: scale(0.95) translateY(20px);
+            transition: opacity 1.25s ease-out, filter 1.25s ease-out, transform 1.25s ease-out;
             will-change: opacity, filter, transform;
         }
         .couple-details.couple-revealed {
@@ -478,8 +479,8 @@ html_content = """
         .schedule-box {
             max-width: 800px;
             margin: 4vh auto 18vh auto;
-            opacity: 0; filter: blur(12px); transform: translateY(50px);
-            transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
+            opacity: 0; filter: blur(16px); transform: translateY(28px);
+            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
             background: rgba(34, 0, 6, 0.42);
             padding: 30px;
             border-radius: 15px;
@@ -498,9 +499,9 @@ html_content = """
             max-width: 720px;
             margin: 0 auto 14vh auto;
             opacity: 0;
-            filter: blur(12px);
-            transform: translateY(40px);
-            transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
+            filter: blur(16px);
+            transform: translateY(24px);
+            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
             line-height: 1.75;
             font-size: 1.25rem;
             color: #f4e2c7;
@@ -520,8 +521,8 @@ html_content = """
         /* --- Footer (Red Theme) --- */
         .footer-text {
             font-size: 1.55rem;
-            opacity: 0; filter: blur(12px); transform: translateY(50px);
-            transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
+            opacity: 0; filter: blur(16px); transform: translateY(24px);
+            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
             padding-bottom: 100px;
             font-style: italic;
             color: #fbe59c;
@@ -545,9 +546,16 @@ html_content = """
         .bf-flap-anim { animation: bfWing 0.3s infinite alternate ease-in-out; transform-origin: 16px 16px; }
         @keyframes bfWing { 0% { transform: scaleX(1); } 100% { transform: scaleX(0.25); } }
 
-        /* --- Explosion Bird SVG Classes --- */
+        /* --- Explosion Bird SVG Classes (Spawns BEHIND heart & adapts color on Red theme) --- */
         .bird-svg { overflow: visible; animation: birdBob 1.2s infinite ease-in-out alternate; }
         .bird-wing { animation: birdFlap 0.5s infinite ease-in-out alternate; }
+        .explosion-bird-path {
+            stroke: #4a3b32;
+            transition: stroke 0.9s ease-in-out;
+        }
+        body.on-red-theme .explosion-bird-path {
+            stroke: #f5deb3;
+        }
         @keyframes birdBob { 0% { transform: translateY(0px); } 100% { transform: translateY(12px); } }
         @keyframes birdFlap {
             0%   { d: path("M 5 10 Q 30 15 50 30 Q 70 15 95 10"); }
@@ -1335,6 +1343,7 @@ html_content = """
         // ============================================================
         // 4. TRIGGERED 60FPS SPLIT-CURTAIN REVEAL (Zero Stutter & Free Scroll-Back)
         // ============================================================
+        const mainContent = document.getElementById('main-content');
         const part1Wrapper = document.getElementById('part1-wrapper');
         const part2Section = document.getElementById('part2-section');
         const coupleDetails = document.getElementById('couple-details');
@@ -1417,6 +1426,16 @@ html_content = """
             syncCloneWidths();
         }
 
+        function setRedThemeActive(isActive) {
+            if (isActive) {
+                redBackdrop.classList.add('red-active');
+                document.body.classList.add('on-red-theme');
+            } else {
+                redBackdrop.classList.remove('red-active');
+                document.body.classList.remove('on-red-theme');
+            }
+        }
+
         function triggerSplitCurtain() {
             if (splitTriggered) return;
             splitTriggered = true;
@@ -1426,7 +1445,7 @@ html_content = """
             splitLeftInner.style.transform = `translate3d(0, ${-curY}px, 0)`;
             splitRightInner.style.transform = `translate3d(0, ${-curY}px, 0)`;
 
-            // Hand off seamlessly from real Part 1 to pre-warmed splitStage (0ms jump!)
+            // Hand off seamlessly from real Part 1 to pre-warmed splitStage
             splitStage.style.zIndex = '25';
             splitStage.style.opacity = '1';
             part1Wrapper.style.opacity = '0';
@@ -1442,10 +1461,8 @@ html_content = """
                 const part2Top = part1Wrapper.offsetHeight;
                 window.scrollTo({ top: part2Top, behavior: 'auto' });
 
-                // Fade in Royal Red theme smoothly
-                redBackdrop.classList.add('red-active');
+                setRedThemeActive(true);
 
-                // Pure GPU Web Animations API on both halves -> silky locked 60fps!
                 const animOpts = {
                     duration: 1850,
                     easing: 'cubic-bezier(0.32, 0.04, 0.25, 1)',
@@ -1468,13 +1485,14 @@ html_content = """
                     coupleDetails.classList.add('couple-revealed');
                 }, 220);
 
-                // Cleanup split overlay & restore Part 1 above so scrolling back up works freely!
+                // Cleanup split overlay & enable bidirectional scroll blur-in on Couple Details too
                 setTimeout(() => {
                     splitFinished = true;
                     splitStage.style.display = 'none';
                     part1Wrapper.style.opacity = '1';
                     part1Wrapper.style.visibility = 'visible';
                     if (realHint) realHint.classList.remove('blur-out-away');
+                    observer.observe(coupleDetails);
                 }, 1900);
             }, 260);
         }
@@ -1489,11 +1507,7 @@ html_content = """
             if (splitFinished) {
                 const p2Top = part1Wrapper.offsetHeight;
                 const threshold = p2Top - window.innerHeight * 0.42;
-                if (scrollY < threshold) {
-                    redBackdrop.classList.remove('red-active');
-                } else {
-                    redBackdrop.classList.add('red-active');
-                }
+                setRedThemeActive(scrollY >= threshold);
             }
         }
 
@@ -1505,7 +1519,6 @@ html_content = """
 
             checkScrollTriggers(scrollY);
 
-            // Smoothly interpolate bird color toward champagne gold whenever Red Theme is active
             const targetRed = redBackdrop.classList.contains('red-active') ? 1 : 0;
             redBlend += (targetRed - redBlend) * 0.06;
 
@@ -1644,20 +1657,32 @@ html_content = """
         }
 
         // ============================================================
-        // 5. SCROLL OBSERVER & 1-SECOND POST-DROP BLUR-IN REVEAL
+        // 5. BIDIRECTIONAL BLUR-IN-FADE-IN SCROLL OBSERVER (Up & Down!)
         // ============================================================
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const el = entry.target;
                 if (entry.isIntersecting) {
-                    if (entry.target.classList.contains('fade-up')) { entry.target.classList.add('visible-up'); }
-                    if (entry.target.classList.contains('ink-trigger')) { entry.target.classList.add('visible-ink'); }
-                    if (entry.target.classList.contains('type-fade')) {
-                        entry.target.classList.add('visible-fade');
-                        typeWriterFadeIn(entry.target);
+                    if (el.classList.contains('fade-up')) { el.classList.add('visible-up'); }
+                    if (el.classList.contains('ink-trigger')) { el.classList.add('visible-ink'); }
+                    if (el.classList.contains('type-fade')) {
+                        el.classList.add('visible-fade');
+                        typeWriterFadeIn(el);
+                    }
+                    if (el.id === 'couple-details') {
+                        el.classList.add('couple-revealed');
+                    }
+                } else {
+                    // Reset when scrolled completely off screen so it blurs-in-fades-in again when scrolling up OR down!
+                    if (el.classList.contains('fade-up')) { el.classList.remove('visible-up'); }
+                    if (el.classList.contains('ink-trigger')) { el.classList.remove('visible-ink'); }
+                    if (el.classList.contains('type-fade')) { el.classList.remove('visible-fade'); }
+                    if (el.id === 'couple-details' && splitFinished) {
+                        el.classList.remove('couple-revealed');
                     }
                 }
             });
-        }, { threshold: 0.22 });
+        }, { threshold: 0.08 });
 
         function openCurtains() {
             if (isCurtainOpening) return;
@@ -1667,7 +1692,6 @@ html_content = """
 
             setTimeout(() => {
                 fitBismillah();
-                const mainContent = document.getElementById('main-content');
                 mainContent.classList.add('site-revealed');
 
                 bgDecorCanvas.classList.add('decor-revealed');
@@ -1826,7 +1850,6 @@ html_content = """
             const part1BottomScroll = Math.max(0, part1Wrapper.offsetHeight - window.innerHeight);
             splitTriggerY = Math.max(curY, part1BottomScroll) + 18;
 
-            // Pre-warm splitStage on GPU immediately so split starts with 0ms stutter!
             splitStage.style.display = 'block';
             splitStage.style.zIndex = '19';
             splitStage.style.opacity = '0.001';
@@ -1907,38 +1930,48 @@ html_content = """
         }
 
         // ============================================================
-        // 10. SLOW-MOTION CINEMATIC FLOCK OF BIRDS (15-20 Seconds)
+        // 10. FLOCK OF BIRDS SPAWNING FROM BEHIND THE SCRATCHED HEART
         // ============================================================
         function spawnExplosionFlock() {
+            const mcRect = mainContent.getBoundingClientRect();
+            const heartRect = document.querySelector('.scratch-container').getBoundingClientRect();
+            const originX = (heartRect.left - mcRect.left) + heartRect.width / 2;
+            const originY = (heartRect.top - mcRect.top) + heartRect.height / 2;
+
             const flockContainer = document.createElement('div');
-            flockContainer.style.position = 'fixed';
-            flockContainer.style.left = '50%';
-            flockContainer.style.top = '50%';
-            flockContainer.style.transform = 'translate(-50%, -50%)';
-            flockContainer.style.zIndex = '1000';
+            flockContainer.style.position = 'absolute';
+            flockContainer.style.left = `${originX}px`;
+            flockContainer.style.top = `${originY}px`;
+            flockContainer.style.width = '0px';
+            flockContainer.style.height = '0px';
+            // z-index 16 sits BEHIND #part1-wrapper (z-index 20, solid white heart!) and IN FRONT of #part2-section (12)
+            flockContainer.style.zIndex = '16';
             flockContainer.style.pointerEvents = 'none';
-            document.body.appendChild(flockContainer);
+            mainContent.insertBefore(flockContainer, part1Wrapper);
 
             const birdCount = isMobile ? 25 : 45;
             for (let i = 0; i < birdCount; i++) {
                 let bird = document.createElement('div');
                 bird.style.position = 'absolute';
+                bird.style.left = '0px';
+                bird.style.top = '0px';
 
                 let flapDelay = '-' + (Math.random() * 0.5).toFixed(2) + 's';
                 bird.innerHTML = `
-                    <svg class="bird-svg" viewBox="0 0 100 60" width="${Math.random() * 15 + 30}" height="20">
-                        <path class="bird-wing" style="animation-delay: ${flapDelay};" fill="none" stroke="#4a3b32" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
+                    <svg class="bird-svg explosion-flock-bird" viewBox="0 0 100 60" width="${Math.random() * 15 + 32}" height="22">
+                        <path class="bird-wing explosion-bird-path" style="animation-delay: ${flapDelay};" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
                     </svg>`;
 
-                let tx = (Math.random() - 0.5) * window.innerWidth * 2.5;
-                let ty = - (Math.random() * window.innerHeight * 1.5 + 400);
+                // Emerge radially outward & upward from behind the white heart rim
+                let tx = (Math.random() - 0.5) * window.innerWidth * 2.4;
+                let ty = - (Math.random() * window.innerHeight * 1.4 + 420);
                 let rot = (Math.random() - 0.5) * 40;
-                let delay = Math.random() * 2000;
+                let delay = Math.random() * 2200;
 
                 bird.animate([
-                    { transform: `translate(0px, 0px) scale(0) rotate(0deg)`, opacity: 0 },
-                    { transform: `translate(0px, 0px) scale(0.2) rotate(0deg)`, opacity: 1, offset: 0.05 },
-                    { transform: `translate(${tx}px, ${ty}px) scale(1.5) rotate(${rot}deg)`, opacity: 0 }
+                    { transform: `translate(-50%, -50%) scale(0.35) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate(calc(-50% + ${tx * 0.15}px), calc(-50% + ${ty * 0.15}px)) scale(0.75) rotate(${rot * 0.3}deg)`, opacity: 1, offset: 0.15 },
+                    { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(1.5) rotate(${rot}deg)`, opacity: 0 }
                 ], {
                     duration: Math.random() * 5000 + 15000,
                     delay: delay,
