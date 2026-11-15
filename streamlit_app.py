@@ -39,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with WebGL silk curtains, scroll-locked heart split reveal, 60fps parallax & animations
+# HTML, CSS, JS payload with WebGL silk curtains, smooth GPU split-curtain reveal, 60fps parallax & animations
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -52,7 +52,7 @@ html_content = """
         /* --- Base & Vintage Old Paper Background --- */
         html, body {
             margin: 0; padding: 0;
-            overflow-x: clip; /* Keeps position:sticky working cleanly without horizontal scrollbars */
+            overflow-x: clip;
         }
         body {
             font-family: 'Playfair Display', serif;
@@ -131,11 +131,13 @@ html_content = """
             transform: scale(1);
         }
 
-        /* --- Part 1 Wrapper (Above & Including Scratched Heart) --- */
-        #part1-wrapper {
+        /* --- Part 1 Container (Styled by Class so Split Clones Match Exactly!) --- */
+        .part1-container {
             padding: 10vh 20px 6vh 20px;
             position: relative;
             z-index: 20;
+            box-sizing: border-box;
+            width: 100%;
         }
 
         /* Bismillah Responsive Wrapper */
@@ -188,7 +190,7 @@ html_content = """
             opacity: 0;
             filter: blur(12px);
             transform: translateY(30px);
-            transition: all 1.5s ease-out;
+            transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
         }
         .hadith-arabic {
             font-family: 'Amiri', serif;
@@ -249,7 +251,7 @@ html_content = """
         .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 30px; height: 130px; }
         .plant { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
         .flower { font-size: 6rem; display: flex; align-items: center; justify-content: center; }
-        .butterfly { font-size: 3rem; position: absolute; bottom: 20px; opacity: 0; transition: all 1.5s ease-in-out; z-index: 10; }
+        .butterfly { font-size: 3rem; position: absolute; bottom: 20px; opacity: 0; transition: bottom 1.5s ease-in-out, opacity 1.5s ease-in-out; z-index: 10; }
 
         .visible-ink .ink-spread-anim { opacity: 1; clip-path: circle(150% at center); filter: blur(0px); }
         .visible-ink .butterfly { bottom: 100px; opacity: 1; transition-delay: 2.2s; animation: hoverfly 2.5s infinite ease-in-out alternate 3.7s; }
@@ -277,8 +279,13 @@ html_content = """
         @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
         @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
-        /* --- Scratch Card & Mobile Scaler (Kept Same) --- */
-        .scratch-wrapper { margin: 0 auto 30px auto; display: flex; justify-content: center; opacity: 0; filter: blur(12px); transform: translateY(30px); transition: all 1.5s ease-out; }
+        /* --- Scratch Card & Mobile Scaler (Explicit transitions, NOT 'all', so hiding is instant!) --- */
+        .scratch-wrapper {
+            margin: 0 auto 30px auto;
+            display: flex; justify-content: center;
+            opacity: 0; filter: blur(12px); transform: translateY(30px);
+            transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
+        }
         .scratch-scaler { transform: scale(1); transition: transform 0.3s; }
         .scratch-container {
             position: relative; width: 320px; height: 320px;
@@ -318,7 +325,7 @@ html_content = """
         }
 
         /* =========================================================
-           SCROLL-DRIVEN SPLIT-PAGE CURTAIN STAGE (Fixed Overlay)
+           60FPS GPU SPLIT-PAGE CURTAIN STAGE (Fixed Overlay)
            ========================================================= */
         #split-stage {
             position: fixed;
@@ -327,14 +334,14 @@ html_content = """
             display: none;
             pointer-events: none;
             overflow: hidden;
+            perspective: 1400px;
         }
         .split-half {
             position: absolute;
             top: 0;
-            width: 50vw;
-            height: 100vh;
+            width: 50%;
+            height: 100%;
             overflow: hidden;
-            /* Same old paper texture on the falling page halves */
             background-color: #f7ecd3;
             background-image: 
                 radial-gradient(circle at 15% 20%, rgba(168, 124, 72, 0.14) 0%, transparent 45%),
@@ -342,36 +349,36 @@ html_content = """
                 radial-gradient(circle at 25% 75%, rgba(168, 124, 72, 0.13) 0%, transparent 50%),
                 radial-gradient(circle at 80% 85%, rgba(120, 75, 40, 0.14) 0%, transparent 45%),
                 url('https://www.transparenttextures.com/patterns/aged-paper.png');
-            will-change: transform, opacity, border-radius;
+            will-change: transform, opacity;
+            backface-visibility: hidden;
         }
         #split-left {
             left: 0;
             transform-origin: top left;
-            box-shadow: 8px 18px 36px rgba(74, 59, 50, 0.25);
+            box-shadow: 8px 18px 36px rgba(74, 59, 50, 0.24);
         }
         #split-right {
             right: 0;
             transform-origin: top right;
-            box-shadow: -8px 18px 36px rgba(74, 59, 50, 0.25);
+            box-shadow: -8px 18px 36px rgba(74, 59, 50, 0.24);
         }
         .split-inner {
             position: absolute;
             top: 0;
-            width: 100vw;
+            left: 0;
             pointer-events: none;
+            will-change: transform;
         }
-        #split-left .split-inner { left: 0; }
-        #split-right .split-inner { left: -50vw; }
 
         /* Soft shadow fold along the center split seam */
         #split-left::after {
             content: ''; position: absolute; top: 0; right: 0; width: 22px; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(74, 59, 50, 0.18));
+            background: linear-gradient(to right, transparent, rgba(74, 59, 50, 0.20));
             pointer-events: none;
         }
         #split-right::after {
             content: ''; position: absolute; top: 0; left: 0; width: 22px; height: 100%;
-            background: linear-gradient(to left, transparent, rgba(74, 59, 50, 0.18));
+            background: linear-gradient(to left, transparent, rgba(74, 59, 50, 0.20));
             pointer-events: none;
         }
 
@@ -397,14 +404,17 @@ html_content = """
             justify-content: center;
             opacity: 0;
             visibility: hidden;
-            will-change: opacity, filter, transform;
+            will-change: opacity, transform;
         }
-
-        /* --- Couple Formal Details (Revealed Underneath Split Curtain) --- */
         .couple-details {
             max-width: 780px;
             padding: 20px 10px;
             margin: 0 auto;
+            filter: blur(12px);
+            transition: filter 1.1s ease-out;
+        }
+        #couple-sticky-frame.couple-clear .couple-details {
+            filter: blur(0px);
         }
         .couple-name-big {
             font-family: 'Alex Brush', cursive;
@@ -426,7 +436,7 @@ html_content = """
         }
 
         /* --- Schedule Table (Kept Same) --- */
-        .schedule-box { max-width: 800px; margin: 4vh auto 18vh auto; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: all 1.5s ease-out; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; overflow-x: auto; }
+        .schedule-box { max-width: 800px; margin: 4vh auto 18vh auto; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 400px; }
         th, td { padding: 15px; text-align: center; border-bottom: 1px solid #d8ccb8; }
         th { font-family: 'Great Vibes', cursive; font-size: 2rem; color: #800000; border-bottom: 2px solid #bba171; }
@@ -439,7 +449,7 @@ html_content = """
             opacity: 0;
             filter: blur(12px);
             transform: translateY(40px);
-            transition: all 1.5s ease-out;
+            transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
             line-height: 1.75;
             font-size: 1.25rem;
         }
@@ -455,7 +465,7 @@ html_content = """
         }
 
         /* --- Footer --- */
-        .footer-text { font-size: 1.5rem; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: all 1.5s ease-out; padding-bottom: 100px; font-style: italic; color: #800000; font-weight: bold; max-width: 750px; margin: 0 auto; }
+        .footer-text { font-size: 1.5rem; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out; padding-bottom: 100px; font-style: italic; color: #800000; font-weight: bold; max-width: 750px; margin: 0 auto; }
 
         /* --- Interactive Trigger Class (for Garden SVGs) --- */
         .interactive-emoji { display: inline-block; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -582,7 +592,7 @@ html_content = """
     <div class="content" id="main-content">
 
        <!-- PART 1: Upper Page up to Scratched Heart -->
-       <div id="part1-wrapper">
+       <div id="part1-wrapper" class="part1-container">
            <!-- Bismillah -->
            <div class="bismillah-wrap">
                <div class="bismillah obs fade-up">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
@@ -1270,16 +1280,23 @@ html_content = """
         let splitPrepared = false;
         let splitStartY = 0;
         let splitTravel = 700;
+        let splitMode = 'none'; // 'top', 'splitting', 'done'
 
         function syncSplitMetrics() {
             if (!splitPrepared) return;
             const vh = window.innerHeight;
+            const cw = document.documentElement.clientWidth;
             splitTravel = Math.round(vh * 0.95);
             splitStartY = Math.max(0, part1Wrapper.offsetHeight - vh);
             part2Section.style.marginTop = `-${vh}px`;
             splitScrollTrack.style.height = `${splitTravel + vh}px`;
-            splitLeftInner.style.transform = `translateY(${-splitStartY}px)`;
-            splitRightInner.style.transform = `translateY(${-splitStartY}px)`;
+
+            // Exact pixel width match (accounts for scrollbar width on desktop)
+            splitLeftInner.style.width = `${cw}px`;
+            splitRightInner.style.width = `${cw}px`;
+            splitRightInner.style.left = `${-cw / 2}px`;
+            splitLeftInner.style.transform = `translate3d(0, ${-splitStartY}px, 0)`;
+            splitRightInner.style.transform = `translate3d(0, ${-splitStartY}px, 0)`;
         }
 
         window.addEventListener('resize', () => {
@@ -1295,14 +1312,15 @@ html_content = """
                 // Remove scratch canvas from clone so only revealed "Asad & Rimsha" heart appears
                 const c = clone.querySelector('canvas');
                 if (c) c.remove();
-                // Ensure all visible animations stay locked visible in the split halves
+                // Lock animations cleanly visible with zero transition lag inside clones
                 clone.querySelectorAll('.obs').forEach(el => {
+                    el.style.transition = 'none';
                     if (el.classList.contains('fade-up')) el.classList.add('visible-up');
                     if (el.classList.contains('ink-trigger')) el.classList.add('visible-ink');
                     if (el.classList.contains('type-fade')) el.classList.add('visible-fade');
                 });
                 const hint = clone.querySelector('.unlock-hint');
-                if (hint) hint.style.opacity = '0';
+                if (hint) hint.style.display = 'none';
                 return clone;
             }
             splitLeftInner.innerHTML = '';
@@ -1315,52 +1333,69 @@ html_content = """
             if (!splitPrepared) return;
 
             if (scrollY <= splitStartY) {
-                part1Wrapper.style.visibility = 'visible';
-                splitStage.style.display = 'none';
-                coupleStickyFrame.style.visibility = 'hidden';
-                coupleStickyFrame.style.opacity = '0';
-                part2Section.style.pointerEvents = 'none';
+                if (splitMode !== 'top') {
+                    splitMode = 'top';
+                    part1Wrapper.style.opacity = '1';
+                    part1Wrapper.style.visibility = 'visible';
+                    part1Wrapper.style.pointerEvents = 'auto';
+                    splitStage.style.display = 'none';
+                    coupleStickyFrame.style.visibility = 'hidden';
+                    coupleStickyFrame.style.opacity = '0';
+                    coupleStickyFrame.classList.remove('couple-clear');
+                    part2Section.style.pointerEvents = 'none';
+                }
             } else if (scrollY < splitStartY + splitTravel) {
                 const p = clamp01((scrollY - splitStartY) / splitTravel);
                 const ease = easeInOutCubic(p);
 
-                part1Wrapper.style.visibility = 'hidden';
-                splitStage.style.display = 'block';
-                part2Section.style.pointerEvents = 'auto';
+                if (splitMode !== 'splitting') {
+                    splitMode = 'splitting';
+                    part1Wrapper.style.opacity = '0';
+                    part1Wrapper.style.visibility = 'hidden';
+                    part1Wrapper.style.pointerEvents = 'none';
+                    splitStage.style.display = 'block';
+                    coupleStickyFrame.style.visibility = 'visible';
+                    part2Section.style.pointerEvents = 'auto';
+                }
 
-                // Split Left & Right page halves falling & parting like curtains
-                const tx = ease * 38;
-                const ty = Math.pow(ease, 1.25) * 65;
-                const rot = ease * 12;
-                const skew = ease * 5;
-                const sx = 1 - ease * 0.25;
-                const brX = ease * 40;
-                const brY = ease * 22;
-                const alpha = p > 0.75 ? Math.max(0, 1 - (p - 0.75) / 0.25) : 1;
+                // Pure GPU transforms (no border-radius or per-frame blur!) -> locked 60fps
+                const tx = ease * 42;
+                const ty = Math.pow(ease, 1.25) * 62;
+                const rotZ = ease * 11;
+                const rotY = ease * 18;
+                const skew = ease * 4;
+                const sx = 1 - ease * 0.22;
+                const alpha = p > 0.72 ? Math.max(0, 1 - (p - 0.72) / 0.28) : 1;
 
-                splitLeft.style.transform = `translate(${-tx}vw, ${ty}vh) rotate(${-rot}deg) skewY(${skew}deg) scaleX(${sx})`;
-                splitLeft.style.borderBottomRightRadius = `${brX}% ${brY}%`;
+                splitLeft.style.transform = `translate3d(${-tx}vw, ${ty}vh, 0) rotateZ(${-rotZ}deg) rotateY(${rotY}deg) skewY(${skew}deg) scaleX(${sx})`;
                 splitLeft.style.opacity = alpha;
 
-                splitRight.style.transform = `translate(${tx}vw, ${ty}vh) rotate(${rot}deg) skewY(${-skew}deg) scaleX(${sx})`;
-                splitRight.style.borderBottomLeftRadius = `${brX}% ${brY}%`;
+                splitRight.style.transform = `translate3d(${tx}vw, ${ty}vh, 0) rotateZ(${rotZ}deg) rotateY(${-rotY}deg) skewY(${-skew}deg) scaleX(${sx})`;
                 splitRight.style.opacity = alpha;
 
-                // Smoothly reveal Bride & Groom full formal details underneath!
-                const cp = clamp01((p - 0.08) / 0.58);
+                // Smoothly reveal couple details underneath via GPU opacity + scale3d + one-shot blur-in
+                const cp = clamp01((p - 0.05) / 0.55);
                 const cEase = easeInOutCubic(cp);
-                coupleStickyFrame.style.visibility = 'visible';
                 coupleStickyFrame.style.opacity = cEase;
-                coupleStickyFrame.style.filter = `blur(${((1 - cEase) * 12).toFixed(1)}px)`;
-                coupleStickyFrame.style.transform = `scale(${(0.92 + 0.08 * cEase).toFixed(3)})`;
+                coupleStickyFrame.style.transform = `scale3d(${(0.92 + 0.08 * cEase).toFixed(3)}, ${(0.92 + 0.08 * cEase).toFixed(3)}, 1)`;
+                if (p > 0.08) {
+                    coupleStickyFrame.classList.add('couple-clear');
+                } else {
+                    coupleStickyFrame.classList.remove('couple-clear');
+                }
             } else {
-                part1Wrapper.style.visibility = 'hidden';
-                splitStage.style.display = 'none';
-                part2Section.style.pointerEvents = 'auto';
-                coupleStickyFrame.style.visibility = 'visible';
-                coupleStickyFrame.style.opacity = '1';
-                coupleStickyFrame.style.filter = 'none';
-                coupleStickyFrame.style.transform = 'none';
+                if (splitMode !== 'done') {
+                    splitMode = 'done';
+                    part1Wrapper.style.opacity = '0';
+                    part1Wrapper.style.visibility = 'hidden';
+                    part1Wrapper.style.pointerEvents = 'none';
+                    splitStage.style.display = 'none';
+                    part2Section.style.pointerEvents = 'auto';
+                    coupleStickyFrame.style.visibility = 'visible';
+                    coupleStickyFrame.style.opacity = '1';
+                    coupleStickyFrame.style.transform = 'none';
+                    coupleStickyFrame.classList.add('couple-clear');
+                }
             }
         }
 
@@ -1683,7 +1718,6 @@ html_content = """
             splitPrepared = true;
             syncSplitMetrics();
             document.getElementById('unlock-hint').classList.add('active');
-            // Observe schedule, RSVP, and footer in Part 2
             part2Section.querySelectorAll('.obs').forEach(el => observer.observe(el));
         }
 
