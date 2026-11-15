@@ -39,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with WebGL glossy silk curtains, 60fps sprite parallax, scratch card & animations
+# HTML, CSS, JS payload with WebGL silk curtains, scroll-locked heart split reveal, 60fps parallax & animations
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -50,8 +50,11 @@ html_content = """
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Amiri:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         /* --- Base & Vintage Old Paper Background --- */
-        body {
+        html, body {
             margin: 0; padding: 0;
+            overflow-x: clip; /* Keeps position:sticky working cleanly without horizontal scrollbars */
+        }
+        body {
             font-family: 'Playfair Display', serif;
             background-color: #f7ecd3;
             background-image: 
@@ -61,7 +64,6 @@ html_content = """
                 radial-gradient(circle at 80% 85%, rgba(120, 75, 40, 0.14) 0%, transparent 45%),
                 url('https://www.transparenttextures.com/patterns/aged-paper.png');
             color: #4a3b32;
-            overflow-x: hidden;
         }
 
         /* --- High-FPS Fixed Parallax Decor Canvases --- */
@@ -114,9 +116,8 @@ html_content = """
         /* --- Post-Curtain Blur-In-Fade-In Reveal --- */
         .content {
             min-height: 100vh;
-            padding: 10vh 20px;
+            padding: 0;
             text-align: center;
-            overflow-x: hidden;
             position: relative;
             z-index: 10;
             opacity: 0;
@@ -128,6 +129,13 @@ html_content = """
             opacity: 1;
             filter: blur(0px);
             transform: scale(1);
+        }
+
+        /* --- Part 1 Wrapper (Above & Including Scratched Heart) --- */
+        #part1-wrapper {
+            padding: 10vh 20px 6vh 20px;
+            position: relative;
+            z-index: 20;
         }
 
         /* Bismillah Responsive Wrapper */
@@ -269,36 +277,8 @@ html_content = """
         @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
         @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
-        /* --- Couple Formal Details --- */
-        .couple-details {
-            margin: 0 auto 12vh auto;
-            max-width: 780px;
-            opacity: 0;
-            filter: blur(12px);
-            transform: translateY(30px);
-            transition: all 1.5s ease-out;
-        }
-        .couple-name-big {
-            font-family: 'Alex Brush', cursive;
-            font-size: clamp(2.8rem, 8vw, 4.2rem);
-            color: #9e001c;
-            line-height: 1.15;
-            margin: 4px 0;
-        }
-        .couple-lineage {
-            font-size: 1.25rem;
-            color: #5c473b;
-            margin-bottom: 14px;
-        }
-        .couple-with {
-            font-family: 'Great Vibes', cursive;
-            font-size: 2.4rem;
-            color: #800000;
-            margin: 8px 0;
-        }
-
         /* --- Scratch Card & Mobile Scaler (Kept Same) --- */
-        .scratch-wrapper { margin: 0 auto 20vh auto; display: flex; justify-content: center; opacity: 0; filter: blur(12px); transform: translateY(30px); transition: all 1.5s ease-out; }
+        .scratch-wrapper { margin: 0 auto 30px auto; display: flex; justify-content: center; opacity: 0; filter: blur(12px); transform: translateY(30px); transition: all 1.5s ease-out; }
         .scratch-scaler { transform: scale(1); transition: transform 0.3s; }
         .scratch-container {
             position: relative; width: 320px; height: 320px;
@@ -318,8 +298,135 @@ html_content = """
         }
         canvas#scratchCard { position: absolute; top: 0; left: 0; z-index: 10; cursor: pointer; touch-action: none; }
 
+        /* --- Scroll Unlock Prompt Below Heart --- */
+        .unlock-hint {
+            font-size: 1.15rem;
+            font-style: italic;
+            color: #800000;
+            margin: 12px auto 0 auto;
+            min-height: 36px;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .unlock-hint.active {
+            opacity: 1;
+            animation: hintPulse 2s infinite ease-in-out;
+        }
+        @keyframes hintPulse {
+            0%, 100% { transform: translateY(0px); opacity: 0.75; }
+            50% { transform: translateY(6px); opacity: 1; }
+        }
+
+        /* =========================================================
+           SCROLL-DRIVEN SPLIT-PAGE CURTAIN STAGE (Fixed Overlay)
+           ========================================================= */
+        #split-stage {
+            position: fixed;
+            inset: 0;
+            z-index: 25;
+            display: none;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .split-half {
+            position: absolute;
+            top: 0;
+            width: 50vw;
+            height: 100vh;
+            overflow: hidden;
+            /* Same old paper texture on the falling page halves */
+            background-color: #f7ecd3;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(168, 124, 72, 0.14) 0%, transparent 45%),
+                radial-gradient(circle at 85% 35%, rgba(139, 94, 52, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 25% 75%, rgba(168, 124, 72, 0.13) 0%, transparent 50%),
+                radial-gradient(circle at 80% 85%, rgba(120, 75, 40, 0.14) 0%, transparent 45%),
+                url('https://www.transparenttextures.com/patterns/aged-paper.png');
+            will-change: transform, opacity, border-radius;
+        }
+        #split-left {
+            left: 0;
+            transform-origin: top left;
+            box-shadow: 8px 18px 36px rgba(74, 59, 50, 0.25);
+        }
+        #split-right {
+            right: 0;
+            transform-origin: top right;
+            box-shadow: -8px 18px 36px rgba(74, 59, 50, 0.25);
+        }
+        .split-inner {
+            position: absolute;
+            top: 0;
+            width: 100vw;
+            pointer-events: none;
+        }
+        #split-left .split-inner { left: 0; }
+        #split-right .split-inner { left: -50vw; }
+
+        /* Soft shadow fold along the center split seam */
+        #split-left::after {
+            content: ''; position: absolute; top: 0; right: 0; width: 22px; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(74, 59, 50, 0.18));
+            pointer-events: none;
+        }
+        #split-right::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 22px; height: 100%;
+            background: linear-gradient(to left, transparent, rgba(74, 59, 50, 0.18));
+            pointer-events: none;
+        }
+
+        /* =========================================================
+           PART 2 SECTION (Hidden until heart is scratched!)
+           ========================================================= */
+        #part2-section {
+            display: none;
+            position: relative;
+            z-index: 12;
+            padding: 0 20px;
+        }
+        #split-scroll-track {
+            position: relative;
+            width: 100%;
+        }
+        #couple-sticky-frame {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            will-change: opacity, filter, transform;
+        }
+
+        /* --- Couple Formal Details (Revealed Underneath Split Curtain) --- */
+        .couple-details {
+            max-width: 780px;
+            padding: 20px 10px;
+            margin: 0 auto;
+        }
+        .couple-name-big {
+            font-family: 'Alex Brush', cursive;
+            font-size: clamp(2.9rem, 8.5vw, 4.4rem);
+            color: #9e001c;
+            line-height: 1.15;
+            margin: 4px 0;
+        }
+        .couple-lineage {
+            font-size: 1.3rem;
+            color: #5c473b;
+            margin-bottom: 14px;
+        }
+        .couple-with {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
+            color: #800000;
+            margin: 8px 0;
+        }
+
         /* --- Schedule Table (Kept Same) --- */
-        .schedule-box { max-width: 800px; margin: 0 auto 18vh auto; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: all 1.5s ease-out; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; overflow-x: auto; }
+        .schedule-box { max-width: 800px; margin: 4vh auto 18vh auto; opacity: 0; filter: blur(12px); transform: translateY(50px); transition: all 1.5s ease-out; background: rgba(255,255,255,0.4); padding: 30px; border-radius: 15px; border: 2px dashed #bba171; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 400px; }
         th, td { padding: 15px; text-align: center; border-bottom: 1px solid #d8ccb8; }
         th { font-family: 'Great Vibes', cursive; font-size: 2rem; color: #800000; border-bottom: 2px solid #bba171; }
@@ -393,7 +500,7 @@ html_content = """
             .couple-with { font-size: 2rem; }
 
             .scratch-scaler { transform: scale(0.85); }
-            .scratch-wrapper { margin: 0 auto 14vh auto; }
+            .scratch-wrapper { margin: 0 auto 12px auto; }
 
             .schedule-box { padding: 15px; margin-bottom: 14vh; }
             th { font-size: 1.5rem; padding: 10px; }
@@ -461,174 +568,197 @@ html_content = """
        <div class="open-btn" onclick="openCurtains()">Open</div>
     </div>
 
+    <!-- Split-Page Curtain Overlay (Activated when scrolling down after scratching!) -->
+    <div id="split-stage">
+        <div id="split-left" class="split-half">
+            <div id="split-left-inner" class="split-inner"></div>
+        </div>
+        <div id="split-right" class="split-half">
+            <div id="split-right-inner" class="split-inner"></div>
+        </div>
+    </div>
+
     <!-- Website Content -->
     <div class="content" id="main-content">
 
-       <!-- Bismillah -->
-       <div class="bismillah-wrap">
-           <div class="bismillah obs fade-up">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
-       </div>
+       <!-- PART 1: Upper Page up to Scratched Heart -->
+       <div id="part1-wrapper">
+           <!-- Bismillah -->
+           <div class="bismillah-wrap">
+               <div class="bismillah obs fade-up">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+           </div>
 
-       <!-- Type-in Fade-in Translation -->
-       <div class="header-text obs type-fade" data-text="&quot;In the name of Allah, the Most Gracious, the Most Merciful&quot;"></div>
+           <!-- Type-in Fade-in Translation -->
+           <div class="header-text obs type-fade" data-text="&quot;In the name of Allah, the Most Gracious, the Most Merciful&quot;"></div>
 
-       <!-- Hadith -->
-       <div class="hadith-box obs fade-up">
-           <div class="hadith-arabic">النِّكَاحُ مِنْ سُنَّتِي</div>
-           <div class="hadith-trans">"Nikah is my Sunnah" — (Sahih Muslim)</div>
-       </div>
+           <!-- Hadith -->
+           <div class="hadith-box obs fade-up">
+               <div class="hadith-arabic">النِّكَاحُ مِنْ سُنَّتِي</div>
+               <div class="hadith-trans">"Nikah is my Sunnah" — (Sahih Muslim)</div>
+           </div>
 
-       <!-- Ink Spread Hosts & Invitation Request + Blooming Garden -->
-       <div class="obs ink-trigger" style="min-height: 360px; margin-bottom: 16vh; display: flex; align-items: center; justify-content: center;">
-           <div class="ink-spread-anim">
-               <div class="sub-header-text">
-                   <span class="blessings-line">With the blessings of Almighty Allah,</span>
-                   <span class="hosts-names">
-                       Mrs. Mehnaz Ahmer <span class="hosts-sub">(W/O Late Mr. Ahmer Mukhtar)</span><br>
-                       &amp; Mr. Ali Ahmer
-                   </span>
-                   cordially request the pleasure of your company<br>
-                   at the <span class="wedding-word">wedding</span> ceremonies of their beloved daughter &amp; sister
-               </div>
-
-               <div class="garden-container">
-                   <div class="plant">
-                       <div class="butterfly">
-                           <span class="interactive-emoji">
-                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#00bfff"><use href="#svg-butterfly" /></svg>
-                           </span>
-                       </div>
-                       <div class="flower">
-                           <span class="interactive-emoji">
-                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffb6c1" style="overflow: visible;">
-                                   <g class="flower-layer-1" stroke="#ffffff" stroke-width="0.5">
-                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
-                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
-                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
-                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
-                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
-                                   </g>
-                                   <g class="flower-layer-2" fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
-                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
-                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
-                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
-                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
-                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
-                                   </g>
-                                   <g class="flower-layer-3" fill="#ffffff" opacity="0.6">
-                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" />
-                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(72 16 16)" />
-                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(144 16 16)" />
-                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(216 16 16)" />
-                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(288 16 16)" />
-                                   </g>
-                                   <g class="flower-center">
-                                       <circle cx="16" cy="16" r="3" fill="#ffd700" />
-                                       <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
-                                   </g>
-                               </svg>
-                           </span>
-                       </div>
+           <!-- Ink Spread Hosts & Invitation Request + Blooming Garden -->
+           <div class="obs ink-trigger" style="min-height: 360px; margin-bottom: 16vh; display: flex; align-items: center; justify-content: center;">
+               <div class="ink-spread-anim">
+                   <div class="sub-header-text">
+                       <span class="blessings-line">With the blessings of Almighty Allah,</span>
+                       <span class="hosts-names">
+                           Mrs. Mehnaz Ahmer <span class="hosts-sub">(W/O Late Mr. Ahmer Mukhtar)</span><br>
+                           &amp; Mr. Ali Ahmer
+                       </span>
+                       cordially request the pleasure of your company<br>
+                       at the <span class="wedding-word">wedding</span> ceremonies of their beloved daughter &amp; sister
                    </div>
-                   <div class="plant delayed">
-                       <div class="butterfly">
-                           <span class="interactive-emoji">
-                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffdab9"><use href="#svg-butterfly" /></svg>
-                           </span>
+
+                   <div class="garden-container">
+                       <div class="plant">
+                           <div class="butterfly">
+                               <span class="interactive-emoji">
+                                   <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#00bfff"><use href="#svg-butterfly" /></svg>
+                               </span>
+                           </div>
+                           <div class="flower">
+                               <span class="interactive-emoji">
+                                   <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffb6c1" style="overflow: visible;">
+                                       <g class="flower-layer-1" stroke="#ffffff" stroke-width="0.5">
+                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
+                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
+                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
+                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
+                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
+                                       </g>
+                                       <g class="flower-layer-2" fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
+                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
+                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
+                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
+                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
+                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
+                                       </g>
+                                       <g class="flower-layer-3" fill="#ffffff" opacity="0.6">
+                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" />
+                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(72 16 16)" />
+                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(144 16 16)" />
+                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(216 16 16)" />
+                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(288 16 16)" />
+                                       </g>
+                                       <g class="flower-center">
+                                           <circle cx="16" cy="16" r="3" fill="#ffd700" />
+                                           <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
+                                       </g>
+                                   </svg>
+                               </span>
+                           </div>
                        </div>
-                       <div class="flower">
-                           <span class="interactive-emoji">
-                               <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ff033e" style="overflow: visible;">
-                                   <g class="flower-layer-1" stroke="#ffffff" stroke-width="0.5">
-                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
-                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
-                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
-                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
-                                       <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
-                                   </g>
-                                   <g class="flower-layer-2" fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
-                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
-                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
-                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
-                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
-                                       <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
-                                   </g>
-                                   <g class="flower-layer-3" fill="#ffffff" opacity="0.6">
-                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" />
-                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(72 16 16)" />
-                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(144 16 16)" />
-                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(216 16 16)" />
-                                       <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(288 16 16)" />
-                                   </g>
-                                   <g class="flower-center">
-                                       <circle cx="16" cy="16" r="3" fill="#ffd700" />
-                                       <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
-                                   </g>
-                               </svg>
-                           </span>
+                       <div class="plant delayed">
+                           <div class="butterfly">
+                               <span class="interactive-emoji">
+                                   <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffdab9"><use href="#svg-butterfly" /></svg>
+                               </span>
+                           </div>
+                           <div class="flower">
+                               <span class="interactive-emoji">
+                                   <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ff033e" style="overflow: visible;">
+                                       <g class="flower-layer-1" stroke="#ffffff" stroke-width="0.5">
+                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
+                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
+                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
+                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
+                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
+                                       </g>
+                                       <g class="flower-layer-2" fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
+                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
+                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
+                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
+                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
+                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
+                                       </g>
+                                       <g class="flower-layer-3" fill="#ffffff" opacity="0.6">
+                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" />
+                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(72 16 16)" />
+                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(144 16 16)" />
+                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(216 16 16)" />
+                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(288 16 16)" />
+                                       </g>
+                                       <g class="flower-center">
+                                           <circle cx="16" cy="16" r="3" fill="#ffd700" />
+                                           <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
+                                       </g>
+                                   </svg>
+                               </span>
+                           </div>
                        </div>
                    </div>
                </div>
            </div>
-       </div>
 
-       <!-- Couple Formal Details -->
-       <div class="couple-details obs fade-up">
-           <div class="couple-name-big">Rimsha Fatima</div>
-           <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Marhoom)</div>
-           <div class="couple-with">with</div>
-           <div class="couple-name-big">Mr. Asad</div>
-           <div class="couple-lineage">S/O [Groom's Father's Name]</div>
-       </div>
-
-       <!-- Scratched Heart (Kept Same) -->
-       <div class="scratch-wrapper obs fade-up">
-           <div class="scratch-scaler">
-               <div class="scratch-container">
-                   <div class="scratch-bg">
-                       <div class="heart-text">
-                           Asad <br>
-                           <span style="font-size: 1.9rem;">&amp;</span><br>
-                           Rimsha
+           <!-- Scratched Heart (Scroll ends here until scratched!) -->
+           <div class="scratch-wrapper obs fade-up">
+               <div class="scratch-scaler">
+                   <div class="scratch-container">
+                       <div class="scratch-bg">
+                           <div class="heart-text">
+                               Asad <br>
+                               <span style="font-size: 1.9rem;">&amp;</span><br>
+                               Rimsha
+                           </div>
                        </div>
+                       <canvas id="scratchCard" width="320" height="320"></canvas>
                    </div>
-                   <canvas id="scratchCard" width="320" height="320"></canvas>
                </div>
+           </div>
+
+           <div id="unlock-hint" class="unlock-hint">
+               ↓ Scroll down to reveal ↓
            </div>
        </div>
 
-       <!-- Schedule Table (Kept Same Layout with Updated Timings) -->
-       <div class="schedule-box obs fade-up">
-           <table>
-               <tr><th>Event</th><th>Date</th><th>Time</th><th>Location</th></tr>
-               <tr>
-                   <td><b>MEHNDI</b></td>
-                   <td>Thursday, 24th December 2026</td>
-                   <td>07:00 PM onwards</td>
-                   <td>Farid Town, Sahiwal</td>
-               </tr>
-               <tr>
-                   <td><b>BARAAT</b></td>
-                   <td>Friday, 25th December 2026</td>
-                   <td>11:00 AM onwards</td>
-                   <td>Grand Al-Noor Marriage Hall (JTS)<br><span style="font-size: 0.9rem; color: #666;">(Near Faridia Park, Tariq Bin Ziad Colony, Sahiwal)</span></td>
-               </tr>
-           </table>
-       </div>
+       <!-- PART 2: Unlocked ONLY After Scratching, Revealed Beneath Splitting Part 1 Curtains -->
+       <div id="part2-section">
+           <div id="split-scroll-track">
+               <div id="couple-sticky-frame">
+                   <div class="couple-details">
+                       <div class="couple-name-big">Rimsha Fatima</div>
+                       <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Marhoom)</div>
+                       <div class="couple-with">with</div>
+                       <div class="couple-name-big">Mr. Asad</div>
+                       <div class="couple-lineage">S/O [Groom's Father's Name]</div>
+                   </div>
+               </div>
+           </div>
 
-       <!-- RSVP & Compliments -->
-       <div class="rsvp-box obs fade-up">
-           <div class="rsvp-heading">RSVP:</div>
-           <div class="rsvp-detail">Mr. Ali Ahmer</div>
-           <div>[Phone Number]</div>
+           <!-- Schedule Table (Same Layout with Updated Timings) -->
+           <div class="schedule-box obs fade-up">
+               <table>
+                   <tr><th>Event</th><th>Date</th><th>Time</th><th>Location</th></tr>
+                   <tr>
+                       <td><b>MEHNDI</b></td>
+                       <td>Thursday, 24th December 2026</td>
+                       <td>07:00 PM onwards</td>
+                       <td>Farid Town, Sahiwal</td>
+                   </tr>
+                   <tr>
+                       <td><b>BARAAT</b></td>
+                       <td>Friday, 25th December 2026</td>
+                       <td>11:00 AM onwards</td>
+                       <td>Grand Al-Noor Marriage Hall (JTS)<br><span style="font-size: 0.9rem; color: #666;">(Near Faridia Park, Tariq Bin Ziad Colony, Sahiwal)</span></td>
+                   </tr>
+               </table>
+           </div>
 
-           <div class="rsvp-heading" style="margin-top: 28px;">With Best Compliments From:</div>
-           <div class="rsvp-detail">All Relatives &amp; Friends</div>
-       </div>
+           <!-- RSVP & Compliments -->
+           <div class="rsvp-box obs fade-up">
+               <div class="rsvp-heading">RSVP:</div>
+               <div class="rsvp-detail">Mr. Ali Ahmer</div>
+               <div>[Phone Number]</div>
 
-       <!-- Footer Quote -->
-       <div class="footer-text obs fade-up">
-           "Your presence and duas are the only gifts we desire."
+               <div class="rsvp-heading" style="margin-top: 28px;">With Best Compliments From:</div>
+               <div class="rsvp-detail">All Relatives &amp; Friends</div>
+           </div>
+
+           <!-- Footer Quote -->
+           <div class="footer-text obs fade-up">
+               "Your presence and duas are the only gifts we desire."
+           </div>
        </div>
     </div>
 
@@ -939,7 +1069,7 @@ html_content = """
         }
 
         // ============================================================
-        // 3. 60FPS PRE-BAKED SPRITE PARALLAX + BIRD FLOCK ENGINE
+        // 3. 60FPS PRE-BAKED SPRITE PARALLAX + BIRD FLOCK + SPLIT CURTAIN ENGINE
         // ============================================================
         const bgDecorCanvas = document.getElementById('bg-decor-canvas');
         const fgDecorCanvas = document.getElementById('fg-decor-canvas');
@@ -1066,7 +1196,6 @@ html_content = """
             fgCtx.setTransform(dDpr, 0, 0, dDpr, 0, 0);
         }
         resizeDecorCanvases();
-        window.addEventListener('resize', resizeDecorCanvases);
 
         function makeParticle(isFg) {
             const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
@@ -1127,11 +1256,121 @@ html_content = """
             });
         }
 
+        // --- Scroll-Driven Page Split State ---
+        const part1Wrapper = document.getElementById('part1-wrapper');
+        const part2Section = document.getElementById('part2-section');
+        const splitScrollTrack = document.getElementById('split-scroll-track');
+        const coupleStickyFrame = document.getElementById('couple-sticky-frame');
+        const splitStage = document.getElementById('split-stage');
+        const splitLeft = document.getElementById('split-left');
+        const splitRight = document.getElementById('split-right');
+        const splitLeftInner = document.getElementById('split-left-inner');
+        const splitRightInner = document.getElementById('split-right-inner');
+
+        let splitPrepared = false;
+        let splitStartY = 0;
+        let splitTravel = 700;
+
+        function syncSplitMetrics() {
+            if (!splitPrepared) return;
+            const vh = window.innerHeight;
+            splitTravel = Math.round(vh * 0.95);
+            splitStartY = Math.max(0, part1Wrapper.offsetHeight - vh);
+            part2Section.style.marginTop = `-${vh}px`;
+            splitScrollTrack.style.height = `${splitTravel + vh}px`;
+            splitLeftInner.style.transform = `translateY(${-splitStartY}px)`;
+            splitRightInner.style.transform = `translateY(${-splitStartY}px)`;
+        }
+
+        window.addEventListener('resize', () => {
+            resizeDecorCanvases();
+            syncSplitMetrics();
+        });
+
+        function buildSplitClones() {
+            function makeSafeClone() {
+                const clone = part1Wrapper.cloneNode(true);
+                clone.removeAttribute('id');
+                clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+                // Remove scratch canvas from clone so only revealed "Asad & Rimsha" heart appears
+                const c = clone.querySelector('canvas');
+                if (c) c.remove();
+                // Ensure all visible animations stay locked visible in the split halves
+                clone.querySelectorAll('.obs').forEach(el => {
+                    if (el.classList.contains('fade-up')) el.classList.add('visible-up');
+                    if (el.classList.contains('ink-trigger')) el.classList.add('visible-ink');
+                    if (el.classList.contains('type-fade')) el.classList.add('visible-fade');
+                });
+                const hint = clone.querySelector('.unlock-hint');
+                if (hint) hint.style.opacity = '0';
+                return clone;
+            }
+            splitLeftInner.innerHTML = '';
+            splitRightInner.innerHTML = '';
+            splitLeftInner.appendChild(makeSafeClone());
+            splitRightInner.appendChild(makeSafeClone());
+        }
+
+        function updateSplitCurtains(scrollY) {
+            if (!splitPrepared) return;
+
+            if (scrollY <= splitStartY) {
+                part1Wrapper.style.visibility = 'visible';
+                splitStage.style.display = 'none';
+                coupleStickyFrame.style.visibility = 'hidden';
+                coupleStickyFrame.style.opacity = '0';
+                part2Section.style.pointerEvents = 'none';
+            } else if (scrollY < splitStartY + splitTravel) {
+                const p = clamp01((scrollY - splitStartY) / splitTravel);
+                const ease = easeInOutCubic(p);
+
+                part1Wrapper.style.visibility = 'hidden';
+                splitStage.style.display = 'block';
+                part2Section.style.pointerEvents = 'auto';
+
+                // Split Left & Right page halves falling & parting like curtains
+                const tx = ease * 38;
+                const ty = Math.pow(ease, 1.25) * 65;
+                const rot = ease * 12;
+                const skew = ease * 5;
+                const sx = 1 - ease * 0.25;
+                const brX = ease * 40;
+                const brY = ease * 22;
+                const alpha = p > 0.75 ? Math.max(0, 1 - (p - 0.75) / 0.25) : 1;
+
+                splitLeft.style.transform = `translate(${-tx}vw, ${ty}vh) rotate(${-rot}deg) skewY(${skew}deg) scaleX(${sx})`;
+                splitLeft.style.borderBottomRightRadius = `${brX}% ${brY}%`;
+                splitLeft.style.opacity = alpha;
+
+                splitRight.style.transform = `translate(${tx}vw, ${ty}vh) rotate(${rot}deg) skewY(${-skew}deg) scaleX(${sx})`;
+                splitRight.style.borderBottomLeftRadius = `${brX}% ${brY}%`;
+                splitRight.style.opacity = alpha;
+
+                // Smoothly reveal Bride & Groom full formal details underneath!
+                const cp = clamp01((p - 0.08) / 0.58);
+                const cEase = easeInOutCubic(cp);
+                coupleStickyFrame.style.visibility = 'visible';
+                coupleStickyFrame.style.opacity = cEase;
+                coupleStickyFrame.style.filter = `blur(${((1 - cEase) * 12).toFixed(1)}px)`;
+                coupleStickyFrame.style.transform = `scale(${(0.92 + 0.08 * cEase).toFixed(3)})`;
+            } else {
+                part1Wrapper.style.visibility = 'hidden';
+                splitStage.style.display = 'none';
+                part2Section.style.pointerEvents = 'auto';
+                coupleStickyFrame.style.visibility = 'visible';
+                coupleStickyFrame.style.opacity = '1';
+                coupleStickyFrame.style.filter = 'none';
+                coupleStickyFrame.style.transform = 'none';
+            }
+        }
+
         let decorLoopActive = false;
         function renderDecorFrame(now) {
             if (!decorLoopActive) return;
             const timeSec = now / 1000;
             const scrollY = window.scrollY || window.pageYOffset || 0;
+
+            updateSplitCurtains(scrollY);
 
             bgCtx.clearRect(0, 0, dW, dH);
             fgCtx.clearRect(0, 0, dW, dH);
@@ -1297,7 +1536,8 @@ html_content = """
                     requestAnimationFrame(renderDecorFrame);
                 }
 
-                document.querySelectorAll('.obs').forEach(el => observer.observe(el));
+                // Observe only Part 1 elements initially (Part 2 stays locked until heart is scratched!)
+                part1Wrapper.querySelectorAll('.obs').forEach(el => observer.observe(el));
 
                 setTimeout(() => {
                     mainContent.style.filter = 'none';
@@ -1389,7 +1629,7 @@ html_content = """
         }
 
         // ============================================================
-        // 7. SCRATCH CARD LOGIC (Threshold 30% + Mobile Scaler Fix)
+        // 7. SCRATCH CARD LOGIC (Unlocks Part 2 + Split Curtain Reveal!)
         // ============================================================
         const canvas = document.getElementById('scratchCard');
         const ctx = canvas.getContext('2d');
@@ -1436,6 +1676,17 @@ html_content = """
         canvas.addEventListener('touchmove', scratch);
         canvas.addEventListener('touchend', () => isDrawing = false);
 
+        function unlockRestOfInvitation() {
+            if (splitPrepared) return;
+            buildSplitClones();
+            part2Section.style.display = 'block';
+            splitPrepared = true;
+            syncSplitMetrics();
+            document.getElementById('unlock-hint').classList.add('active');
+            // Observe schedule, RSVP, and footer in Part 2
+            part2Section.querySelectorAll('.obs').forEach(el => observer.observe(el));
+        }
+
         function checkReveal() {
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             let transparentPixels = 0;
@@ -1451,6 +1702,7 @@ html_content = """
                 canvas.style.opacity = 0;
                 setTimeout(() => canvas.style.display = 'none', 800);
 
+                unlockRestOfInvitation();
                 fireSideCannon('left');
                 fireSideCannon('right');
                 spawnExplosionFlock();
