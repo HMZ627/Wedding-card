@@ -42,14 +42,14 @@ st.markdown(
 )
 
 
-def load_couple_image_html():
+def load_image_html(base_name, img_id, alt_text, placeholder_text):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     candidates = [
-        "couple.png", "couple.webp", "couple.jpg", "couple.jpeg",
-        os.path.join("images", "couple.png"),
-        os.path.join("images", "couple.webp"),
-        os.path.join("images", "couple.jpg"),
-        os.path.join("images", "couple.jpeg"),
+        f"{base_name}.png", f"{base_name}.webp", f"{base_name}.jpg", f"{base_name}.jpeg",
+        os.path.join("images", f"{base_name}.png"),
+        os.path.join("images", f"{base_name}.webp"),
+        os.path.join("images", f"{base_name}.jpg"),
+        os.path.join("images", f"{base_name}.jpeg"),
     ]
     for rel_path in candidates:
         full_path = os.path.join(base_dir, rel_path)
@@ -59,17 +59,28 @@ def load_couple_image_html():
                 ext = "jpeg"
             with open(full_path, "rb") as img_file:
                 b64_data = base64.b64encode(img_file.read()).decode("utf-8")
-            return f'<img id="couple-photo-img" src="data:image/{ext};base64,{b64_data}" alt="Velvet Heart Box" class="couple-photo">'
+            return f'<img id="{img_id}" src="data:image/{ext};base64,{b64_data}" alt="{alt_text}" class="couple-photo">'
     return (
         '<div class="couple-photo couple-photo-placeholder">'
-        '<span>Upload transparent <b>couple.png</b><br>(374 &times; 667)<br>to your GitHub repo root</span>'
+        f'<span>{placeholder_text}</span>'
         '</div>'
     )
 
 
-couple_photo_html = load_couple_image_html()
+couple_photo_html = load_image_html(
+    "couple",
+    "couple-photo-img",
+    "Velvet Heart Box",
+    "Upload transparent <b>couple.png</b><br>(374 &times; 667)<br>to your GitHub repo root"
+)
+couple_photo_2_html = load_image_html(
+    "couple2",
+    "couple-photo-img-2",
+    "Flower Bouquet",
+    "Upload transparent <b>couple2.png</b><br>to your GitHub repo root"
+)
 
-# HTML, CSS, JS payload with WebGL silk curtains, synchronized slow ease-in-out heart-bordered photo & Red theme
+# HTML, CSS, JS payload with WebGL silk curtains, synchronized slow ease-in-out gold-bordered photos & Red theme
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -361,7 +372,7 @@ html_content = """
             color: #fdf5e6;
         }
 
-        /* Section 3: Groom & Bride Names Centered + Gold-Bordered Transparent Heart Box */
+        /* Section 3: Groom & Bride Names Centered + Left Bouquet Tilt-In + Right Heart Box Slide-In */
         #sec-couple {
             overflow: hidden;
         }
@@ -375,13 +386,13 @@ html_content = """
         .couple-details {
             position: relative;
             z-index: 18;
-            max-width: 680px;
+            max-width: 660px;
             padding: 16px 10px;
             margin: 0 auto;
             opacity: 0;
             filter: blur(22px);
             transform: scale(0.95) translateY(20px);
-            transition: opacity 1.3s ease-out, filter 1.3s ease-out, transform 1.3s ease-out;
+            transition: opacity 1.4s ease-out, filter 1.4s ease-out, transform 1.4s ease-out;
             will-change: opacity, filter, transform;
         }
         .couple-details.couple-revealed {
@@ -411,7 +422,7 @@ html_content = """
             text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
         }
 
-        /* 374x667 Transparent Heart Box (Driven 1:1 in JS with scroll animation progress!) */
+        /* Right Side: 374x667 Transparent Heart Box (1:1 synced with scroll) */
         .couple-photo-wrap {
             position: absolute;
             right: 0;
@@ -424,12 +435,27 @@ html_content = """
             transform: translate3d(105%, -50%, 0);
             will-change: transform, opacity;
         }
+
+        /* Left Side: Flower Bouquet Tilting In at 60deg (1:1 synced with scroll) */
+        .couple-photo-wrap-2 {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 340px;
+            height: 453px;
+            z-index: 14;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate3d(-115%, -50%, 0) rotate(20deg);
+            will-change: transform, opacity;
+        }
+
         .couple-photo {
             width: 100%;
             height: 100%;
             object-fit: contain;
             display: block;
-            filter: drop-shadow(-10px 18px 28px rgba(0, 0, 0, 0.58));
+            filter: drop-shadow(-8px 16px 24px rgba(0, 0, 0, 0.55));
         }
         .couple-photo-placeholder {
             display: flex;
@@ -442,7 +468,7 @@ html_content = """
             font-size: 1.05rem;
             line-height: 1.6;
             border-radius: 18px;
-            border: 2px dashed rgba(245, 211, 118, 0.45);
+            border: 1.5px dashed rgba(245, 211, 118, 0.45);
             background: rgba(34, 0, 6, 0.35);
         }
 
@@ -601,15 +627,23 @@ html_content = """
            ========================================= */
         @media (max-width: 960px) {
             .couple-details {
-                margin-bottom: 14vh;
+                margin-bottom: 18vh;
             }
             .couple-photo-wrap {
                 top: auto;
                 bottom: -3vh;
                 right: 0;
-                width: min(260px, 62vw);
+                width: min(230px, 55vw);
                 height: auto;
                 aspect-ratio: 374 / 667;
+            }
+            .couple-photo-wrap-2 {
+                top: auto;
+                bottom: 2vh;
+                left: 0;
+                width: min(195px, 46vw);
+                height: auto;
+                aspect-ratio: 3 / 4;
             }
         }
 
@@ -624,13 +658,17 @@ html_content = """
             .butterfly { font-size: 2.2rem; }
             .garden-container { gap: 40px; height: 100px; }
 
-            .couple-details { padding: 6px 10px; margin-bottom: 16vh; }
+            .couple-details { padding: 6px 10px; margin-bottom: 20vh; }
             .couple-name-big { font-size: clamp(2.4rem, 9vw, 3.3rem); }
             .couple-lineage { font-size: 1.02rem; margin-bottom: 8px; }
             .couple-with { font-size: 2rem; margin: 4px 0; }
             .couple-photo-wrap {
                 bottom: -4vh;
-                width: min(240px, 62vw);
+                width: min(215px, 54vw);
+            }
+            .couple-photo-wrap-2 {
+                bottom: 2vh;
+                width: min(180px, 45vw);
             }
 
             .schedule-box { padding: 16px; }
@@ -650,7 +688,11 @@ html_content = """
             .garden-container { gap: 20px; }
             .couple-photo-wrap {
                 bottom: -4vh;
-                width: min(220px, 60vw);
+                width: min(195px, 52vw);
+            }
+            .couple-photo-wrap-2 {
+                bottom: 1vh;
+                width: min(165px, 44vw);
             }
         }
     </style>
@@ -825,7 +867,7 @@ html_content = """
 
        <!-- PART 2: Royal Red Theme -->
        <div id="part2-section">
-           <!-- SECTION 2: Centered Groom & Bride Names + 77% Slide-In Heart Box on Right -->
+           <!-- SECTION 2: Centered Groom & Bride Names + Left Bouquet (60deg) + Right Heart Box -->
            <section id="sec-couple" class="snap-section">
                <div id="couple-stage-wrap" class="couple-stage-layout">
                    <div id="couple-details" class="couple-details obs">
@@ -835,6 +877,9 @@ html_content = """
                        <div class="couple-name-big">Ms. Rimsha Fatima</div>
                        <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Late)</div>
                    </div>
+               </div>
+               <div id="couple-photo-wrap-2" class="couple-photo-wrap-2">
+                   __COUPLE_PHOTO_2_HTML__
                </div>
                <div id="couple-photo-wrap" class="couple-photo-wrap">
                    __COUPLE_PHOTO_HTML__
@@ -1176,7 +1221,7 @@ html_content = """
         requestAnimationFrame(renderCurtainFrame);
 
         // ============================================================
-        // 2. AUTO-FIT BISMILLAH + METALLIC GOLD HEART SILHOUETTE BORDER
+        // 2. AUTO-FIT BISMILLAH + THIN METALLIC GOLD SILHOUETTE BORDERS
         // ============================================================
         function fitBismillah() {
             const el = document.querySelector('.bismillah');
@@ -1196,22 +1241,27 @@ html_content = """
             document.fonts.ready.then(fitBismillah);
         }
 
-        // Traces exact alpha contour of transparent heart-box PNG and wraps it in a gleaming metallic gold border
-        function applyGoldHeartBorder() {
-            const img = document.getElementById('couple-photo-img');
+        // Traces exact alpha contour of transparent PNGs and draws a delicate thin gold outline on both
+        function applyGoldBorderToImage(imgId) {
+            const img = document.getElementById(imgId);
             if (!img || img.dataset.goldBorderApplied) return;
 
             function process() {
                 if (img.dataset.goldBorderApplied) return;
-                const w = img.naturalWidth || 374;
-                const h = img.naturalHeight || 667;
-                if (w === 0 || h === 0) return;
+                const origW = img.naturalWidth;
+                const origH = img.naturalHeight;
+                if (!origW || !origH) return;
 
-                const pad = 12;
+                // Cap internal canvas width at 760px for 2x retina crispness & instant startup even on huge PNGs
+                const maxCanvasW = 760;
+                const downScale = origW > maxCanvasW ? (maxCanvasW / origW) : 1;
+                const w = Math.round(origW * downScale);
+                const h = Math.round(origH * downScale);
+
+                const pad = 10;
                 const cw = w + pad * 2;
                 const ch = h + pad * 2;
 
-                // Build metallic gold silhouette matching exact PNG alpha mask
                 const goldSil = document.createElement('canvas');
                 goldSil.width = cw;
                 goldSil.height = ch;
@@ -1228,18 +1278,18 @@ html_content = """
                 gsCtx.fillStyle = grad;
                 gsCtx.fillRect(0, 0, cw, ch);
 
-                // Stamp 32-angle radial gold contour + soft gold aura, then overlay original photo
                 const out = document.createElement('canvas');
                 out.width = cw;
                 out.height = ch;
                 const oCtx = out.getContext('2d');
 
-                const borderPx = Math.max(3, Math.round(w * 0.011));
+                // Thin, refined ~1.75px visual border scaled cleanly to canvas resolution
+                const borderPx = Math.max(1.8, (w / 360) * 1.75);
                 const steps = 32;
 
                 oCtx.save();
-                oCtx.shadowColor = 'rgba(251, 229, 156, 0.58)';
-                oCtx.shadowBlur = 10;
+                oCtx.shadowColor = 'rgba(251, 229, 156, 0.45)';
+                oCtx.shadowBlur = Math.max(3, (w / 360) * 4.5);
                 for (let i = 0; i < steps; i++) {
                     const ang = (i * Math.PI * 2) / steps;
                     oCtx.drawImage(goldSil, Math.cos(ang) * borderPx, Math.sin(ang) * borderPx);
@@ -1263,7 +1313,8 @@ html_content = """
                 img.addEventListener('load', process, { once: true });
             }
         }
-        applyGoldHeartBorder();
+        applyGoldBorderToImage('couple-photo-img');
+        applyGoldBorderToImage('couple-photo-img-2');
 
         // ============================================================
         // 3. 60FPS SIDE-FRAMED PARALLAX SPRITES + BIRD FLOCK ENGINE
@@ -1462,12 +1513,13 @@ html_content = """
         }
 
         // ============================================================
-        // 4. LOCKED SINGLE-SCROLL + SYNCHRONIZED SLOW EASE-IN-OUT PHOTO
+        // 4. LOCKED SINGLE-SCROLL + SYNCHRONIZED SLOW EASE-IN-OUT PHOTOS
         // ============================================================
         const mainContent = document.getElementById('main-content');
         const part2Section = document.getElementById('part2-section');
         const coupleDetails = document.getElementById('couple-details');
         const couplePhotoWrap = document.getElementById('couple-photo-wrap');
+        const couplePhotoWrap2 = document.getElementById('couple-photo-wrap-2');
         const sections = Array.from(document.querySelectorAll('.snap-section'));
 
         let currentSectionIdx = 0;
@@ -1478,16 +1530,28 @@ html_content = """
         let currentPhotoP = 0;
 
         function applyCouplePhotoProgress(p) {
-            if (!couplePhotoWrap) return;
             const clamped = clamp01(p);
             const isSmall = window.innerWidth <= 960;
-            // Slides from 105% (off-screen right) down to 23% (~77% inside right side of screen)
-            const xPct = 105 - clamped * (105 - 23);
-            const op = clamp01(clamped * 1.45);
-            couplePhotoWrap.style.opacity = op.toFixed(3);
-            couplePhotoWrap.style.transform = isSmall
-                ? `translate3d(${xPct.toFixed(3)}%, 0, 0)`
-                : `translate3d(${xPct.toFixed(3)}%, -50%, 0)`;
+            const op = clamp01(clamped * 1.35);
+
+            // Right Picture (Heart Box): Slides in from 105% -> 23% (~77% inside right side)
+            if (couplePhotoWrap) {
+                const xRight = 105 - clamped * (105 - 23);
+                couplePhotoWrap.style.opacity = op.toFixed(3);
+                couplePhotoWrap.style.transform = isSmall
+                    ? `translate3d(${xRight.toFixed(3)}%, 0, 0)`
+                    : `translate3d(${xRight.toFixed(3)}%, -50%, 0)`;
+            }
+
+            // Left Picture (Flower Bouquet): Tilts in from left side (-115%, 20deg -> -20%, 60deg)
+            if (couplePhotoWrap2) {
+                const xLeft = -115 + clamped * (115 - 20);
+                const rotLeft = 20 + clamped * 40; // Ends at 60 degrees tilt!
+                couplePhotoWrap2.style.opacity = op.toFixed(3);
+                couplePhotoWrap2.style.transform = isSmall
+                    ? `translate3d(${xLeft.toFixed(3)}%, 0, 0) rotate(${rotLeft.toFixed(2)}deg)`
+                    : `translate3d(${xLeft.toFixed(3)}%, -50%, 0) rotate(${rotLeft.toFixed(2)}deg)`;
+            }
         }
 
         function getSectionTargetY(idx) {
@@ -1513,7 +1577,7 @@ html_content = """
             const endY = getSectionTargetY(targetIdx);
             const distance = endY - startY;
 
-            // Slower, majestic 2.4s glide whenever entering or leaving the Name Reveal & Heart Box section
+            // Slower, graceful 2.4s glide whenever entering or leaving the Name Reveal & Photos section
             const involvesCouple = (targetIdx === 2 || prevIdx === 2);
             const duration = involvesCouple ? 2400 : 1650;
 
@@ -1524,12 +1588,12 @@ html_content = """
             function step(now) {
                 const elapsed = now - startTime;
                 const t = Math.min(1, elapsed / duration);
-                // Deep easeInOutQuart gives a slower, gentler ease-in and longer cushioned ease-out
+                // easeInOutQuart provides a slower, gentler ease-in and longer cushioned ease-out
                 const ease = involvesCouple ? easeInOutQuart(t) : easeInOutCubic(t);
 
                 window.scrollTo(0, startY + distance * ease);
 
-                // Picture ease-in & ease-out is 1:1 synchronized with the scroll progress (starts at t=0, completes at t=1!)
+                // Both pictures' ease-in & ease-out start at t=0 and finish cleanly at t=1 with scroll!
                 currentPhotoP = startPhotoP + (endPhotoP - startPhotoP) * ease;
                 applyCouplePhotoProgress(currentPhotoP);
 
@@ -2085,6 +2149,6 @@ html_content = """
     </script>
 </body>
 </html>
-""".replace("__COUPLE_PHOTO_HTML__", couple_photo_html)
+""".replace("__COUPLE_PHOTO_HTML__", couple_photo_html).replace("__COUPLE_PHOTO_2_HTML__", couple_photo_2_html)
 
 components.html(html_content, scrolling=True)
