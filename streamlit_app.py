@@ -1,3 +1,5 @@
+import base64
+import os
 import streamlit as st
 import streamlit.components.v1 as components
 
@@ -39,7 +41,35 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with WebGL silk curtains, locked slow auto-scroll sections, Red transition, pop-up & table arrows
+
+def load_couple_image_html():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        "couple.jpg", "couple.jpeg", "couple.png", "couple.webp",
+        os.path.join("images", "couple.jpg"),
+        os.path.join("images", "couple.jpeg"),
+        os.path.join("images", "couple.png"),
+        os.path.join("images", "couple.webp"),
+    ]
+    for rel_path in candidates:
+        full_path = os.path.join(base_dir, rel_path)
+        if os.path.exists(full_path):
+            ext = os.path.splitext(full_path)[1].lower().lstrip(".")
+            if ext == "jpg":
+                ext = "jpeg"
+            with open(full_path, "rb") as img_file:
+                b64_data = base64.b64encode(img_file.read()).decode("utf-8")
+            return f'<img src="data:image/{ext};base64,{b64_data}" alt="Mr. Asad Arsal &amp; Ms. Rimsha Fatima" class="couple-photo">'
+    return (
+        '<div class="couple-photo couple-photo-placeholder">'
+        '<span>Upload <b>couple.jpg</b><br>(374 &times; 667)<br>to your GitHub repo root</span>'
+        '</div>'
+    )
+
+
+couple_photo_html = load_couple_image_html()
+
+# HTML, CSS, JS payload with WebGL silk curtains, locked slow auto-scroll sections, Red transition, pop-up & slide-in photo
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -157,7 +187,7 @@ html_content = """
             min-height: 100vh;
             width: 100%;
             box-sizing: border-box;
-            padding: 7vh 28px;
+            padding: 5vh 28px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -331,11 +361,20 @@ html_content = """
             color: #fdf5e6;
         }
 
-        /* Section 3: Groom & Bride Names */
-        .couple-details {
-            max-width: 760px;
-            padding: 20px 10px;
+        /* Section 3: Groom & Bride Names + 374x667 Right Slide-In Picture */
+        .couple-stage-layout {
+            width: 100%;
+            max-width: 1080px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 48px;
             margin: 0 auto;
+        }
+        .couple-details {
+            flex: 1 1 auto;
+            max-width: 560px;
+            padding: 16px 10px;
             opacity: 0;
             filter: blur(22px);
             transform: scale(0.95) translateY(20px);
@@ -349,7 +388,7 @@ html_content = """
         }
         .couple-name-big {
             font-family: 'Alex Brush', cursive;
-            font-size: clamp(2.9rem, 8.5vw, 4.5rem);
+            font-size: clamp(2.8rem, 6.2vw, 4.4rem);
             color: #fbe59c;
             line-height: 1.15;
             margin: 4px 0;
@@ -367,6 +406,44 @@ html_content = """
             color: #f5d376;
             margin: 8px 0;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+        }
+
+        /* 374x667 Slide-In Photo Container (Ease-In From Right Side) */
+        .couple-photo-wrap {
+            flex: 0 0 auto;
+            width: 374px;
+            height: 667px;
+            border-radius: 18px;
+            border: 2px solid rgba(245, 211, 118, 0.72);
+            box-shadow: 0 18px 46px rgba(0, 0, 0, 0.55), 0 0 22px rgba(245, 211, 118, 0.16);
+            overflow: hidden;
+            background: rgba(34, 0, 6, 0.45);
+            opacity: 0;
+            transform: translateX(65vw);
+            transition: transform 1.35s ease-in, opacity 1.15s ease-in;
+            will-change: transform, opacity;
+        }
+        .couple-photo-wrap.photo-revealed {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .couple-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .couple-photo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            box-sizing: border-box;
+            text-align: center;
+            color: #fbe59c;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            border: 2px dashed rgba(245, 211, 118, 0.45);
         }
 
         /* Section 4: Schedule Table + Helpful Slide Arrow Controls for Mobile/Elderly Users */
@@ -520,10 +597,24 @@ html_content = """
         .visible-up { opacity: 1 !important; filter: blur(0px) !important; transform: translateY(0) !important; }
 
         /* =========================================
-           MOBILE RESPONSIVENESS
+           MOBILE & TABLET RESPONSIVENESS
            ========================================= */
+        @media (max-width: 960px) {
+            .couple-stage-layout {
+                flex-direction: column;
+                gap: 18px;
+            }
+            .couple-photo-wrap {
+                /* Maintains exact 374:667 portrait ratio cleanly on smaller screens */
+                width: min(230px, 46vw);
+                height: auto;
+                aspect-ratio: 374 / 667;
+                max-height: 44vh;
+            }
+        }
+
         @media (max-width: 768px) {
-            .snap-section { padding: 6vh 24px; }
+            .snap-section { padding: 4.5vh 24px; }
             .type-fade { font-size: 1.35rem !important; margin-bottom: 4.5vh; }
             .hadith-trans { font-size: 1.15rem; }
             .sub-header-text { font-size: 1.22rem; }
@@ -533,8 +624,14 @@ html_content = """
             .butterfly { font-size: 2.2rem; }
             .garden-container { gap: 40px; height: 100px; }
 
-            .couple-lineage { font-size: 1.05rem; }
-            .couple-with { font-size: 2rem; }
+            .couple-details { padding: 6px 10px; }
+            .couple-name-big { font-size: clamp(2.4rem, 9vw, 3.2rem); }
+            .couple-lineage { font-size: 1rem; margin-bottom: 8px; }
+            .couple-with { font-size: 2rem; margin: 4px 0; }
+            .couple-photo-wrap {
+                width: min(210px, 50vw);
+                max-height: 42vh;
+            }
 
             .schedule-box { padding: 16px; }
             th { font-size: 1.5rem; padding: 10px; }
@@ -551,6 +648,10 @@ html_content = """
             .sub-header-text { font-size: 1.1rem; }
             .hosts-names { font-size: 1.2rem; }
             .garden-container { gap: 20px; }
+            .couple-photo-wrap {
+                width: min(195px, 48vw);
+                max-height: 40vh;
+            }
         }
     </style>
 </head>
@@ -724,14 +825,19 @@ html_content = """
 
        <!-- PART 2: Royal Red Theme -->
        <div id="part2-section">
-           <!-- SECTION 2: Groom & Bride Names + Triggered Pop-up Animation -->
+           <!-- SECTION 2: Groom & Bride Names + 374x667 Right Slide-In Picture + Pop-up Animation -->
            <section id="sec-couple" class="snap-section">
-               <div id="couple-details" class="couple-details obs">
-                   <div class="couple-name-big">Mr. Asad Arsal</div>
-                   <div class="couple-lineage">S/O Mr. Arsal Bhatti</div>
-                   <div class="couple-with">with</div>
-                   <div class="couple-name-big">Ms. Rimsha Fatima</div>
-                   <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Late)</div>
+               <div id="couple-stage-wrap" class="couple-stage-layout">
+                   <div id="couple-details" class="couple-details obs">
+                       <div class="couple-name-big">Mr. Asad Arsal</div>
+                       <div class="couple-lineage">S/O Mr. Arsal Bhatti</div>
+                       <div class="couple-with">with</div>
+                       <div class="couple-name-big">Ms. Rimsha Fatima</div>
+                       <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Late)</div>
+                   </div>
+                   <div id="couple-photo-wrap" class="couple-photo-wrap">
+                       __COUPLE_PHOTO_HTML__
+                   </div>
                </div>
            </section>
 
@@ -1289,6 +1395,7 @@ html_content = """
         const mainContent = document.getElementById('main-content');
         const part2Section = document.getElementById('part2-section');
         const coupleDetails = document.getElementById('couple-details');
+        const couplePhotoWrap = document.getElementById('couple-photo-wrap');
         const sections = Array.from(document.querySelectorAll('.snap-section'));
 
         let currentSectionIdx = 0;
@@ -1348,9 +1455,7 @@ html_content = """
             }
         }
 
-        // Wheel Lock & Single-Scroll Trigger (Desktop Mouse & Trackpad)
         window.addEventListener('wheel', (e) => {
-            // Allow horizontal trackpad scroll on the Schedule Table
             const inTable = e.target.closest('#schedule-scroll-wrap');
             if (inTable && Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
 
@@ -1363,7 +1468,6 @@ html_content = """
             }
         }, { passive: false });
 
-        // Touch Swipe Lock & Single-Swipe Trigger (Mobile Phones)
         let touchStartX = 0, touchStartY = 0, touchInTable = false, touchTriggered = false;
         window.addEventListener('touchstart', (e) => {
             if (e.touches.length !== 1) return;
@@ -1378,7 +1482,6 @@ html_content = """
             const dx = touchStartX - e.touches[0].clientX;
             const dy = touchStartY - e.touches[0].clientY;
 
-            // Allow horizontal swiping inside the schedule table without locking
             if (touchInTable && Math.abs(dx) > Math.abs(dy)) return;
 
             if (!isCurtainOpening || isAutoScrolling || performance.now() < scrollCooldownUntil) {
@@ -1395,7 +1498,6 @@ html_content = """
             }
         }, { passive: false });
 
-        // Keyboard Lock & Single-Step Navigation
         window.addEventListener('keydown', (e) => {
             if (!isCurtainOpening) {
                 if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(e.key)) {
@@ -1639,7 +1741,7 @@ html_content = """
         });
 
         // ============================================================
-        // 7. BIDIRECTIONAL BLUR-IN-FADE-IN SCROLL OBSERVER (Up & Down!)
+        // 7. BIDIRECTIONAL BLUR-IN-FADE-IN SCROLL OBSERVER + PHOTO SLIDE-IN
         // ============================================================
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -1653,6 +1755,7 @@ html_content = """
                     }
                     if (el.id === 'couple-details') {
                         el.classList.add('couple-revealed');
+                        if (couplePhotoWrap) couplePhotoWrap.classList.add('photo-revealed');
                         setRedThemeActive(true);
                         triggerCoupleCelebration();
                     }
@@ -1663,7 +1766,10 @@ html_content = """
                     if (el.classList.contains('fade-up')) { el.classList.remove('visible-up'); }
                     if (el.classList.contains('ink-trigger')) { el.classList.remove('visible-ink'); }
                     if (el.classList.contains('type-fade')) { el.classList.remove('visible-fade'); }
-                    if (el.id === 'couple-details') { el.classList.remove('couple-revealed'); }
+                    if (el.id === 'couple-details') {
+                        el.classList.remove('couple-revealed');
+                        if (couplePhotoWrap) couplePhotoWrap.classList.remove('photo-revealed');
+                    }
                 }
             });
         }, { threshold: 0.10 });
@@ -1879,6 +1985,6 @@ html_content = """
     </script>
 </body>
 </html>
-"""
+""".replace("__COUPLE_PHOTO_HTML__", couple_photo_html)
 
 components.html(html_content, scrolling=True)
