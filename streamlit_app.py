@@ -161,7 +161,7 @@ html_content = """
             width: 100%;
         }
 
-        /* Bismillah Calligraphy (Original ﷽ + auto-fit) */
+        /* Bismillah Calligraphy (Original ۞بِسْـــمِ اللّٰهِ الرَّحْمٰـــنِ الرَّحِيْـــمِ۞ + auto-fit) */
         .bismillah-wrap {
             width: 100%;
             display: flex;
