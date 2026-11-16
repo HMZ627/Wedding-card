@@ -161,7 +161,7 @@ html_content = """
             width: 100%;
         }
 
-        /* Bismillah Calligraphy (Original ۞بِسْـــمِ اللّٰهِ الرَّحْمٰـــنِ الرَّحِيْـــمِ۞ + auto-fit) */
+        /* Bismillah Calligraphy (Auto-fit for Mobile & Desktop) */
         .bismillah-wrap {
             width: 100%;
             display: flex;
@@ -170,14 +170,15 @@ html_content = """
         }
         .bismillah {
             display: inline-block;
-            font-family: 'Amiri', serif;
-            font-size: clamp(1.8rem, 11vw, 4.5rem);
+            font-family: 'Amiri', 'Traditional Arabic', serif;
+            font-size: clamp(1.2rem, 6.2vw, 3.3rem);
             opacity: 0;
             filter: blur(16px);
             transform: translateY(24px);
             transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
-            line-height: 1.4;
+            line-height: 1.5;
             white-space: nowrap;
+            direction: rtl;
         }
         .bismillah.visible-up {
             opacity: 1 !important;
@@ -405,7 +406,7 @@ html_content = """
             justify-content: center;
         }
 
-        /* Blur-in-Fade-in animation for Bride & Groom names (bidirectional on scroll!) */
+        /* Blur-in-Fade-in animation for Groom & Bride names (bidirectional on scroll!) */
         .couple-details {
             max-width: 760px;
             padding: 20px 10px;
@@ -636,9 +637,9 @@ html_content = """
 
        <!-- PART 1: Upper Page -->
        <div id="part1-wrapper" class="part1-container">
-           <!-- Original Bismillah Calligraphy -->
+           <!-- Bismillah Calligraphy -->
            <div class="bismillah-wrap">
-               <div class="bismillah obs fade-up">﷽</div>
+               <div class="bismillah obs fade-up">۞بِسْـــمِ اللّٰهِ الرَّحْمٰـــنِ الرَّحِيْـــمِ۞</div>
            </div>
 
            <!-- Type-in Fade-in Translation -->
