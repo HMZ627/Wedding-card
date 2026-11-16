@@ -44,7 +44,6 @@ st.markdown(
 
 def load_couple_image_html():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    # Prioritize PNG/WEBP first so transparent background is preserved
     candidates = [
         "couple.png", "couple.webp", "couple.jpg", "couple.jpeg",
         os.path.join("images", "couple.png"),
@@ -412,7 +411,7 @@ html_content = """
             text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
         }
 
-        /* 374x667 Transparent Heart Box (77% slid into right edge of screen, ease-in) */
+        /* 374x667 Transparent Heart Box (Smooth ease-in entry + cushioned ease-out stop!) */
         .couple-photo-wrap {
             position: absolute;
             right: 0;
@@ -423,12 +422,12 @@ html_content = """
             pointer-events: none;
             opacity: 0;
             transform: translate3d(105%, -50%, 0);
-            transition: transform 1.35s ease-in, opacity 1.15s ease-in;
+            transition: transform 1.65s cubic-bezier(0.65, 0, 0.30, 1), opacity 1.35s ease-in-out;
             will-change: transform, opacity;
         }
         .couple-photo-wrap.photo-revealed {
             opacity: 1;
-            /* 23% stays off right edge -> ~77% of the box slides into the screen! */
+            /* 23% stays off right edge -> ~77% of the box slides into the screen */
             transform: translate3d(23%, -50%, 0);
         }
         .couple-photo {
@@ -607,7 +606,6 @@ html_content = """
            MOBILE & TABLET RESPONSIVENESS
            ========================================= */
         @media (max-width: 960px) {
-            /* Keep names centered in upper-middle while transparent box slides 77% into bottom-right */
             .couple-details {
                 margin-bottom: 14vh;
             }
