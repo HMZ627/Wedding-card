@@ -44,12 +44,13 @@ st.markdown(
 
 def load_couple_image_html():
     base_dir = os.path.dirname(os.path.abspath(__file__))
+    # Prioritize PNG/WEBP first so transparent background is preserved
     candidates = [
-        "couple.jpg", "couple.jpeg", "couple.png", "couple.webp",
-        os.path.join("images", "couple.jpg"),
-        os.path.join("images", "couple.jpeg"),
+        "couple.png", "couple.webp", "couple.jpg", "couple.jpeg",
         os.path.join("images", "couple.png"),
         os.path.join("images", "couple.webp"),
+        os.path.join("images", "couple.jpg"),
+        os.path.join("images", "couple.jpeg"),
     ]
     for rel_path in candidates:
         full_path = os.path.join(base_dir, rel_path)
@@ -59,17 +60,17 @@ def load_couple_image_html():
                 ext = "jpeg"
             with open(full_path, "rb") as img_file:
                 b64_data = base64.b64encode(img_file.read()).decode("utf-8")
-            return f'<img src="data:image/{ext};base64,{b64_data}" alt="Mr. Asad Arsal &amp; Ms. Rimsha Fatima" class="couple-photo">'
+            return f'<img src="data:image/{ext};base64,{b64_data}" alt="Velvet Heart Box" class="couple-photo">'
     return (
         '<div class="couple-photo couple-photo-placeholder">'
-        '<span>Upload <b>couple.jpg</b><br>(374 &times; 667)<br>to your GitHub repo root</span>'
+        '<span>Upload transparent <b>couple.png</b><br>(374 &times; 667)<br>to your GitHub repo root</span>'
         '</div>'
     )
 
 
 couple_photo_html = load_couple_image_html()
 
-# HTML, CSS, JS payload with WebGL silk curtains, locked slow auto-scroll sections, Red transition, pop-up & slide-in photo
+# HTML, CSS, JS payload with WebGL silk curtains, locked slow auto-scroll sections, Red transition & transparent box slide-in
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -361,20 +362,23 @@ html_content = """
             color: #fdf5e6;
         }
 
-        /* Section 3: Groom & Bride Names + 374x667 Right Slide-In Picture */
+        /* Section 3: Groom & Bride Names Centered + Transparent Heart Box Sliding 77% In From Right */
+        #sec-couple {
+            overflow: hidden;
+        }
         .couple-stage-layout {
             width: 100%;
-            max-width: 1080px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 48px;
-            margin: 0 auto;
+            position: relative;
         }
         .couple-details {
-            flex: 1 1 auto;
-            max-width: 560px;
+            position: relative;
+            z-index: 18;
+            max-width: 680px;
             padding: 16px 10px;
+            margin: 0 auto;
             opacity: 0;
             filter: blur(22px);
             transform: scale(0.95) translateY(20px);
@@ -388,50 +392,51 @@ html_content = """
         }
         .couple-name-big {
             font-family: 'Alex Brush', cursive;
-            font-size: clamp(2.8rem, 6.2vw, 4.4rem);
+            font-size: clamp(2.9rem, 7.5vw, 4.5rem);
             color: #fbe59c;
             line-height: 1.15;
             margin: 4px 0;
-            text-shadow: 0 3px 14px rgba(0, 0, 0, 0.45);
+            text-shadow: 0 3px 16px rgba(0, 0, 0, 0.65);
         }
         .couple-lineage {
             font-size: 1.3rem;
             color: #f4e2c7;
             margin-bottom: 14px;
-            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
         }
         .couple-with {
             font-family: 'Great Vibes', cursive;
             font-size: 2.6rem;
             color: #f5d376;
             margin: 8px 0;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
         }
 
-        /* 374x667 Slide-In Photo Container (Ease-In From Right Side) */
+        /* 374x667 Transparent Heart Box (77% slid into right edge of screen, ease-in) */
         .couple-photo-wrap {
-            flex: 0 0 auto;
+            position: absolute;
+            right: 0;
+            top: 50%;
             width: 374px;
             height: 667px;
-            border-radius: 18px;
-            border: 2px solid rgba(245, 211, 118, 0.72);
-            box-shadow: 0 18px 46px rgba(0, 0, 0, 0.55), 0 0 22px rgba(245, 211, 118, 0.16);
-            overflow: hidden;
-            background: rgba(34, 0, 6, 0.45);
+            z-index: 14;
+            pointer-events: none;
             opacity: 0;
-            transform: translateX(65vw);
+            transform: translate3d(105%, -50%, 0);
             transition: transform 1.35s ease-in, opacity 1.15s ease-in;
             will-change: transform, opacity;
         }
         .couple-photo-wrap.photo-revealed {
             opacity: 1;
-            transform: translateX(0);
+            /* 23% stays off right edge -> ~77% of the box slides into the screen! */
+            transform: translate3d(23%, -50%, 0);
         }
         .couple-photo {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             display: block;
+            filter: drop-shadow(-10px 18px 28px rgba(0, 0, 0, 0.58));
         }
         .couple-photo-placeholder {
             display: flex;
@@ -441,9 +446,11 @@ html_content = """
             box-sizing: border-box;
             text-align: center;
             color: #fbe59c;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             line-height: 1.6;
+            border-radius: 18px;
             border: 2px dashed rgba(245, 211, 118, 0.45);
+            background: rgba(34, 0, 6, 0.35);
         }
 
         /* Section 4: Schedule Table + Helpful Slide Arrow Controls for Mobile/Elderly Users */
@@ -600,16 +607,21 @@ html_content = """
            MOBILE & TABLET RESPONSIVENESS
            ========================================= */
         @media (max-width: 960px) {
-            .couple-stage-layout {
-                flex-direction: column;
-                gap: 18px;
+            /* Keep names centered in upper-middle while transparent box slides 77% into bottom-right */
+            .couple-details {
+                margin-bottom: 14vh;
             }
             .couple-photo-wrap {
-                /* Maintains exact 374:667 portrait ratio cleanly on smaller screens */
-                width: min(230px, 46vw);
+                top: auto;
+                bottom: -3vh;
+                right: 0;
+                width: min(260px, 62vw);
                 height: auto;
                 aspect-ratio: 374 / 667;
-                max-height: 44vh;
+                transform: translate3d(105%, 0, 0);
+            }
+            .couple-photo-wrap.photo-revealed {
+                transform: translate3d(23%, 0, 0);
             }
         }
 
@@ -624,13 +636,13 @@ html_content = """
             .butterfly { font-size: 2.2rem; }
             .garden-container { gap: 40px; height: 100px; }
 
-            .couple-details { padding: 6px 10px; }
-            .couple-name-big { font-size: clamp(2.4rem, 9vw, 3.2rem); }
-            .couple-lineage { font-size: 1rem; margin-bottom: 8px; }
+            .couple-details { padding: 6px 10px; margin-bottom: 16vh; }
+            .couple-name-big { font-size: clamp(2.4rem, 9vw, 3.3rem); }
+            .couple-lineage { font-size: 1.02rem; margin-bottom: 8px; }
             .couple-with { font-size: 2rem; margin: 4px 0; }
             .couple-photo-wrap {
-                width: min(210px, 50vw);
-                max-height: 42vh;
+                bottom: -4vh;
+                width: min(240px, 62vw);
             }
 
             .schedule-box { padding: 16px; }
@@ -649,8 +661,8 @@ html_content = """
             .hosts-names { font-size: 1.2rem; }
             .garden-container { gap: 20px; }
             .couple-photo-wrap {
-                width: min(195px, 48vw);
-                max-height: 40vh;
+                bottom: -4vh;
+                width: min(220px, 60vw);
             }
         }
     </style>
@@ -825,7 +837,7 @@ html_content = """
 
        <!-- PART 2: Royal Red Theme -->
        <div id="part2-section">
-           <!-- SECTION 2: Groom & Bride Names + 374x667 Right Slide-In Picture + Pop-up Animation -->
+           <!-- SECTION 2: Centered Groom & Bride Names + 77% Slide-In Heart Box on Right -->
            <section id="sec-couple" class="snap-section">
                <div id="couple-stage-wrap" class="couple-stage-layout">
                    <div id="couple-details" class="couple-details obs">
@@ -835,9 +847,9 @@ html_content = """
                        <div class="couple-name-big">Ms. Rimsha Fatima</div>
                        <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Late)</div>
                    </div>
-                   <div id="couple-photo-wrap" class="couple-photo-wrap">
-                       __COUPLE_PHOTO_HTML__
-                   </div>
+               </div>
+               <div id="couple-photo-wrap" class="couple-photo-wrap">
+                   __COUPLE_PHOTO_HTML__
                </div>
            </section>
 
@@ -1425,7 +1437,7 @@ html_content = """
             const startY = window.scrollY || window.pageYOffset || 0;
             const endY = getSectionTargetY(targetIdx);
             const distance = endY - startY;
-            const duration = 1600; // Smooth and slow 1.6s glide
+            const duration = 1600;
             const startTime = performance.now();
 
             function step(now) {
