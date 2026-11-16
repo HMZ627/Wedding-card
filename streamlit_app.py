@@ -39,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with WebGL silk curtains, side-framed parallax, split reveal & Royal Red pop-up trigger
+# HTML, CSS, JS payload with WebGL silk curtains, side-framed parallax, Red transition, pop-up & table arrows
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -66,7 +66,7 @@ html_content = """
             color: #4a3b32;
         }
 
-        /* --- Royal Crimson Red Theme Backdrop --- */
+        /* --- Royal Crimson Red Theme Backdrop (Smooth Color Transition on Scroll) --- */
         #red-theme-backdrop {
             position: fixed;
             inset: 0;
@@ -81,7 +81,7 @@ html_content = """
                 radial-gradient(ellipse at center, transparent 38%, rgba(26, 0, 4, 0.68) 100%),
                 url('https://www.transparenttextures.com/patterns/aged-paper.png');
             background-blend-mode: normal, normal, normal, normal, multiply;
-            transition: opacity 0.9s ease-in-out;
+            transition: opacity 1.1s ease-in-out;
             will-change: opacity;
         }
         #red-theme-backdrop.red-active {
@@ -154,11 +154,21 @@ html_content = """
 
         /* --- Part 1 Container --- */
         .part1-container {
-            padding: 10vh 28px 10vh 28px;
+            padding: 10vh 28px 12vh 28px;
             position: relative;
             z-index: 20;
             box-sizing: border-box;
             width: 100%;
+            transition: color 0.9s ease-in-out;
+        }
+        body.on-red-theme .part1-container,
+        body.on-red-theme .hadith-trans,
+        body.on-red-theme .blessings-line {
+            color: #f4e2c7;
+        }
+        body.on-red-theme .hadith-arabic,
+        body.on-red-theme .hosts-names {
+            color: #fbe59c;
         }
 
         /* Bismillah Calligraphy (Auto-fit for Mobile & Desktop) */
@@ -175,7 +185,7 @@ html_content = """
             opacity: 0;
             filter: blur(16px);
             transform: translateY(24px);
-            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
+            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out, color 0.9s ease-in-out;
             line-height: 1.5;
             white-space: nowrap;
             direction: rtl;
@@ -222,11 +232,13 @@ html_content = """
             margin-bottom: 10px;
             line-height: 1.5;
             direction: rtl;
+            transition: color 0.9s ease-in-out;
         }
         .hadith-trans {
             font-size: 1.45rem;
             font-style: italic;
             color: #4a3b32;
+            transition: color 0.9s ease-in-out;
         }
 
         /* --- Ink Spread Hosts & Invitation Section --- */
@@ -250,14 +262,16 @@ html_content = """
             color: #6b5344;
             margin-bottom: 14px;
             display: block;
+            transition: color 0.9s ease-in-out;
         }
         .hosts-names {
             font-size: 1.85rem;
             font-weight: 700;
             color: #800000;
             display: block;
-            margin: 12px 0;
-            line-height: 1.55;
+            margin: 14px 0;
+            line-height: 1.6;
+            transition: color 0.9s ease-in-out;
         }
         .wedding-word {
             color: #ff033e;
@@ -297,113 +311,21 @@ html_content = """
         @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
         @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
-        /* --- Subtle Scroll Prompt Below Garden --- */
-        .unlock-hint {
-            font-size: 1.15rem;
-            font-style: italic;
-            color: #800000;
-            margin: 18px auto 0 auto;
-            min-height: 36px;
-            opacity: 0;
-            filter: blur(10px);
-            transform: translateY(8px);
-            transition: opacity 0.8s ease-out, filter 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .unlock-hint.active {
-            opacity: 1;
-            filter: blur(0px);
-            transform: translateY(0px);
-            animation: hintPulse 2s infinite ease-in-out 0.8s;
-        }
-        .clone-unlock-hint {
-            opacity: 1;
-            filter: blur(0px);
-            transform: translateY(0px);
-            transition: opacity 0.45s ease-out, filter 0.45s ease-out, transform 0.45s ease-out;
-        }
-        .unlock-hint.blur-out-away,
-        .clone-unlock-hint.blur-out-away {
-            animation: none !important;
-            opacity: 0 !important;
-            filter: blur(14px) !important;
-            transform: translateY(14px) scale(0.94) !important;
-            transition: opacity 0.45s ease-out, filter 0.45s ease-out, transform 0.45s ease-out !important;
-        }
-        @keyframes hintPulse {
-            0%, 100% { transform: translateY(0px); opacity: 0.78; }
-            50% { transform: translateY(6px); opacity: 1; }
-        }
-
         /* =========================================================
-           PRE-WARMED 60FPS GPU SPLIT-PAGE CURTAIN STAGE
-           ========================================================= */
-        #split-stage {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            display: none;
-            opacity: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-        .split-half {
-            position: absolute;
-            top: 0;
-            width: 50%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #f7ecd3;
-            background-image: 
-                radial-gradient(circle at 15% 20%, rgba(168, 124, 72, 0.14) 0%, transparent 45%),
-                radial-gradient(circle at 85% 35%, rgba(139, 94, 52, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 25% 75%, rgba(168, 124, 72, 0.13) 0%, transparent 50%),
-                radial-gradient(circle at 80% 85%, rgba(120, 75, 40, 0.14) 0%, transparent 45%),
-                url('https://www.transparenttextures.com/patterns/aged-paper.png');
-            will-change: transform, opacity;
-            backface-visibility: hidden;
-        }
-        #split-left {
-            left: 0;
-            transform-origin: top left;
-            box-shadow: 8px 18px 36px rgba(25, 0, 4, 0.45);
-        }
-        #split-right {
-            right: 0;
-            transform-origin: top right;
-            box-shadow: -8px 18px 36px rgba(25, 0, 4, 0.45);
-        }
-        .split-inner {
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
-
-        #split-left::after {
-            content: ''; position: absolute; top: 0; right: 0; width: 22px; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(74, 59, 50, 0.22));
-            pointer-events: none;
-        }
-        #split-right::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 22px; height: 100%;
-            background: linear-gradient(to left, transparent, rgba(74, 59, 50, 0.22));
-            pointer-events: none;
-        }
-
-        /* =========================================================
-           PART 2 SECTION (Royal Red Theme — Natural Flow)
+           PART 2 SECTION (Royal Red Theme — Smooth Natural Flow)
            ========================================================= */
         #part2-section {
             position: relative;
             z-index: 12;
-            padding: 0 28px;
+            padding: 8vh 28px 0 28px;
             color: #fdf5e6;
         }
         #couple-stage-wrap {
-            min-height: 92vh;
+            min-height: 75vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 10vh;
         }
 
         /* Blur-in-Fade-in animation for Groom & Bride names (bidirectional on scroll!) */
@@ -444,20 +366,78 @@ html_content = """
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
         }
 
-        /* --- Schedule Table (Same Layout, Restyled for Royal Red Theme) --- */
+        /* --- Schedule Table + Helpful Slide Arrow Controls for Mobile/Elderly Users --- */
         .schedule-box {
             max-width: 780px;
             margin: 4vh auto 18vh auto;
             opacity: 0; filter: blur(16px); transform: translateY(28px);
             transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
             background: rgba(34, 0, 6, 0.42);
-            padding: 30px;
+            padding: 26px 26px 30px 26px;
             border-radius: 15px;
             border: 2px dashed rgba(245, 211, 118, 0.65);
             box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32);
-            overflow-x: auto;
         }
-        table { width: 100%; border-collapse: collapse; min-width: 400px; }
+        .table-slide-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+            padding: 6px 10px;
+            background: rgba(245, 211, 118, 0.10);
+            border-radius: 999px;
+            border: 1px solid rgba(245, 211, 118, 0.35);
+        }
+        .table-slide-bar.needs-scroll {
+            display: flex;
+        }
+        .slide-arrow-btn {
+            min-width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1.5px solid #f5d376;
+            background: rgba(92, 6, 18, 0.85);
+            color: #fbe59c;
+            font-size: 1.2rem;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.25s ease, transform 0.2s ease, background 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .slide-arrow-btn:active {
+            transform: scale(0.92);
+            background: rgba(245, 211, 118, 0.25);
+        }
+        .slide-arrow-btn.at-edge {
+            opacity: 0.30;
+            cursor: default;
+            animation: none !important;
+        }
+        .slide-arrow-btn.nudge-right:not(.at-edge) {
+            animation: arrowNudgeR 1.6s infinite ease-in-out;
+        }
+        @keyframes arrowNudgeR {
+            0%, 100% { transform: translateX(0px); }
+            50% { transform: translateX(4px); }
+        }
+        .slide-bar-label {
+            font-size: 0.98rem;
+            font-style: italic;
+            color: #fbe59c;
+            letter-spacing: 0.3px;
+        }
+        .table-scroll-wrap {
+            width: 100%;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 480px; }
         th, td { padding: 15px; text-align: center; border-bottom: 1px solid rgba(253, 245, 230, 0.22); }
         th { font-family: 'Great Vibes', cursive; font-size: 2rem; color: #f5d376; border-bottom: 2px solid rgba(245, 211, 118, 0.55); }
         td { font-size: 1.15rem; color: #fdf5e6; }
@@ -541,7 +521,7 @@ html_content = """
            ========================================= */
         @media (max-width: 768px) {
             .part1-container { padding: 10vh 24px 8vh 24px; }
-            #part2-section { padding: 0 24px; }
+            #part2-section { padding: 6vh 24px 0 24px; }
             .type-fade { font-size: 1.35rem !important; margin-bottom: 14vh; }
             .hadith-trans { font-size: 1.15rem; }
             .sub-header-text { font-size: 1.22rem; }
@@ -554,7 +534,7 @@ html_content = """
             .couple-lineage { font-size: 1.05rem; }
             .couple-with { font-size: 2rem; }
 
-            .schedule-box { padding: 15px; margin-bottom: 14vh; }
+            .schedule-box { padding: 16px; margin-bottom: 14vh; }
             th { font-size: 1.5rem; padding: 10px; }
             td { font-size: 0.95rem; padding: 10px; }
 
@@ -622,20 +602,10 @@ html_content = """
        <div class="open-btn" onclick="openCurtains()">Open</div>
     </div>
 
-    <!-- Pre-Warmed Split-Page Curtain Overlay -->
-    <div id="split-stage">
-        <div id="split-left" class="split-half">
-            <div id="split-left-inner" class="split-inner"></div>
-        </div>
-        <div id="split-right" class="split-half">
-            <div id="split-right-inner" class="split-inner"></div>
-        </div>
-    </div>
-
     <!-- Website Content -->
     <div class="content" id="main-content">
 
-       <!-- PART 1: Upper Page -->
+       <!-- PART 1: Old Paper Theme -->
        <div id="part1-wrapper" class="part1-container">
            <!-- Bismillah Calligraphy -->
            <div class="bismillah-wrap">
@@ -652,13 +622,15 @@ html_content = """
            </div>
 
            <!-- Ink Spread Hosts & Invitation Request + Blooming Garden -->
-           <div class="obs ink-trigger" style="min-height: 360px; margin-bottom: 10vh; display: flex; align-items: center; justify-content: center;">
+           <div class="obs ink-trigger" style="min-height: 360px; margin-bottom: 6vh; display: flex; align-items: center; justify-content: center;">
                <div class="ink-spread-anim">
                    <div class="sub-header-text">
                        <span class="blessings-line">With the blessings of Almighty Allah,</span>
                        <span class="hosts-names">
-                           Mr. Ahmer Mukhtar (Late), Mrs. Mehnaz Ahmer<br>
-                           and Mr. Ali Ahmer
+                           Mr. Ahmer Mukhtar (Late)<br>
+                           Mrs. Mehnaz Ahmer<br>
+                           Mr. Ali Ahmer<br>
+                           Mr. Umer Ahmer
                        </span>
                        cordially request the pleasure of your company<br>
                        at the <span class="wedding-word">wedding</span> ceremonies of their beloved daughter &amp; sister
@@ -744,16 +716,12 @@ html_content = """
                    </div>
                </div>
            </div>
-
-           <div id="unlock-hint" class="unlock-hint active">
-               ↓ Scroll down to reveal ↓
-           </div>
        </div>
 
        <!-- PART 2: Royal Red Theme (Groom First, then Bride + Triggered Pop-up Animation) -->
        <div id="part2-section">
            <div id="couple-stage-wrap">
-               <div id="couple-details" class="couple-details">
+               <div id="couple-details" class="couple-details obs">
                    <div class="couple-name-big">Mr. Asad Arsal</div>
                    <div class="couple-lineage">S/O Mr. Arsal Bhatti</div>
                    <div class="couple-with">with</div>
@@ -762,23 +730,30 @@ html_content = """
                </div>
            </div>
 
-           <!-- Schedule Table -->
+           <!-- Schedule Table with Helpful Left/Right Slide Arrows for Mobile/Elderly Users -->
            <div class="schedule-box obs fade-up">
-               <table>
-                   <tr><th>Event</th><th>Date</th><th>Time</th><th>Location</th></tr>
-                   <tr>
-                       <td><b>MEHNDI</b></td>
-                       <td>Thursday, 24th December 2026</td>
-                       <td>07:00 PM onwards</td>
-                       <td>Farid Town, Sahiwal</td>
-                   </tr>
-                   <tr>
-                       <td><b>BARAAT</b></td>
-                       <td>Friday, 25th December 2026</td>
-                       <td>11:00 AM onwards</td>
-                       <td>Grand Al-Noor Marriage Hall (JTS)<br><span class="venue-sub">(Near Faridia Park, Tariq Bin Ziad Colony, Sahiwal)</span></td>
-                   </tr>
-               </table>
+               <div id="table-slide-bar" class="table-slide-bar">
+                   <button id="slide-left-btn" class="slide-arrow-btn at-edge" type="button" aria-label="Slide table left" onclick="slideSchedule(-180, event)">◀</button>
+                   <span class="slide-bar-label">Slide or tap arrows for full details</span>
+                   <button id="slide-right-btn" class="slide-arrow-btn nudge-right" type="button" aria-label="Slide table right" onclick="slideSchedule(180, event)">▶</button>
+               </div>
+               <div id="schedule-scroll-wrap" class="table-scroll-wrap">
+                   <table id="schedule-table">
+                       <tr><th>Event</th><th>Date</th><th>Time</th><th>Location</th></tr>
+                       <tr>
+                           <td><b>MEHNDI</b></td>
+                           <td>Thursday, 24th December 2026</td>
+                           <td>07:00 PM onwards</td>
+                           <td>Farid Town, Sahiwal</td>
+                       </tr>
+                       <tr>
+                           <td><b>BARAAT</b></td>
+                           <td>Friday, 25th December 2026</td>
+                           <td>11:00 AM onwards</td>
+                           <td>Grand Al-Noor Marriage Hall (JTS)<br><span class="venue-sub">(Near Faridia Park, Tariq Bin Ziad Colony, Sahiwal)</span></td>
+                       </tr>
+                   </table>
+               </div>
            </div>
 
            <!-- RSVP & Compliments -->
@@ -1240,7 +1215,7 @@ html_content = """
             const sizePx = isFg ? (Math.random() * 28 + 34) : (Math.random() * 22 + 16);
             const blurPx = isFg ? 3.2 : 1.6;
 
-            // Strictly place all background & foreground decor along the left & right sides (never in front of center texts!)
+            // Strictly place all background & foreground decor along left & right edges (never in front of center texts)
             const isLeft = Math.random() > 0.5;
             const marginBand = isMobile ? 0.08 : 0.14;
             const xFrac = isLeft
@@ -1302,102 +1277,14 @@ html_content = """
         }
 
         // ============================================================
-        // 4. TRIGGERED 60FPS SPLIT-CURTAIN REVEAL + POP-UP CELEBRATION
+        // 4. ROYAL RED THEME TRANSITION + COUPLE POP-UP TRIGGER
         // ============================================================
         const mainContent = document.getElementById('main-content');
-        const part1Wrapper = document.getElementById('part1-wrapper');
         const part2Section = document.getElementById('part2-section');
         const coupleDetails = document.getElementById('couple-details');
-        const splitStage = document.getElementById('split-stage');
-        const splitLeft = document.getElementById('split-left');
-        const splitRight = document.getElementById('split-right');
-        const splitLeftInner = document.getElementById('split-left-inner');
-        const splitRightInner = document.getElementById('split-right-inner');
 
-        let splitPrepared = false;
-        let splitTriggered = false;
-        let splitFinished = false;
         let celebrationTriggered = false;
-        let splitTriggerY = 0;
         let redBlend = 0;
-        let clonedHintEls = [];
-
-        function syncCloneWidths() {
-            if (!splitPrepared) return;
-            const cw = document.documentElement.clientWidth;
-            splitLeftInner.style.width = `${cw}px`;
-            splitRightInner.style.width = `${cw}px`;
-            splitRightInner.style.left = `${-cw / 2}px`;
-        }
-
-        window.addEventListener('resize', () => {
-            resizeDecorCanvases();
-            syncCloneWidths();
-        });
-
-        function buildSplitClones() {
-            function makeSafeClone() {
-                const clone = part1Wrapper.cloneNode(true);
-                clone.removeAttribute('id');
-                clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
-
-                clone.querySelectorAll('.obs').forEach(el => {
-                    el.style.transition = 'none';
-                    if (el.classList.contains('fade-up')) el.classList.add('visible-up');
-                    if (el.classList.contains('ink-trigger')) el.classList.add('visible-ink');
-                    if (el.classList.contains('type-fade')) el.classList.add('visible-fade');
-                });
-
-                const inkAnim = clone.querySelector('.ink-spread-anim');
-                if (inkAnim) {
-                    inkAnim.style.transition = 'none';
-                    inkAnim.style.opacity = '1';
-                    inkAnim.style.clipPath = 'none';
-                    inkAnim.style.filter = 'none';
-                }
-                clone.querySelectorAll('.flower-layer-1, .flower-layer-2, .flower-layer-3, .flower-center').forEach(layer => {
-                    layer.style.animation = 'none';
-                    layer.style.transform = 'scale(1)';
-                });
-                clone.querySelectorAll('.flower svg').forEach(svg => {
-                    svg.style.animation = 'none';
-                    svg.style.transform = 'scale(1)';
-                });
-                clone.querySelectorAll('.butterfly').forEach(bf => {
-                    bf.style.transition = 'none';
-                    bf.style.animation = 'none';
-                    bf.style.bottom = '100px';
-                    bf.style.opacity = '1';
-                });
-
-                const hint = clone.querySelector('.unlock-hint');
-                if (hint) {
-                    hint.classList.remove('active');
-                    hint.classList.add('clone-unlock-hint');
-                }
-                return clone;
-            }
-            splitLeftInner.innerHTML = '';
-            splitRightInner.innerHTML = '';
-            splitLeftInner.appendChild(makeSafeClone());
-            splitRightInner.appendChild(makeSafeClone());
-            clonedHintEls = Array.from(splitStage.querySelectorAll('.clone-unlock-hint'));
-            syncCloneWidths();
-        }
-
-        function prepareSplitStage() {
-            if (splitPrepared) return;
-            buildSplitClones();
-            splitPrepared = true;
-
-            const part1BottomScroll = Math.max(0, part1Wrapper.offsetHeight - window.innerHeight);
-            splitTriggerY = Math.max(40, part1BottomScroll + 20);
-
-            // Pre-warm splitStage behind Part 1 so split starts with 0ms stutter
-            splitStage.style.display = 'block';
-            splitStage.style.zIndex = '19';
-            splitStage.style.opacity = '0.001';
-        }
 
         function setRedThemeActive(isActive) {
             if (isActive) {
@@ -1417,86 +1304,11 @@ html_content = """
             spawnExplosionFlock();
         }
 
-        function triggerSplitCurtain() {
-            if (splitTriggered) return;
-            splitTriggered = true;
-
-            const curY = window.scrollY || window.pageYOffset || 0;
-            syncCloneWidths();
-            splitLeftInner.style.transform = `translate3d(0, ${-curY}px, 0)`;
-            splitRightInner.style.transform = `translate3d(0, ${-curY}px, 0)`;
-
-            splitStage.style.zIndex = '25';
-            splitStage.style.opacity = '1';
-            part1Wrapper.style.opacity = '0';
-            part1Wrapper.style.visibility = 'hidden';
-
-            // BEAT 1 (0ms): Smoothly blur-out-fade-out "Scroll down to reveal" first!
-            const realHint = document.getElementById('unlock-hint');
-            if (realHint) realHint.classList.add('blur-out-away');
-            clonedHintEls.forEach(el => el.classList.add('blur-out-away'));
-
-            // BEAT 2 (260ms): Position Couple Details at center & launch silky falling split curtains!
-            setTimeout(() => {
-                const part2Top = part1Wrapper.offsetHeight;
-                window.scrollTo({ top: part2Top, behavior: 'auto' });
-
-                setRedThemeActive(true);
-
-                const animOpts = {
-                    duration: 1850,
-                    easing: 'cubic-bezier(0.32, 0.04, 0.25, 1)',
-                    fill: 'forwards'
-                };
-                splitLeft.animate([
-                    { transform: 'translate3d(0, 0, 0) rotate(0deg) scaleX(1)', opacity: 1 },
-                    { transform: 'translate3d(-16vw, 18vh, 0) rotate(-4deg) scaleX(0.92)', opacity: 1, offset: 0.45 },
-                    { transform: 'translate3d(-44vw, 64vh, 0) rotate(-11deg) scaleX(0.82)', opacity: 0 }
-                ], animOpts);
-
-                splitRight.animate([
-                    { transform: 'translate3d(0, 0, 0) rotate(0deg) scaleX(1)', opacity: 1 },
-                    { transform: 'translate3d(16vw, 18vh, 0) rotate(4deg) scaleX(0.92)', opacity: 1, offset: 0.45 },
-                    { transform: 'translate3d(44vw, 64vh, 0) rotate(11deg) scaleX(0.82)', opacity: 0 }
-                ], animOpts);
-
-                // BEAT 3 (480ms): Blur-in-Fade-in Groom & Bride names & trigger Pop-up animation in Royal Red background!
-                setTimeout(() => {
-                    coupleDetails.classList.add('couple-revealed');
-                    triggerCoupleCelebration();
-                }, 220);
-
-                // Cleanup split overlay & observe Couple Details for bidirectional scroll blur-in
-                setTimeout(() => {
-                    splitFinished = true;
-                    splitStage.style.display = 'none';
-                    part1Wrapper.style.opacity = '1';
-                    part1Wrapper.style.visibility = 'visible';
-                    if (realHint) realHint.classList.remove('blur-out-away');
-                    observer.observe(coupleDetails);
-                }, 1900);
-            }, 260);
-        }
-
-        function checkScrollTriggers(scrollY) {
+        function checkRedThemeTransition() {
             if (!isCurtainOpening) return;
-
-            if (!splitPrepared) {
-                const approxTrigger = Math.max(40, part1Wrapper.offsetHeight - window.innerHeight + 20);
-                if (scrollY >= approxTrigger) {
-                    prepareSplitStage();
-                }
-            }
-
-            if (splitPrepared && !splitTriggered && scrollY >= splitTriggerY) {
-                triggerSplitCurtain();
-            }
-
-            if (splitFinished) {
-                const p2Top = part1Wrapper.offsetHeight;
-                const threshold = p2Top - window.innerHeight * 0.42;
-                setRedThemeActive(scrollY >= threshold);
-            }
+            const p2Rect = part2Section.getBoundingClientRect();
+            // Smoothly switch to Royal Red theme as Groom & Bride section approaches view
+            setRedThemeActive(p2Rect.top <= window.innerHeight * 0.62);
         }
 
         let decorLoopActive = false;
@@ -1505,10 +1317,10 @@ html_content = """
             const timeSec = now / 1000;
             const scrollY = window.scrollY || window.pageYOffset || 0;
 
-            checkScrollTriggers(scrollY);
+            checkRedThemeTransition();
 
             const targetRed = redBackdrop.classList.contains('red-active') ? 1 : 0;
-            redBlend += (targetRed - redBlend) * 0.06;
+            redBlend += (targetRed - redBlend) * 0.05;
 
             bgCtx.clearRect(0, 0, dW, dH);
             fgCtx.clearRect(0, 0, dW, dH);
@@ -1645,35 +1457,79 @@ html_content = """
         }
 
         // ============================================================
-        // 5. BIDIRECTIONAL BLUR-IN-FADE-IN SCROLL OBSERVER (Up & Down!)
+        // 5. SCHEDULE TABLE SLIDE ARROWS (For Mobile / Elderly Users)
+        // ============================================================
+        const scheduleScrollWrap = document.getElementById('schedule-scroll-wrap');
+        const tableSlideBar = document.getElementById('table-slide-bar');
+        const slideLeftBtn = document.getElementById('slide-left-btn');
+        const slideRightBtn = document.getElementById('slide-right-btn');
+
+        function updateTableSlideBar() {
+            if (!scheduleScrollWrap || !tableSlideBar) return;
+            const maxScroll = scheduleScrollWrap.scrollWidth - scheduleScrollWrap.clientWidth;
+            if (maxScroll > 6) {
+                tableSlideBar.classList.add('needs-scroll');
+                const cur = scheduleScrollWrap.scrollLeft;
+                if (cur <= 2) {
+                    slideLeftBtn.classList.add('at-edge');
+                } else {
+                    slideLeftBtn.classList.remove('at-edge');
+                }
+                if (cur >= maxScroll - 2) {
+                    slideRightBtn.classList.add('at-edge');
+                } else {
+                    slideRightBtn.classList.remove('at-edge');
+                }
+            } else {
+                tableSlideBar.classList.remove('needs-scroll');
+            }
+        }
+
+        function slideSchedule(delta, e) {
+            if (e) e.stopPropagation();
+            if (!scheduleScrollWrap) return;
+            scheduleScrollWrap.scrollBy({ left: delta, behavior: 'smooth' });
+        }
+
+        if (scheduleScrollWrap) {
+            scheduleScrollWrap.addEventListener('scroll', updateTableSlideBar, { passive: true });
+        }
+        window.addEventListener('load', updateTableSlideBar);
+        window.addEventListener('resize', () => {
+            resizeDecorCanvases();
+            updateTableSlideBar();
+        });
+
+        // ============================================================
+        // 6. BIDIRECTIONAL BLUR-IN-FADE-IN SCROLL OBSERVER (Up & Down!)
         // ============================================================
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 const el = entry.target;
                 if (entry.isIntersecting) {
                     if (el.classList.contains('fade-up')) { el.classList.add('visible-up'); }
-                    if (el.classList.contains('ink-trigger')) {
-                        el.classList.add('visible-ink');
-                        if (!splitPrepared) prepareSplitStage();
-                    }
+                    if (el.classList.contains('ink-trigger')) { el.classList.add('visible-ink'); }
                     if (el.classList.contains('type-fade')) {
                         el.classList.add('visible-fade');
                         typeWriterFadeIn(el);
                     }
                     if (el.id === 'couple-details') {
                         el.classList.add('couple-revealed');
-                        if (splitFinished) triggerCoupleCelebration();
+                        // Ensure Red backdrop is active & trigger Pop-up animation as Groom & Bride appear!
+                        setRedThemeActive(true);
+                        triggerCoupleCelebration();
+                    }
+                    if (el.classList.contains('schedule-box')) {
+                        updateTableSlideBar();
                     }
                 } else {
                     if (el.classList.contains('fade-up')) { el.classList.remove('visible-up'); }
                     if (el.classList.contains('ink-trigger')) { el.classList.remove('visible-ink'); }
                     if (el.classList.contains('type-fade')) { el.classList.remove('visible-fade'); }
-                    if (el.id === 'couple-details' && splitFinished) {
-                        el.classList.remove('couple-revealed');
-                    }
+                    if (el.id === 'couple-details') { el.classList.remove('couple-revealed'); }
                 }
             });
-        }, { threshold: 0.08 });
+        }, { threshold: 0.10 });
 
         function openCurtains() {
             if (isCurtainOpening) return;
@@ -1683,6 +1539,7 @@ html_content = """
 
             setTimeout(() => {
                 fitBismillah();
+                updateTableSlideBar();
                 mainContent.classList.add('site-revealed');
 
                 bgDecorCanvas.classList.add('decor-revealed');
@@ -1692,8 +1549,7 @@ html_content = """
                     requestAnimationFrame(renderDecorFrame);
                 }
 
-                part1Wrapper.querySelectorAll('.obs').forEach(el => observer.observe(el));
-                part2Section.querySelectorAll('.obs').forEach(el => observer.observe(el));
+                document.querySelectorAll('.obs').forEach(el => observer.observe(el));
 
                 setTimeout(() => {
                     mainContent.style.filter = 'none';
@@ -1705,10 +1561,11 @@ html_content = """
         }
 
         // ============================================================
-        // 6. INTERACTIVE TAP / CLICK HANDLER
+        // 7. INTERACTIVE TAP / CLICK HANDLER
         // ============================================================
         document.addEventListener('click', function(e) {
             if (!isCurtainOpening) return;
+            if (e.target.closest('.slide-arrow-btn')) return;
 
             const target = e.target.closest('.interactive-emoji');
             if (target) {
@@ -1754,7 +1611,7 @@ html_content = """
         });
 
         // ============================================================
-        // 7. TYPEWRITER "FADE-IN" LOGIC
+        // 8. TYPEWRITER "FADE-IN" LOGIC
         // ============================================================
         function typeWriterFadeIn(el) {
             if(el.dataset.typed) return;
@@ -1783,7 +1640,7 @@ html_content = """
         }
 
         // ============================================================
-        // 8. CUSTOM SIDE-CANNONS (Left & Right Bottom Screen)
+        // 9. CUSTOM SIDE-CANNONS (Left & Right Bottom Screen)
         // ============================================================
         function fireSideCannon(side) {
             const container = document.createElement('div');
@@ -1831,7 +1688,7 @@ html_content = """
         }
 
         // ============================================================
-        // 9. SLOW-MOTION FLOCK OF BIRDS EMERGING BEHIND COUPLE NAMES
+        // 10. SLOW-MOTION FLOCK OF BIRDS EMERGING BEHIND COUPLE NAMES
         // ============================================================
         function spawnExplosionFlock() {
             const mcRect = mainContent.getBoundingClientRect();
@@ -1845,7 +1702,6 @@ html_content = """
             flockContainer.style.top = `${originY}px`;
             flockContainer.style.width = '0px';
             flockContainer.style.height = '0px';
-            // z-index 10 sits cleanly BEHIND #part2-section (z-index 12) and IN FRONT of Royal Red backdrop (0)!
             flockContainer.style.zIndex = '10';
             flockContainer.style.pointerEvents = 'none';
             mainContent.insertBefore(flockContainer, part2Section);
