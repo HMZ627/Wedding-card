@@ -59,7 +59,7 @@ def load_couple_image_html():
                 ext = "jpeg"
             with open(full_path, "rb") as img_file:
                 b64_data = base64.b64encode(img_file.read()).decode("utf-8")
-            return f'<img src="data:image/{ext};base64,{b64_data}" alt="Velvet Heart Box" class="couple-photo">'
+            return f'<img id="couple-photo-img" src="data:image/{ext};base64,{b64_data}" alt="Velvet Heart Box" class="couple-photo">'
     return (
         '<div class="couple-photo couple-photo-placeholder">'
         '<span>Upload transparent <b>couple.png</b><br>(374 &times; 667)<br>to your GitHub repo root</span>'
@@ -69,7 +69,7 @@ def load_couple_image_html():
 
 couple_photo_html = load_couple_image_html()
 
-# HTML, CSS, JS payload with WebGL silk curtains, locked slow auto-scroll sections, Red transition & transparent box slide-in
+# HTML, CSS, JS payload with WebGL silk curtains, synchronized slow ease-in-out heart-bordered photo & Red theme
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -111,7 +111,7 @@ html_content = """
                 radial-gradient(ellipse at center, transparent 38%, rgba(26, 0, 4, 0.68) 100%),
                 url('https://www.transparenttextures.com/patterns/aged-paper.png');
             background-blend-mode: normal, normal, normal, normal, multiply;
-            transition: opacity 1.2s ease-in-out;
+            transition: opacity 1.3s ease-in-out;
             will-change: opacity;
         }
         #red-theme-backdrop.red-active {
@@ -361,7 +361,7 @@ html_content = """
             color: #fdf5e6;
         }
 
-        /* Section 3: Groom & Bride Names Centered + Transparent Heart Box Sliding 77% In From Right */
+        /* Section 3: Groom & Bride Names Centered + Gold-Bordered Transparent Heart Box */
         #sec-couple {
             overflow: hidden;
         }
@@ -381,7 +381,7 @@ html_content = """
             opacity: 0;
             filter: blur(22px);
             transform: scale(0.95) translateY(20px);
-            transition: opacity 1.25s ease-out, filter 1.25s ease-out, transform 1.25s ease-out;
+            transition: opacity 1.3s ease-out, filter 1.3s ease-out, transform 1.3s ease-out;
             will-change: opacity, filter, transform;
         }
         .couple-details.couple-revealed {
@@ -411,7 +411,7 @@ html_content = """
             text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
         }
 
-        /* 374x667 Transparent Heart Box (Smooth ease-in entry + cushioned ease-out stop!) */
+        /* 374x667 Transparent Heart Box (Driven 1:1 in JS with scroll animation progress!) */
         .couple-photo-wrap {
             position: absolute;
             right: 0;
@@ -422,13 +422,7 @@ html_content = """
             pointer-events: none;
             opacity: 0;
             transform: translate3d(105%, -50%, 0);
-            transition: transform 1.65s cubic-bezier(0.65, 0, 0.30, 1), opacity 1.35s ease-in-out;
             will-change: transform, opacity;
-        }
-        .couple-photo-wrap.photo-revealed {
-            opacity: 1;
-            /* 23% stays off right edge -> ~77% of the box slides into the screen */
-            transform: translate3d(23%, -50%, 0);
         }
         .couple-photo {
             width: 100%;
@@ -616,10 +610,6 @@ html_content = """
                 width: min(260px, 62vw);
                 height: auto;
                 aspect-ratio: 374 / 667;
-                transform: translate3d(105%, 0, 0);
-            }
-            .couple-photo-wrap.photo-revealed {
-                transform: translate3d(23%, 0, 0);
             }
         }
 
@@ -912,6 +902,9 @@ html_content = """
         function easeInOutCubic(t) {
             return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
+        function easeInOutQuart(t) {
+            return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+        }
         function clamp01(val) {
             return Math.max(0, Math.min(1, val));
         }
@@ -1183,7 +1176,7 @@ html_content = """
         requestAnimationFrame(renderCurtainFrame);
 
         // ============================================================
-        // 2. AUTO-FIT BISMILLAH FOR MOBILE SCREENS
+        // 2. AUTO-FIT BISMILLAH + METALLIC GOLD HEART SILHOUETTE BORDER
         // ============================================================
         function fitBismillah() {
             const el = document.querySelector('.bismillah');
@@ -1202,6 +1195,75 @@ html_content = """
         if (document.fonts && document.fonts.ready) {
             document.fonts.ready.then(fitBismillah);
         }
+
+        // Traces exact alpha contour of transparent heart-box PNG and wraps it in a gleaming metallic gold border
+        function applyGoldHeartBorder() {
+            const img = document.getElementById('couple-photo-img');
+            if (!img || img.dataset.goldBorderApplied) return;
+
+            function process() {
+                if (img.dataset.goldBorderApplied) return;
+                const w = img.naturalWidth || 374;
+                const h = img.naturalHeight || 667;
+                if (w === 0 || h === 0) return;
+
+                const pad = 12;
+                const cw = w + pad * 2;
+                const ch = h + pad * 2;
+
+                // Build metallic gold silhouette matching exact PNG alpha mask
+                const goldSil = document.createElement('canvas');
+                goldSil.width = cw;
+                goldSil.height = ch;
+                const gsCtx = goldSil.getContext('2d');
+                gsCtx.drawImage(img, pad, pad, w, h);
+                gsCtx.globalCompositeOperation = 'source-in';
+
+                const grad = gsCtx.createLinearGradient(0, 0, cw, ch);
+                grad.addColorStop(0.0, '#fff3b8');
+                grad.addColorStop(0.28, '#d4af37');
+                grad.addColorStop(0.55, '#fbe59c');
+                grad.addColorStop(0.80, '#b8860b');
+                grad.addColorStop(1.0, '#f5d376');
+                gsCtx.fillStyle = grad;
+                gsCtx.fillRect(0, 0, cw, ch);
+
+                // Stamp 32-angle radial gold contour + soft gold aura, then overlay original photo
+                const out = document.createElement('canvas');
+                out.width = cw;
+                out.height = ch;
+                const oCtx = out.getContext('2d');
+
+                const borderPx = Math.max(3, Math.round(w * 0.011));
+                const steps = 32;
+
+                oCtx.save();
+                oCtx.shadowColor = 'rgba(251, 229, 156, 0.58)';
+                oCtx.shadowBlur = 10;
+                for (let i = 0; i < steps; i++) {
+                    const ang = (i * Math.PI * 2) / steps;
+                    oCtx.drawImage(goldSil, Math.cos(ang) * borderPx, Math.sin(ang) * borderPx);
+                }
+                oCtx.restore();
+
+                for (let i = 0; i < steps; i++) {
+                    const ang = (i * Math.PI * 2) / steps;
+                    oCtx.drawImage(goldSil, Math.cos(ang) * (borderPx * 0.65), Math.sin(ang) * (borderPx * 0.65));
+                }
+
+                oCtx.drawImage(img, pad, pad, w, h);
+
+                img.dataset.goldBorderApplied = '1';
+                img.src = out.toDataURL('image/png');
+            }
+
+            if (img.complete && img.naturalWidth > 0) {
+                process();
+            } else {
+                img.addEventListener('load', process, { once: true });
+            }
+        }
+        applyGoldHeartBorder();
 
         // ============================================================
         // 3. 60FPS SIDE-FRAMED PARALLAX SPRITES + BIRD FLOCK ENGINE
@@ -1400,7 +1462,7 @@ html_content = """
         }
 
         // ============================================================
-        // 4. LOCKED SINGLE-SCROLL SMOOTH & SLOW SECTION NAVIGATION
+        // 4. LOCKED SINGLE-SCROLL + SYNCHRONIZED SLOW EASE-IN-OUT PHOTO
         // ============================================================
         const mainContent = document.getElementById('main-content');
         const part2Section = document.getElementById('part2-section');
@@ -1413,6 +1475,20 @@ html_content = """
         let scrollCooldownUntil = 0;
         let celebrationTriggered = false;
         let redBlend = 0;
+        let currentPhotoP = 0;
+
+        function applyCouplePhotoProgress(p) {
+            if (!couplePhotoWrap) return;
+            const clamped = clamp01(p);
+            const isSmall = window.innerWidth <= 960;
+            // Slides from 105% (off-screen right) down to 23% (~77% inside right side of screen)
+            const xPct = 105 - clamped * (105 - 23);
+            const op = clamp01(clamped * 1.45);
+            couplePhotoWrap.style.opacity = op.toFixed(3);
+            couplePhotoWrap.style.transform = isSmall
+                ? `translate3d(${xPct.toFixed(3)}%, 0, 0)`
+                : `translate3d(${xPct.toFixed(3)}%, -50%, 0)`;
+        }
 
         function getSectionTargetY(idx) {
             const sec = sections[idx];
@@ -1429,26 +1505,40 @@ html_content = """
             if (targetIdx < 0 || targetIdx >= sections.length || targetIdx === currentSectionIdx) return;
             if (isAutoScrolling) return;
 
+            const prevIdx = currentSectionIdx;
             isAutoScrolling = true;
             currentSectionIdx = targetIdx;
 
             const startY = window.scrollY || window.pageYOffset || 0;
             const endY = getSectionTargetY(targetIdx);
             const distance = endY - startY;
-            const duration = 1600;
+
+            // Slower, majestic 2.4s glide whenever entering or leaving the Name Reveal & Heart Box section
+            const involvesCouple = (targetIdx === 2 || prevIdx === 2);
+            const duration = involvesCouple ? 2400 : 1650;
+
+            const startPhotoP = currentPhotoP;
+            const endPhotoP = (targetIdx === 2) ? 1 : 0;
             const startTime = performance.now();
 
             function step(now) {
                 const elapsed = now - startTime;
                 const t = Math.min(1, elapsed / duration);
-                const ease = easeInOutCubic(t);
+                // Deep easeInOutQuart gives a slower, gentler ease-in and longer cushioned ease-out
+                const ease = involvesCouple ? easeInOutQuart(t) : easeInOutCubic(t);
 
                 window.scrollTo(0, startY + distance * ease);
+
+                // Picture ease-in & ease-out is 1:1 synchronized with the scroll progress (starts at t=0, completes at t=1!)
+                currentPhotoP = startPhotoP + (endPhotoP - startPhotoP) * ease;
+                applyCouplePhotoProgress(currentPhotoP);
 
                 if (t < 1) {
                     requestAnimationFrame(step);
                 } else {
                     window.scrollTo(0, endY);
+                    currentPhotoP = endPhotoP;
+                    applyCouplePhotoProgress(currentPhotoP);
                     isAutoScrolling = false;
                     scrollCooldownUntil = performance.now() + 250;
                 }
@@ -1745,13 +1835,14 @@ html_content = """
         window.addEventListener('resize', () => {
             resizeDecorCanvases();
             updateTableSlideBar();
+            applyCouplePhotoProgress(currentPhotoP);
             if (isCurtainOpening && !isAutoScrolling) {
                 window.scrollTo(0, getSectionTargetY(currentSectionIdx));
             }
         });
 
         // ============================================================
-        // 7. BIDIRECTIONAL BLUR-IN-FADE-IN SCROLL OBSERVER + PHOTO SLIDE-IN
+        // 7. BIDIRECTIONAL BLUR-IN-FADE-IN SCROLL OBSERVER
         // ============================================================
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -1765,7 +1856,6 @@ html_content = """
                     }
                     if (el.id === 'couple-details') {
                         el.classList.add('couple-revealed');
-                        if (couplePhotoWrap) couplePhotoWrap.classList.add('photo-revealed');
                         setRedThemeActive(true);
                         triggerCoupleCelebration();
                     }
@@ -1778,7 +1868,6 @@ html_content = """
                     if (el.classList.contains('type-fade')) { el.classList.remove('visible-fade'); }
                     if (el.id === 'couple-details') {
                         el.classList.remove('couple-revealed');
-                        if (couplePhotoWrap) couplePhotoWrap.classList.remove('photo-revealed');
                     }
                 }
             });
@@ -1793,6 +1882,7 @@ html_content = """
             setTimeout(() => {
                 fitBismillah();
                 updateTableSlideBar();
+                applyCouplePhotoProgress(0);
                 mainContent.classList.add('site-revealed');
 
                 bgDecorCanvas.classList.add('decor-revealed');
