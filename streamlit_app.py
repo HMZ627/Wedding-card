@@ -39,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with WebGL silk curtains, side-framed parallax, Red transition, pop-up & table arrows
+# HTML, CSS, JS payload with WebGL silk curtains, locked slow auto-scroll sections, Red transition, pop-up & table arrows
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -66,7 +66,7 @@ html_content = """
             color: #4a3b32;
         }
 
-        /* --- Royal Crimson Red Theme Backdrop (Smooth Color Transition on Scroll) --- */
+        /* --- Royal Crimson Red Theme Backdrop (Smooth Color Transition) --- */
         #red-theme-backdrop {
             position: fixed;
             inset: 0;
@@ -81,7 +81,7 @@ html_content = """
                 radial-gradient(ellipse at center, transparent 38%, rgba(26, 0, 4, 0.68) 100%),
                 url('https://www.transparenttextures.com/patterns/aged-paper.png');
             background-blend-mode: normal, normal, normal, normal, multiply;
-            transition: opacity 1.1s ease-in-out;
+            transition: opacity 1.2s ease-in-out;
             will-change: opacity;
         }
         #red-theme-backdrop.red-active {
@@ -152,12 +152,23 @@ html_content = """
             transform: scale(1);
         }
 
+        /* --- Full-Viewport Auto-Scroll Sections --- */
+        .snap-section {
+            min-height: 100vh;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 7vh 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
         /* --- Part 1 Container --- */
         .part1-container {
-            padding: 10vh 28px 12vh 28px;
             position: relative;
             z-index: 20;
-            box-sizing: border-box;
             width: 100%;
             transition: color 0.9s ease-in-out;
         }
@@ -171,12 +182,12 @@ html_content = """
             color: #fbe59c;
         }
 
-        /* Bismillah Calligraphy (Auto-fit for Mobile & Desktop) */
+        /* Section 1: Bismillah + Translation + Hadith */
         .bismillah-wrap {
             width: 100%;
             display: flex;
             justify-content: center;
-            margin-bottom: 18vh;
+            margin-bottom: 5vh;
         }
         .bismillah {
             display: inline-block;
@@ -198,8 +209,8 @@ html_content = """
 
         /* Type-in Fade-in + Bidirectional Blur-in-Fade-in */
         .type-fade {
-            font-size: 1.95rem;
-            margin: 0 auto 18vh auto;
+            font-size: 1.75rem;
+            margin: 0 auto 6vh auto;
             max-width: 760px;
             padding: 0 15px;
             line-height: 1.5;
@@ -208,7 +219,7 @@ html_content = """
             filter: blur(16px);
             transform: translateY(22px);
             transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
-            min-height: 70px;
+            min-height: 54px;
         }
         .type-fade.visible-fade {
             opacity: 1 !important;
@@ -216,9 +227,8 @@ html_content = """
             transform: translateY(0) !important;
         }
 
-        /* --- Hadith Section --- */
         .hadith-box {
-            margin: 0 auto 20vh auto;
+            margin: 0 auto;
             max-width: 760px;
             opacity: 0;
             filter: blur(16px);
@@ -227,50 +237,50 @@ html_content = """
         }
         .hadith-arabic {
             font-family: 'Amiri', serif;
-            font-size: clamp(1.9rem, 7vw, 3.2rem);
+            font-size: clamp(1.85rem, 6.5vw, 3.0rem);
             color: #800000;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             line-height: 1.5;
             direction: rtl;
             transition: color 0.9s ease-in-out;
         }
         .hadith-trans {
-            font-size: 1.45rem;
+            font-size: 1.35rem;
             font-style: italic;
             color: #4a3b32;
             transition: color 0.9s ease-in-out;
         }
 
-        /* --- Ink Spread Hosts & Invitation Section --- */
+        /* Section 2: Ink Spread Hosts & Invitation + Blooming Garden */
         .ink-spread-anim {
             clip-path: circle(0% at center);
             filter: blur(20px);
             opacity: 0;
             transition: clip-path 2.0s cubic-bezier(0.25, 1, 0.5, 1), filter 1.6s ease-out, opacity 1.2s ease-in;
-            padding: 20px 0;
+            padding: 10px 0;
             max-width: 780px;
             margin: 0 auto;
         }
         .sub-header-text {
-            font-size: 1.65rem;
-            line-height: 1.75;
+            font-size: 1.55rem;
+            line-height: 1.7;
             position: relative;
         }
         .blessings-line {
             font-style: italic;
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             color: #6b5344;
-            margin-bottom: 14px;
+            margin-bottom: 10px;
             display: block;
             transition: color 0.9s ease-in-out;
         }
         .hosts-names {
-            font-size: 1.85rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: #800000;
             display: block;
-            margin: 14px 0;
-            line-height: 1.6;
+            margin: 12px 0;
+            line-height: 1.65;
             transition: color 0.9s ease-in-out;
         }
         .wedding-word {
@@ -280,55 +290,48 @@ html_content = """
         }
 
         /* --- Detailed Blooming Garden Sequence --- */
-        .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 30px; height: 130px; }
+        .garden-container { display: flex; justify-content: center; gap: 100px; margin-top: 26px; height: 125px; }
         .plant { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
-        .flower { font-size: 6rem; display: flex; align-items: center; justify-content: center; }
-        .butterfly { font-size: 3rem; position: absolute; bottom: 20px; opacity: 0; transition: bottom 1.5s ease-in-out, opacity 1.5s ease-in-out; z-index: 10; }
+        .flower { font-size: 5.5rem; display: flex; align-items: center; justify-content: center; }
+        .butterfly { font-size: 2.8rem; position: absolute; bottom: 20px; opacity: 0; transition: bottom 1.5s ease-in-out, opacity 1.5s ease-in-out; z-index: 10; }
 
         .visible-ink .ink-spread-anim { opacity: 1; clip-path: circle(150% at center); filter: blur(0px); }
-        .visible-ink .butterfly { bottom: 100px; opacity: 1; transition-delay: 2.0s; animation: hoverfly 2.5s infinite ease-in-out alternate 3.5s; }
-        .plant.delayed .butterfly { transition-delay: 2.4s; animation-delay: 3.9s; }
+        .visible-ink .butterfly { bottom: 95px; opacity: 1; transition-delay: 1.8s; animation: hoverfly 2.5s infinite ease-in-out alternate 3.3s; }
+        .plant.delayed .butterfly { transition-delay: 2.2s; animation-delay: 3.7s; }
 
         .flower-layer-1, .flower-layer-2, .flower-layer-3, .flower-center {
             transform-origin: 16px 16px;
             transform: scale(0);
         }
 
-        .visible-ink .flower-layer-1 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.8s; }
-        .visible-ink .flower-layer-2 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.1s; }
-        .visible-ink .flower-layer-3 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.4s; }
-        .visible-ink .flower-center { animation: bloomLayer 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.7s; }
+        .visible-ink .flower-layer-1 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.7s; }
+        .visible-ink .flower-layer-2 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.0s; }
+        .visible-ink .flower-layer-3 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.3s; }
+        .visible-ink .flower-center { animation: bloomLayer 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.6s; }
 
-        .visible-ink .flower svg { animation: continuousBloom 4s infinite alternate ease-in-out 3.2s; }
+        .visible-ink .flower svg { animation: continuousBloom 4s infinite alternate ease-in-out 3.1s; }
 
-        .plant.delayed .flower-layer-1 { animation-delay: 1.2s; }
-        .plant.delayed .flower-layer-2 { animation-delay: 1.5s; }
-        .plant.delayed .flower-layer-3 { animation-delay: 1.8s; }
-        .plant.delayed .flower-center { animation-delay: 2.1s; }
-        .plant.delayed .flower svg { animation-delay: 3.6s; }
+        .plant.delayed .flower-layer-1 { animation-delay: 1.1s; }
+        .plant.delayed .flower-layer-2 { animation-delay: 1.4s; }
+        .plant.delayed .flower-layer-3 { animation-delay: 1.7s; }
+        .plant.delayed .flower-center { animation-delay: 2.0s; }
+        .plant.delayed .flower svg { animation-delay: 3.5s; }
 
         @keyframes bloomLayer { 0% { transform: scale(0) rotate(-15deg); } 100% { transform: scale(1) rotate(0deg); } }
         @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
         @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
         /* =========================================================
-           PART 2 SECTION (Royal Red Theme — Smooth Natural Flow)
+           PART 2 SECTION (Royal Red Theme — Smooth Auto-Scroll Sections)
            ========================================================= */
         #part2-section {
             position: relative;
             z-index: 12;
-            padding: 8vh 28px 0 28px;
+            width: 100%;
             color: #fdf5e6;
         }
-        #couple-stage-wrap {
-            min-height: 75vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10vh;
-        }
 
-        /* Blur-in-Fade-in animation for Groom & Bride names (bidirectional on scroll!) */
+        /* Section 3: Groom & Bride Names */
         .couple-details {
             max-width: 760px;
             padding: 20px 10px;
@@ -366,10 +369,11 @@ html_content = """
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
         }
 
-        /* --- Schedule Table + Helpful Slide Arrow Controls for Mobile/Elderly Users --- */
+        /* Section 4: Schedule Table + Helpful Slide Arrow Controls for Mobile/Elderly Users */
         .schedule-box {
+            width: 100%;
             max-width: 780px;
-            margin: 4vh auto 18vh auto;
+            margin: 0 auto;
             opacity: 0; filter: blur(16px); transform: translateY(28px);
             transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
             background: rgba(34, 0, 6, 0.42);
@@ -377,12 +381,13 @@ html_content = """
             border-radius: 15px;
             border: 2px dashed rgba(245, 211, 118, 0.65);
             box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32);
+            box-sizing: border-box;
         }
         .table-slide-bar {
             display: none;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 14px;
             padding: 6px 10px;
             background: rgba(245, 211, 118, 0.10);
@@ -426,7 +431,7 @@ html_content = """
             50% { transform: translateX(4px); }
         }
         .slide-bar-label {
-            font-size: 0.98rem;
+            font-size: 0.95rem;
             font-style: italic;
             color: #fbe59c;
             letter-spacing: 0.3px;
@@ -443,10 +448,10 @@ html_content = """
         td { font-size: 1.15rem; color: #fdf5e6; }
         .venue-sub { font-size: 0.9rem; color: #e6cfb3; }
 
-        /* --- RSVP & Best Compliments (Red Theme) --- */
+        /* Section 5: RSVP & Best Compliments + Footer */
         .rsvp-box {
             max-width: 720px;
-            margin: 0 auto 14vh auto;
+            margin: 0 auto 6vh auto;
             opacity: 0;
             filter: blur(16px);
             transform: translateY(24px);
@@ -459,7 +464,7 @@ html_content = """
             font-family: 'Great Vibes', cursive;
             font-size: 2.5rem;
             color: #f5d376;
-            margin: 18px 0 6px 0;
+            margin: 16px 0 6px 0;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
         }
         .rsvp-detail {
@@ -473,12 +478,10 @@ html_content = """
             border-bottom: 1px dotted rgba(251, 229, 156, 0.5);
         }
 
-        /* --- Footer (Red Theme) --- */
         .footer-text {
             font-size: 1.55rem;
             opacity: 0; filter: blur(16px); transform: translateY(24px);
-            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
-            padding-bottom: 100px;
+            transition: opacity 1.15s ease-out 0.18s, filter 1.15s ease-out 0.18s, transform 1.15s ease-out 0.18s;
             font-style: italic;
             color: #fbe59c;
             font-weight: bold;
@@ -520,9 +523,8 @@ html_content = """
            MOBILE RESPONSIVENESS
            ========================================= */
         @media (max-width: 768px) {
-            .part1-container { padding: 10vh 24px 8vh 24px; }
-            #part2-section { padding: 6vh 24px 0 24px; }
-            .type-fade { font-size: 1.35rem !important; margin-bottom: 14vh; }
+            .snap-section { padding: 6vh 24px; }
+            .type-fade { font-size: 1.35rem !important; margin-bottom: 4.5vh; }
             .hadith-trans { font-size: 1.15rem; }
             .sub-header-text { font-size: 1.22rem; }
             .blessings-line { font-size: 1.15rem; }
@@ -534,7 +536,7 @@ html_content = """
             .couple-lineage { font-size: 1.05rem; }
             .couple-with { font-size: 2rem; }
 
-            .schedule-box { padding: 16px; margin-bottom: 14vh; }
+            .schedule-box { padding: 16px; }
             th { font-size: 1.5rem; padding: 10px; }
             td { font-size: 0.95rem; padding: 10px; }
 
@@ -607,120 +609,123 @@ html_content = """
 
        <!-- PART 1: Old Paper Theme -->
        <div id="part1-wrapper" class="part1-container">
-           <!-- Bismillah Calligraphy -->
-           <div class="bismillah-wrap">
-               <div class="bismillah obs fade-up">۞بِسْـــمِ اللّٰهِ الرَّحْمٰـــنِ الرَّحِيْـــمِ۞</div>
-           </div>
+           <!-- SECTION 0: Bismillah + Translation + Hadith -->
+           <section id="sec-bismillah" class="snap-section">
+               <div class="bismillah-wrap">
+                   <div class="bismillah obs fade-up">۞بِسْـــمِ اللّٰهِ الرَّحْمٰـــنِ الرَّحِيْـــمِ۞</div>
+               </div>
 
-           <!-- Type-in Fade-in Translation -->
-           <div class="header-text obs type-fade" data-text="&quot;In the name of Allah, the Most Gracious, the Most Merciful&quot;"></div>
+               <div class="header-text obs type-fade" data-text="&quot;In the name of Allah, the Most Gracious, the Most Merciful&quot;"></div>
 
-           <!-- Hadith -->
-           <div class="hadith-box obs fade-up">
-               <div class="hadith-arabic">النِّكَاحُ مِنْ سُنَّتِي</div>
-               <div class="hadith-trans">"Nikah is my Sunnah" — (Sahih Muslim)</div>
-           </div>
+               <div class="hadith-box obs fade-up">
+                   <div class="hadith-arabic">النِّكَاحُ مِنْ سُنَّتِي</div>
+                   <div class="hadith-trans">"Nikah is my Sunnah" — (Sahih Muslim)</div>
+               </div>
+           </section>
 
-           <!-- Ink Spread Hosts & Invitation Request + Blooming Garden -->
-           <div class="obs ink-trigger" style="min-height: 360px; margin-bottom: 6vh; display: flex; align-items: center; justify-content: center;">
-               <div class="ink-spread-anim">
-                   <div class="sub-header-text">
-                       <span class="blessings-line">With the blessings of Almighty Allah,</span>
-                       <span class="hosts-names">
-                           Mr. Ahmer Mukhtar (Late)<br>
-                           Mrs. Mehnaz Ahmer<br>
-                           Mr. Ali Ahmer<br>
-                           Mr. Umer Ahmer
-                       </span>
-                       cordially request the pleasure of your company<br>
-                       at the <span class="wedding-word">wedding</span> ceremonies of their beloved daughter &amp; sister
-                   </div>
-
-                   <div class="garden-container">
-                       <div class="plant">
-                           <div class="butterfly">
-                               <span class="interactive-emoji">
-                                   <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#00bfff"><use href="#svg-butterfly" /></svg>
-                               </span>
-                           </div>
-                           <div class="flower">
-                               <span class="interactive-emoji">
-                                   <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffb6c1" style="overflow: visible;">
-                                       <g class="flower-layer-1" stroke="#ffffff" stroke-width="0.5">
-                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
-                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
-                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
-                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
-                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
-                                       </g>
-                                       <g class="flower-layer-2" fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
-                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
-                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
-                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
-                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
-                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
-                                       </g>
-                                       <g class="flower-layer-3" fill="#ffffff" opacity="0.6">
-                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" />
-                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(72 16 16)" />
-                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(144 16 16)" />
-                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(216 16 16)" />
-                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(288 16 16)" />
-                                       </g>
-                                       <g class="flower-center">
-                                           <circle cx="16" cy="16" r="3" fill="#ffd700" />
-                                           <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
-                                       </g>
-                                   </svg>
-                               </span>
-                           </div>
+           <!-- SECTION 1: Inviting People's Names + Blooming Garden -->
+           <section id="sec-hosts" class="snap-section">
+               <div class="obs ink-trigger" style="width: 100%; display: flex; align-items: center; justify-content: center;">
+                   <div class="ink-spread-anim">
+                       <div class="sub-header-text">
+                           <span class="blessings-line">With the blessings of Almighty Allah,</span>
+                           <span class="hosts-names">
+                               Mr. Ahmer Mukhtar (Late)<br>
+                               Mrs. Mehnaz Ahmer<br>
+                               Mr. Ali Ahmer<br>
+                               Mr. Umer Ahmer
+                           </span>
+                           cordially request the pleasure of your company<br>
+                           at the <span class="wedding-word">wedding</span> ceremonies of their beloved daughter &amp; sister
                        </div>
-                       <div class="plant delayed">
-                           <div class="butterfly">
-                               <span class="interactive-emoji">
-                                   <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffdab9"><use href="#svg-butterfly" /></svg>
-                               </span>
+
+                       <div class="garden-container">
+                           <div class="plant">
+                               <div class="butterfly">
+                                   <span class="interactive-emoji">
+                                       <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#00bfff"><use href="#svg-butterfly" /></svg>
+                                   </span>
+                               </div>
+                               <div class="flower">
+                                   <span class="interactive-emoji">
+                                       <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffb6c1" style="overflow: visible;">
+                                           <g class="flower-layer-1" stroke="#ffffff" stroke-width="0.5">
+                                               <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
+                                               <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
+                                               <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
+                                               <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
+                                               <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
+                                           </g>
+                                           <g class="flower-layer-2" fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
+                                               <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
+                                               <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
+                                               <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
+                                               <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
+                                               <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
+                                           </g>
+                                           <g class="flower-layer-3" fill="#ffffff" opacity="0.6">
+                                               <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" />
+                                               <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(72 16 16)" />
+                                               <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(144 16 16)" />
+                                               <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(216 16 16)" />
+                                               <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(288 16 16)" />
+                                           </g>
+                                           <g class="flower-center">
+                                               <circle cx="16" cy="16" r="3" fill="#ffd700" />
+                                               <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
+                                           </g>
+                                       </svg>
+                                   </span>
+                               </div>
                            </div>
-                           <div class="flower">
-                               <span class="interactive-emoji">
-                                   <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ff033e" style="overflow: visible;">
-                                       <g class="flower-layer-1" stroke="#ffffff" stroke-width="0.5">
-                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
-                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
-                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
-                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
-                                           <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
-                                       </g>
-                                       <g class="flower-layer-2" fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
-                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
-                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
-                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
-                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
-                                           <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
-                                       </g>
-                                       <g class="flower-layer-3" fill="#ffffff" opacity="0.6">
-                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" />
-                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(72 16 16)" />
-                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(144 16 16)" />
-                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(216 16 16)" />
-                                           <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(288 16 16)" />
-                                       </g>
-                                       <g class="flower-center">
-                                           <circle cx="16" cy="16" r="3" fill="#ffd700" />
-                                           <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
-                                       </g>
-                                   </svg>
-                               </span>
+                           <div class="plant delayed">
+                               <div class="butterfly">
+                                   <span class="interactive-emoji">
+                                       <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ffdab9"><use href="#svg-butterfly" /></svg>
+                                   </span>
+                               </div>
+                               <div class="flower">
+                                   <span class="interactive-emoji">
+                                       <svg viewBox="0 0 32 32" width="1em" height="1em" fill="#ff033e" style="overflow: visible;">
+                                           <g class="flower-layer-1" stroke="#ffffff" stroke-width="0.5">
+                                               <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
+                                               <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
+                                               <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
+                                               <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
+                                               <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
+                                           </g>
+                                           <g class="flower-layer-2" fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
+                                               <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
+                                               <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
+                                               <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
+                                               <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
+                                               <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
+                                           </g>
+                                           <g class="flower-layer-3" fill="#ffffff" opacity="0.6">
+                                               <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" />
+                                               <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(72 16 16)" />
+                                               <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(144 16 16)" />
+                                               <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(216 16 16)" />
+                                               <path d="M 16 16 C 10 14 11 6 16 8 C 21 6 22 14 16 16 Z" transform="rotate(288 16 16)" />
+                                           </g>
+                                           <g class="flower-center">
+                                               <circle cx="16" cy="16" r="3" fill="#ffd700" />
+                                               <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
+                                           </g>
+                                       </svg>
+                                   </span>
+                               </div>
                            </div>
                        </div>
                    </div>
                </div>
-           </div>
+           </section>
        </div>
 
-       <!-- PART 2: Royal Red Theme (Groom First, then Bride + Triggered Pop-up Animation) -->
+       <!-- PART 2: Royal Red Theme -->
        <div id="part2-section">
-           <div id="couple-stage-wrap">
+           <!-- SECTION 2: Groom & Bride Names + Triggered Pop-up Animation -->
+           <section id="sec-couple" class="snap-section">
                <div id="couple-details" class="couple-details obs">
                    <div class="couple-name-big">Mr. Asad Arsal</div>
                    <div class="couple-lineage">S/O Mr. Arsal Bhatti</div>
@@ -728,48 +733,51 @@ html_content = """
                    <div class="couple-name-big">Ms. Rimsha Fatima</div>
                    <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Late)</div>
                </div>
-           </div>
+           </section>
 
-           <!-- Schedule Table with Helpful Left/Right Slide Arrows for Mobile/Elderly Users -->
-           <div class="schedule-box obs fade-up">
-               <div id="table-slide-bar" class="table-slide-bar">
-                   <button id="slide-left-btn" class="slide-arrow-btn at-edge" type="button" aria-label="Slide table left" onclick="slideSchedule(-180, event)">◀</button>
-                   <span class="slide-bar-label">Slide or tap arrows for full details</span>
-                   <button id="slide-right-btn" class="slide-arrow-btn nudge-right" type="button" aria-label="Slide table right" onclick="slideSchedule(180, event)">▶</button>
+           <!-- SECTION 3: Schedule Table + Mobile Slide Arrows -->
+           <section id="sec-schedule" class="snap-section">
+               <div class="schedule-box obs fade-up">
+                   <div id="table-slide-bar" class="table-slide-bar">
+                       <button id="slide-left-btn" class="slide-arrow-btn at-edge" type="button" aria-label="Slide table left" onclick="slideSchedule(-180, event)">◀</button>
+                       <span class="slide-bar-label">Slide or tap arrows for full details</span>
+                       <button id="slide-right-btn" class="slide-arrow-btn nudge-right" type="button" aria-label="Slide table right" onclick="slideSchedule(180, event)">▶</button>
+                   </div>
+                   <div id="schedule-scroll-wrap" class="table-scroll-wrap">
+                       <table id="schedule-table">
+                           <tr><th>Event</th><th>Date</th><th>Time</th><th>Location</th></tr>
+                           <tr>
+                               <td><b>MEHNDI</b></td>
+                               <td>Thursday, 24th December 2026</td>
+                               <td>07:00 PM onwards</td>
+                               <td>Farid Town, Sahiwal</td>
+                           </tr>
+                           <tr>
+                               <td><b>BARAAT</b></td>
+                               <td>Friday, 25th December 2026</td>
+                               <td>11:00 AM onwards</td>
+                               <td>Grand Al-Noor Marriage Hall (JTS)<br><span class="venue-sub">(Near Faridia Park, Tariq Bin Ziad Colony, Sahiwal)</span></td>
+                           </tr>
+                       </table>
+                   </div>
                </div>
-               <div id="schedule-scroll-wrap" class="table-scroll-wrap">
-                   <table id="schedule-table">
-                       <tr><th>Event</th><th>Date</th><th>Time</th><th>Location</th></tr>
-                       <tr>
-                           <td><b>MEHNDI</b></td>
-                           <td>Thursday, 24th December 2026</td>
-                           <td>07:00 PM onwards</td>
-                           <td>Farid Town, Sahiwal</td>
-                       </tr>
-                       <tr>
-                           <td><b>BARAAT</b></td>
-                           <td>Friday, 25th December 2026</td>
-                           <td>11:00 AM onwards</td>
-                           <td>Grand Al-Noor Marriage Hall (JTS)<br><span class="venue-sub">(Near Faridia Park, Tariq Bin Ziad Colony, Sahiwal)</span></td>
-                       </tr>
-                   </table>
+           </section>
+
+           <!-- SECTION 4: RSVP + Best Compliments + Closing Quote -->
+           <section id="sec-rsvp" class="snap-section">
+               <div class="rsvp-box obs fade-up">
+                   <div class="rsvp-heading">RSVP:</div>
+                   <div class="rsvp-detail">Mr. Ali Ahmer: <a href="tel:03088887023" class="rsvp-phone">0308-8887023</a></div>
+                   <div class="rsvp-detail">Mr. Umer Ahmer: <a href="tel:03009696692" class="rsvp-phone">0300-9696692</a></div>
+
+                   <div class="rsvp-heading" style="margin-top: 28px;">With Best Compliments From:</div>
+                   <div class="rsvp-detail">All Relatives &amp; Friends</div>
                </div>
-           </div>
 
-           <!-- RSVP & Compliments -->
-           <div class="rsvp-box obs fade-up">
-               <div class="rsvp-heading">RSVP:</div>
-               <div class="rsvp-detail">Mr. Ali Ahmer: <a href="tel:03088887023" class="rsvp-phone">0308-8887023</a></div>
-               <div class="rsvp-detail">Mr. Umer Ahmer: <a href="tel:03009696692" class="rsvp-phone">0300-9696692</a></div>
-
-               <div class="rsvp-heading" style="margin-top: 28px;">With Best Compliments From:</div>
-               <div class="rsvp-detail">All Relatives &amp; Friends</div>
-           </div>
-
-           <!-- Footer Quote -->
-           <div class="footer-text obs fade-up">
-               "Your presence and duas are the only gifts we desire."
-           </div>
+               <div class="footer-text obs fade-up">
+                   "Your presence and duas are the only gifts we desire."
+               </div>
+           </section>
        </div>
     </div>
 
@@ -1215,7 +1223,6 @@ html_content = """
             const sizePx = isFg ? (Math.random() * 28 + 34) : (Math.random() * 22 + 16);
             const blurPx = isFg ? 3.2 : 1.6;
 
-            // Strictly place all background & foreground decor along left & right edges (never in front of center texts)
             const isLeft = Math.random() > 0.5;
             const marginBand = isMobile ? 0.08 : 0.14;
             const xFrac = isLeft
@@ -1277,15 +1284,143 @@ html_content = """
         }
 
         // ============================================================
-        // 4. ROYAL RED THEME TRANSITION + COUPLE POP-UP TRIGGER
+        // 4. LOCKED SINGLE-SCROLL SMOOTH & SLOW SECTION NAVIGATION
         // ============================================================
         const mainContent = document.getElementById('main-content');
         const part2Section = document.getElementById('part2-section');
         const coupleDetails = document.getElementById('couple-details');
+        const sections = Array.from(document.querySelectorAll('.snap-section'));
 
+        let currentSectionIdx = 0;
+        let isAutoScrolling = false;
+        let scrollCooldownUntil = 0;
         let celebrationTriggered = false;
         let redBlend = 0;
 
+        function getSectionTargetY(idx) {
+            const sec = sections[idx];
+            if (!sec) return 0;
+            if (idx === 0) return 0;
+            const rect = sec.getBoundingClientRect();
+            const docTop = rect.top + (window.scrollY || window.pageYOffset || 0);
+            const vh = window.innerHeight;
+            const maxScroll = Math.max(0, document.documentElement.scrollHeight - vh);
+            return Math.max(0, Math.min(maxScroll, Math.round(docTop)));
+        }
+
+        function animateScrollToSection(targetIdx) {
+            if (targetIdx < 0 || targetIdx >= sections.length || targetIdx === currentSectionIdx) return;
+            if (isAutoScrolling) return;
+
+            isAutoScrolling = true;
+            currentSectionIdx = targetIdx;
+
+            const startY = window.scrollY || window.pageYOffset || 0;
+            const endY = getSectionTargetY(targetIdx);
+            const distance = endY - startY;
+            const duration = 1600; // Smooth and slow 1.6s glide
+            const startTime = performance.now();
+
+            function step(now) {
+                const elapsed = now - startTime;
+                const t = Math.min(1, elapsed / duration);
+                const ease = easeInOutCubic(t);
+
+                window.scrollTo(0, startY + distance * ease);
+
+                if (t < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    window.scrollTo(0, endY);
+                    isAutoScrolling = false;
+                    scrollCooldownUntil = performance.now() + 250;
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function stepSection(dir) {
+            if (!isCurtainOpening || isAutoScrolling) return;
+            if (performance.now() < scrollCooldownUntil) return;
+            const nextIdx = Math.max(0, Math.min(sections.length - 1, currentSectionIdx + dir));
+            if (nextIdx !== currentSectionIdx) {
+                animateScrollToSection(nextIdx);
+            }
+        }
+
+        // Wheel Lock & Single-Scroll Trigger (Desktop Mouse & Trackpad)
+        window.addEventListener('wheel', (e) => {
+            // Allow horizontal trackpad scroll on the Schedule Table
+            const inTable = e.target.closest('#schedule-scroll-wrap');
+            if (inTable && Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+
+            e.preventDefault();
+            if (!isCurtainOpening || isAutoScrolling) return;
+            if (performance.now() < scrollCooldownUntil) return;
+
+            if (Math.abs(e.deltaY) >= 4) {
+                stepSection(e.deltaY > 0 ? 1 : -1);
+            }
+        }, { passive: false });
+
+        // Touch Swipe Lock & Single-Swipe Trigger (Mobile Phones)
+        let touchStartX = 0, touchStartY = 0, touchInTable = false, touchTriggered = false;
+        window.addEventListener('touchstart', (e) => {
+            if (e.touches.length !== 1) return;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchInTable = !!e.target.closest('#schedule-scroll-wrap');
+            touchTriggered = false;
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length !== 1) return;
+            const dx = touchStartX - e.touches[0].clientX;
+            const dy = touchStartY - e.touches[0].clientY;
+
+            // Allow horizontal swiping inside the schedule table without locking
+            if (touchInTable && Math.abs(dx) > Math.abs(dy)) return;
+
+            if (!isCurtainOpening || isAutoScrolling || performance.now() < scrollCooldownUntil) {
+                e.preventDefault();
+                return;
+            }
+
+            if (Math.abs(dy) > 16) {
+                e.preventDefault();
+                if (!touchTriggered) {
+                    touchTriggered = true;
+                    stepSection(dy > 0 ? 1 : -1);
+                }
+            }
+        }, { passive: false });
+
+        // Keyboard Lock & Single-Step Navigation
+        window.addEventListener('keydown', (e) => {
+            if (!isCurtainOpening) {
+                if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(e.key)) {
+                    e.preventDefault();
+                }
+                return;
+            }
+            if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+                e.preventDefault();
+                stepSection(1);
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                stepSection(-1);
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                animateScrollToSection(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                animateScrollToSection(sections.length - 1);
+            }
+        });
+
+        // ============================================================
+        // 5. ROYAL RED THEME TRANSITION + COUPLE POP-UP TRIGGER
+        // ============================================================
         function setRedThemeActive(isActive) {
             if (isActive) {
                 redBackdrop.classList.add('red-active');
@@ -1307,8 +1442,8 @@ html_content = """
         function checkRedThemeTransition() {
             if (!isCurtainOpening) return;
             const p2Rect = part2Section.getBoundingClientRect();
-            // Smoothly switch to Royal Red theme as Groom & Bride section approaches view
-            setRedThemeActive(p2Rect.top <= window.innerHeight * 0.62);
+            const enteringRed = (currentSectionIdx >= 2) || (p2Rect.top <= window.innerHeight * 0.58);
+            setRedThemeActive(enteringRed);
         }
 
         let decorLoopActive = false;
@@ -1457,7 +1592,7 @@ html_content = """
         }
 
         // ============================================================
-        // 5. SCHEDULE TABLE SLIDE ARROWS (For Mobile / Elderly Users)
+        // 6. SCHEDULE TABLE SLIDE ARROWS (For Mobile / Elderly Users)
         // ============================================================
         const scheduleScrollWrap = document.getElementById('schedule-scroll-wrap');
         const tableSlideBar = document.getElementById('table-slide-bar');
@@ -1498,10 +1633,13 @@ html_content = """
         window.addEventListener('resize', () => {
             resizeDecorCanvases();
             updateTableSlideBar();
+            if (isCurtainOpening && !isAutoScrolling) {
+                window.scrollTo(0, getSectionTargetY(currentSectionIdx));
+            }
         });
 
         // ============================================================
-        // 6. BIDIRECTIONAL BLUR-IN-FADE-IN SCROLL OBSERVER (Up & Down!)
+        // 7. BIDIRECTIONAL BLUR-IN-FADE-IN SCROLL OBSERVER (Up & Down!)
         // ============================================================
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -1515,7 +1653,6 @@ html_content = """
                     }
                     if (el.id === 'couple-details') {
                         el.classList.add('couple-revealed');
-                        // Ensure Red backdrop is active & trigger Pop-up animation as Groom & Bride appear!
                         setRedThemeActive(true);
                         triggerCoupleCelebration();
                     }
@@ -1561,7 +1698,7 @@ html_content = """
         }
 
         // ============================================================
-        // 7. INTERACTIVE TAP / CLICK HANDLER
+        // 8. INTERACTIVE TAP / CLICK HANDLER
         // ============================================================
         document.addEventListener('click', function(e) {
             if (!isCurtainOpening) return;
@@ -1611,7 +1748,7 @@ html_content = """
         });
 
         // ============================================================
-        // 8. TYPEWRITER "FADE-IN" LOGIC
+        // 9. TYPEWRITER "FADE-IN" LOGIC
         // ============================================================
         function typeWriterFadeIn(el) {
             if(el.dataset.typed) return;
@@ -1640,7 +1777,7 @@ html_content = """
         }
 
         // ============================================================
-        // 9. CUSTOM SIDE-CANNONS (Left & Right Bottom Screen)
+        // 10. CUSTOM SIDE-CANNONS (Left & Right Bottom Screen)
         // ============================================================
         function fireSideCannon(side) {
             const container = document.createElement('div');
@@ -1688,7 +1825,7 @@ html_content = """
         }
 
         // ============================================================
-        // 10. SLOW-MOTION FLOCK OF BIRDS EMERGING BEHIND COUPLE NAMES
+        // 11. SLOW-MOTION FLOCK OF BIRDS EMERGING BEHIND COUPLE NAMES
         // ============================================================
         function spawnExplosionFlock() {
             const mcRect = mainContent.getBoundingClientRect();
