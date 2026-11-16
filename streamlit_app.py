@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 
 # Configure the page setting
 st.set_page_config(
-    page_title="Wedding Invitation - Ms. Rimsha Fatima & Mr. Asad Arsal",
+    page_title="Wedding Invitation - Mr. Asad Arsal & Ms. Rimsha Fatima",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -749,15 +749,15 @@ html_content = """
            </div>
        </div>
 
-       <!-- PART 2: Royal Red Theme (Bride & Groom Names + Triggered Pop-up Animation) -->
+       <!-- PART 2: Royal Red Theme (Groom First, then Bride + Triggered Pop-up Animation) -->
        <div id="part2-section">
            <div id="couple-stage-wrap">
                <div id="couple-details" class="couple-details">
-                   <div class="couple-name-big">Ms. Rimsha Fatima</div>
-                   <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Late)</div>
-                   <div class="couple-with">with</div>
                    <div class="couple-name-big">Mr. Asad Arsal</div>
                    <div class="couple-lineage">S/O Mr. Arsal Bhatti</div>
+                   <div class="couple-with">with</div>
+                   <div class="couple-name-big">Ms. Rimsha Fatima</div>
+                   <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Late)</div>
                </div>
            </div>
 
@@ -1459,7 +1459,7 @@ html_content = """
                     { transform: 'translate3d(44vw, 64vh, 0) rotate(11deg) scaleX(0.82)', opacity: 0 }
                 ], animOpts);
 
-                // BEAT 3 (480ms): Blur-in-Fade-in Bride & Groom names & trigger Pop-up animation in Royal Red background!
+                // BEAT 3 (480ms): Blur-in-Fade-in Groom & Bride names & trigger Pop-up animation in Royal Red background!
                 setTimeout(() => {
                     coupleDetails.classList.add('couple-revealed');
                     triggerCoupleCelebration();
@@ -1653,7 +1653,6 @@ html_content = """
                     if (el.classList.contains('fade-up')) { el.classList.add('visible-up'); }
                     if (el.classList.contains('ink-trigger')) {
                         el.classList.add('visible-ink');
-                        // Pre-warm splitStage right as the blooming garden comes into view
                         if (!splitPrepared) prepareSplitStage();
                     }
                     if (el.classList.contains('type-fade')) {
