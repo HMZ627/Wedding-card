@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 
 # Configure the page setting
 st.set_page_config(
-    page_title="Wedding Invitation - Rimsha Fatima & Mr. Asad",
+    page_title="Wedding Invitation - Ms. Rimsha Fatima & Mr. Asad Arsal",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -39,7 +39,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# HTML, CSS, JS payload with WebGL silk curtains, behind-heart bird flock, bidirectional blur-in scroll & Red Part 2
+# HTML, CSS, JS payload with WebGL silk curtains, side-framed parallax, split reveal & Royal Red pop-up trigger
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -88,7 +88,7 @@ html_content = """
             opacity: 1;
         }
 
-        /* --- High-FPS Fixed Parallax Decor Canvases --- */
+        /* --- High-FPS Fixed Parallax Decor Canvases (Framing Left & Right Edges) --- */
         .decor-canvas {
             position: fixed;
             top: 0; left: 0;
@@ -135,7 +135,7 @@ html_content = """
             transform: translate(-50%, -35%) scale(0.75);
         }
 
-        /* --- Post-Curtain Blur-In-Fade-In Reveal (No z-index so children stack directly!) --- */
+        /* --- Post-Curtain Blur-In-Fade-In Reveal --- */
         .content {
             min-height: 100vh;
             padding: 0;
@@ -152,9 +152,9 @@ html_content = """
             transform: scale(1);
         }
 
-        /* --- Part 1 Container (z-index 20 sits IN FRONT of behind-heart birds at z-index 16!) --- */
+        /* --- Part 1 Container --- */
         .part1-container {
-            padding: 10vh 20px 8vh 20px;
+            padding: 10vh 28px 10vh 28px;
             position: relative;
             z-index: 20;
             box-sizing: border-box;
@@ -189,7 +189,7 @@ html_content = """
         .type-fade {
             font-size: 1.95rem;
             margin: 0 auto 18vh auto;
-            max-width: 820px;
+            max-width: 760px;
             padding: 0 15px;
             line-height: 1.5;
             font-style: italic;
@@ -208,7 +208,7 @@ html_content = """
         /* --- Hadith Section --- */
         .hadith-box {
             margin: 0 auto 20vh auto;
-            max-width: 780px;
+            max-width: 760px;
             opacity: 0;
             filter: blur(16px);
             transform: translateY(24px);
@@ -235,7 +235,7 @@ html_content = """
             opacity: 0;
             transition: clip-path 2.0s cubic-bezier(0.25, 1, 0.5, 1), filter 1.6s ease-out, opacity 1.2s ease-in;
             padding: 20px 0;
-            max-width: 860px;
+            max-width: 780px;
             margin: 0 auto;
         }
         .sub-header-text {
@@ -251,17 +251,12 @@ html_content = """
             display: block;
         }
         .hosts-names {
-            font-size: 1.95rem;
+            font-size: 1.85rem;
             font-weight: 700;
             color: #800000;
             display: block;
             margin: 12px 0;
-            line-height: 1.5;
-        }
-        .hosts-sub {
-            font-weight: 400;
-            font-size: 1.35rem;
-            color: #5c473b;
+            line-height: 1.55;
         }
         .wedding-word {
             color: #ff033e;
@@ -301,38 +296,12 @@ html_content = """
         @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
         @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
-        /* --- Scratch Card & Mobile Scaler --- */
-        .scratch-wrapper {
-            margin: 0 auto 24px auto;
-            display: flex; justify-content: center;
-            opacity: 0; filter: blur(16px); transform: translateY(24px);
-            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
-        }
-        .scratch-scaler { transform: scale(1); transition: transform 0.3s; }
-        .scratch-container {
-            position: relative; width: 320px; height: 320px;
-            clip-path: path("M 160,90 C 160,90 110,0 20,50 C -50,120 160,300 160,300 C 160,300 370,120 300,50 C 210,0 160,90 160,90 Z");
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-        }
-        .scratch-bg { width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .heart-text {
-            font-family: 'Alex Brush', cursive;
-            color: #9e001c;
-            font-size: 2.85rem;
-            line-height: 1.08;
-            letter-spacing: 0.5px;
-            text-align: center;
-            margin-top: 24px;
-            text-shadow: 0 1px 2px rgba(158, 0, 28, 0.12);
-        }
-        canvas#scratchCard { position: absolute; top: 0; left: 0; z-index: 10; cursor: pointer; touch-action: none; }
-
-        /* --- Scroll Unlock Prompt Below Heart --- */
+        /* --- Subtle Scroll Prompt Below Garden --- */
         .unlock-hint {
             font-size: 1.15rem;
             font-style: italic;
             color: #800000;
-            margin: 12px auto 0 auto;
+            margin: 18px auto 0 auto;
             min-height: 36px;
             opacity: 0;
             filter: blur(10px);
@@ -421,13 +390,12 @@ html_content = """
         }
 
         /* =========================================================
-           PART 2 SECTION (Natural Flow — Zero Sticky Trap!)
+           PART 2 SECTION (Royal Red Theme — Natural Flow)
            ========================================================= */
         #part2-section {
-            display: none;
             position: relative;
             z-index: 12;
-            padding: 0 20px;
+            padding: 0 28px;
             color: #fdf5e6;
         }
         #couple-stage-wrap {
@@ -437,9 +405,9 @@ html_content = """
             justify-content: center;
         }
 
-        /* Blur-in-Fade-in animation for Bride & Groom names (also bidirectional on scroll!) */
+        /* Blur-in-Fade-in animation for Bride & Groom names (bidirectional on scroll!) */
         .couple-details {
-            max-width: 780px;
+            max-width: 760px;
             padding: 20px 10px;
             margin: 0 auto;
             opacity: 0;
@@ -455,7 +423,7 @@ html_content = """
         }
         .couple-name-big {
             font-family: 'Alex Brush', cursive;
-            font-size: clamp(3rem, 8.8vw, 4.6rem);
+            font-size: clamp(2.9rem, 8.5vw, 4.5rem);
             color: #fbe59c;
             line-height: 1.15;
             margin: 4px 0;
@@ -477,7 +445,7 @@ html_content = """
 
         /* --- Schedule Table (Same Layout, Restyled for Royal Red Theme) --- */
         .schedule-box {
-            max-width: 800px;
+            max-width: 780px;
             margin: 4vh auto 18vh auto;
             opacity: 0; filter: blur(16px); transform: translateY(28px);
             transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
@@ -502,7 +470,7 @@ html_content = """
             filter: blur(16px);
             transform: translateY(24px);
             transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
-            line-height: 1.75;
+            line-height: 1.85;
             font-size: 1.25rem;
             color: #f4e2c7;
         }
@@ -510,12 +478,18 @@ html_content = """
             font-family: 'Great Vibes', cursive;
             font-size: 2.5rem;
             color: #f5d376;
-            margin: 18px 0 4px 0;
+            margin: 18px 0 6px 0;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
         }
         .rsvp-detail {
             font-weight: 600;
             color: #fff8ec;
+            margin: 3px 0;
+        }
+        .rsvp-phone {
+            color: #fbe59c;
+            text-decoration: none;
+            border-bottom: 1px dotted rgba(251, 229, 156, 0.5);
         }
 
         /* --- Footer (Red Theme) --- */
@@ -546,15 +520,12 @@ html_content = """
         .bf-flap-anim { animation: bfWing 0.3s infinite alternate ease-in-out; transform-origin: 16px 16px; }
         @keyframes bfWing { 0% { transform: scaleX(1); } 100% { transform: scaleX(0.25); } }
 
-        /* --- Explosion Bird SVG Classes (Spawns BEHIND heart & adapts color on Red theme) --- */
+        /* --- Explosion Bird SVG Classes --- */
         .bird-svg { overflow: visible; animation: birdBob 1.2s infinite ease-in-out alternate; }
         .bird-wing { animation: birdFlap 0.5s infinite ease-in-out alternate; }
         .explosion-bird-path {
-            stroke: #4a3b32;
-            transition: stroke 0.9s ease-in-out;
-        }
-        body.on-red-theme .explosion-bird-path {
             stroke: #f5deb3;
+            transition: stroke 0.9s ease-in-out;
         }
         @keyframes birdBob { 0% { transform: translateY(0px); } 100% { transform: translateY(12px); } }
         @keyframes birdFlap {
@@ -568,21 +539,19 @@ html_content = """
            MOBILE RESPONSIVENESS
            ========================================= */
         @media (max-width: 768px) {
+            .part1-container { padding: 10vh 24px 8vh 24px; }
+            #part2-section { padding: 0 24px; }
             .type-fade { font-size: 1.35rem !important; margin-bottom: 14vh; }
             .hadith-trans { font-size: 1.15rem; }
-            .sub-header-text { font-size: 1.25rem; }
+            .sub-header-text { font-size: 1.22rem; }
             .blessings-line { font-size: 1.15rem; }
-            .hosts-names { font-size: 1.4rem; }
-            .hosts-sub { font-size: 1.05rem; }
+            .hosts-names { font-size: 1.35rem; }
             .flower { font-size: 4.5rem; }
             .butterfly { font-size: 2.2rem; }
             .garden-container { gap: 40px; height: 100px; }
 
             .couple-lineage { font-size: 1.05rem; }
             .couple-with { font-size: 2rem; }
-
-            .scratch-scaler { transform: scale(0.85); }
-            .scratch-wrapper { margin: 0 auto 12px auto; }
 
             .schedule-box { padding: 15px; margin-bottom: 14vh; }
             th { font-size: 1.5rem; padding: 10px; }
@@ -596,9 +565,8 @@ html_content = """
 
         @media (max-width: 480px) {
             .type-fade { font-size: 1.2rem !important; }
-            .sub-header-text { font-size: 1.12rem; }
-            .hosts-names { font-size: 1.25rem; }
-            .scratch-scaler { transform: scale(0.75); }
+            .sub-header-text { font-size: 1.1rem; }
+            .hosts-names { font-size: 1.2rem; }
             .garden-container { gap: 20px; }
         }
     </style>
@@ -643,7 +611,7 @@ html_content = """
     <!-- Royal Red Theme Backdrop -->
     <div id="red-theme-backdrop"></div>
 
-    <!-- 60fps Pre-Baked Sprite Parallax Canvases (Background & Foreground) -->
+    <!-- 60fps Pre-Baked Side-Framed Parallax Canvases (Background & Foreground) -->
     <canvas id="bg-decor-canvas" class="decor-canvas"></canvas>
     <canvas id="fg-decor-canvas" class="decor-canvas"></canvas>
 
@@ -666,9 +634,9 @@ html_content = """
     <!-- Website Content -->
     <div class="content" id="main-content">
 
-       <!-- PART 1: Upper Page up to Scratched Heart -->
+       <!-- PART 1: Upper Page -->
        <div id="part1-wrapper" class="part1-container">
-           <!-- Restored Original Bismillah Calligraphy -->
+           <!-- Original Bismillah Calligraphy -->
            <div class="bismillah-wrap">
                <div class="bismillah obs fade-up">﷽</div>
            </div>
@@ -683,13 +651,13 @@ html_content = """
            </div>
 
            <!-- Ink Spread Hosts & Invitation Request + Blooming Garden -->
-           <div class="obs ink-trigger" style="min-height: 360px; margin-bottom: 16vh; display: flex; align-items: center; justify-content: center;">
+           <div class="obs ink-trigger" style="min-height: 360px; margin-bottom: 10vh; display: flex; align-items: center; justify-content: center;">
                <div class="ink-spread-anim">
                    <div class="sub-header-text">
                        <span class="blessings-line">With the blessings of Almighty Allah,</span>
                        <span class="hosts-names">
-                           Mrs. Mehnaz Ahmer <span class="hosts-sub">(W/O Late Mr. Ahmer Mukhtar)</span><br>
-                           &amp; Mr. Ali Ahmer
+                           Mr. Ahmer Mukhtar (Late), Mrs. Mehnaz Ahmer<br>
+                           and Mr. Ali Ahmer
                        </span>
                        cordially request the pleasure of your company<br>
                        at the <span class="wedding-word">wedding</span> ceremonies of their beloved daughter &amp; sister
@@ -776,40 +744,24 @@ html_content = """
                </div>
            </div>
 
-           <!-- Scratched Heart (Scroll ends here until scratched!) -->
-           <div class="scratch-wrapper obs fade-up">
-               <div class="scratch-scaler">
-                   <div class="scratch-container">
-                       <div class="scratch-bg">
-                           <div class="heart-text">
-                               Asad <br>
-                               <span style="font-size: 1.9rem;">&amp;</span><br>
-                               Rimsha
-                           </div>
-                       </div>
-                       <canvas id="scratchCard" width="320" height="320"></canvas>
-                   </div>
-               </div>
-           </div>
-
-           <div id="unlock-hint" class="unlock-hint">
+           <div id="unlock-hint" class="unlock-hint active">
                ↓ Scroll down to reveal ↓
            </div>
        </div>
 
-       <!-- PART 2: Royal Red Theme (Natural Flow — Zero Sticky Trap!) -->
+       <!-- PART 2: Royal Red Theme (Bride & Groom Names + Triggered Pop-up Animation) -->
        <div id="part2-section">
            <div id="couple-stage-wrap">
                <div id="couple-details" class="couple-details">
-                   <div class="couple-name-big">Rimsha Fatima</div>
-                   <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Marhoom)</div>
+                   <div class="couple-name-big">Ms. Rimsha Fatima</div>
+                   <div class="couple-lineage">D/O Mr. Ahmer Mukhtar (Late)</div>
                    <div class="couple-with">with</div>
-                   <div class="couple-name-big">Mr. Asad</div>
-                   <div class="couple-lineage">S/O [Groom's Father's Name]</div>
+                   <div class="couple-name-big">Mr. Asad Arsal</div>
+                   <div class="couple-lineage">S/O Mr. Arsal Bhatti</div>
                </div>
            </div>
 
-           <!-- Schedule Table (Same Layout, Restyled for Royal Red Theme) -->
+           <!-- Schedule Table -->
            <div class="schedule-box obs fade-up">
                <table>
                    <tr><th>Event</th><th>Date</th><th>Time</th><th>Location</th></tr>
@@ -831,8 +783,8 @@ html_content = """
            <!-- RSVP & Compliments -->
            <div class="rsvp-box obs fade-up">
                <div class="rsvp-heading">RSVP:</div>
-               <div class="rsvp-detail">Mr. Ali Ahmer</div>
-               <div>[Phone Number]</div>
+               <div class="rsvp-detail">Mr. Ali Ahmer: <a href="tel:03088887023" class="rsvp-phone">0308-8887023</a></div>
+               <div class="rsvp-detail">Mr. Umer Ahmer: <a href="tel:03009696692" class="rsvp-phone">0300-9696692</a></div>
 
                <div class="rsvp-heading" style="margin-top: 28px;">With Best Compliments From:</div>
                <div class="rsvp-detail">All Relatives &amp; Friends</div>
@@ -1137,7 +1089,7 @@ html_content = """
             const el = document.querySelector('.bismillah');
             if (!el) return;
             el.style.fontSize = '';
-            const maxWidth = window.innerWidth - 48;
+            const maxWidth = window.innerWidth - 56;
             const naturalWidth = el.scrollWidth;
             if (naturalWidth > maxWidth && naturalWidth > 0) {
                 const currentFontSize = parseFloat(window.getComputedStyle(el).fontSize);
@@ -1152,7 +1104,7 @@ html_content = """
         }
 
         // ============================================================
-        // 3. 60FPS PRE-BAKED SPRITE PARALLAX + BIRD FLOCK ENGINE
+        // 3. 60FPS SIDE-FRAMED PARALLAX SPRITES + BIRD FLOCK ENGINE
         // ============================================================
         const redBackdrop = document.getElementById('red-theme-backdrop');
         const bgDecorCanvas = document.getElementById('bg-decor-canvas');
@@ -1264,8 +1216,8 @@ html_content = """
         }
 
         const isMobile = window.innerWidth <= 768;
-        const bgCount = isMobile ? 30 : 60;
-        const fgCount = isMobile ? 12 : 25;
+        const bgCount = isMobile ? 28 : 56;
+        const fgCount = isMobile ? 12 : 24;
 
         let dW = 0, dH = 0, dDpr = 1;
         function resizeDecorCanvases() {
@@ -1284,19 +1236,27 @@ html_content = """
         function makeParticle(isFg) {
             const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
             const color = weddingColors[Math.floor(Math.random() * weddingColors.length)];
-            const sizePx = isFg ? (Math.random() * 32 + 40) : (Math.random() * 24 + 18);
+            const sizePx = isFg ? (Math.random() * 28 + 34) : (Math.random() * 22 + 16);
             const blurPx = isFg ? 3.2 : 1.6;
+
+            // Strictly place all background & foreground decor along the left & right sides (never in front of center texts!)
+            const isLeft = Math.random() > 0.5;
+            const marginBand = isMobile ? 0.08 : 0.14;
+            const xFrac = isLeft
+                ? (0.02 + Math.random() * marginBand)
+                : (0.98 - Math.random() * marginBand);
+
             return {
                 type,
                 sprite: getBlurredSprite(type, color, blurPx),
-                xFrac: Math.random() * 0.94 + 0.03,
+                xFrac,
                 yFrac: Math.random(),
                 sizePx,
                 alpha: isFg ? 0.65 : 0.55,
                 phase: Math.random() * Math.PI * 2,
                 floatSpeed: isFg ? 0.78 : 1.05,
                 floatAmp: isFg ? 18 : 14,
-                swayAmp: isFg ? 10 : 6,
+                swayAmp: isFg ? 6 : 4,
                 flapPhase: Math.random() * Math.PI * 2,
                 popStart: 0,
                 lastX: -999,
@@ -1341,7 +1301,7 @@ html_content = """
         }
 
         // ============================================================
-        // 4. TRIGGERED 60FPS SPLIT-CURTAIN REVEAL (Zero Stutter & Free Scroll-Back)
+        // 4. TRIGGERED 60FPS SPLIT-CURTAIN REVEAL + POP-UP CELEBRATION
         // ============================================================
         const mainContent = document.getElementById('main-content');
         const part1Wrapper = document.getElementById('part1-wrapper');
@@ -1356,6 +1316,7 @@ html_content = """
         let splitPrepared = false;
         let splitTriggered = false;
         let splitFinished = false;
+        let celebrationTriggered = false;
         let splitTriggerY = 0;
         let redBlend = 0;
         let clonedHintEls = [];
@@ -1378,9 +1339,6 @@ html_content = """
                 const clone = part1Wrapper.cloneNode(true);
                 clone.removeAttribute('id');
                 clone.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
-
-                const c = clone.querySelector('canvas');
-                if (c) c.remove();
 
                 clone.querySelectorAll('.obs').forEach(el => {
                     el.style.transition = 'none';
@@ -1426,6 +1384,20 @@ html_content = """
             syncCloneWidths();
         }
 
+        function prepareSplitStage() {
+            if (splitPrepared) return;
+            buildSplitClones();
+            splitPrepared = true;
+
+            const part1BottomScroll = Math.max(0, part1Wrapper.offsetHeight - window.innerHeight);
+            splitTriggerY = Math.max(40, part1BottomScroll + 20);
+
+            // Pre-warm splitStage behind Part 1 so split starts with 0ms stutter
+            splitStage.style.display = 'block';
+            splitStage.style.zIndex = '19';
+            splitStage.style.opacity = '0.001';
+        }
+
         function setRedThemeActive(isActive) {
             if (isActive) {
                 redBackdrop.classList.add('red-active');
@@ -1434,6 +1406,14 @@ html_content = """
                 redBackdrop.classList.remove('red-active');
                 document.body.classList.remove('on-red-theme');
             }
+        }
+
+        function triggerCoupleCelebration() {
+            if (celebrationTriggered) return;
+            celebrationTriggered = true;
+            fireSideCannon('left');
+            fireSideCannon('right');
+            spawnExplosionFlock();
         }
 
         function triggerSplitCurtain() {
@@ -1445,7 +1425,6 @@ html_content = """
             splitLeftInner.style.transform = `translate3d(0, ${-curY}px, 0)`;
             splitRightInner.style.transform = `translate3d(0, ${-curY}px, 0)`;
 
-            // Hand off seamlessly from real Part 1 to pre-warmed splitStage
             splitStage.style.zIndex = '25';
             splitStage.style.opacity = '1';
             part1Wrapper.style.opacity = '0';
@@ -1456,7 +1435,7 @@ html_content = """
             if (realHint) realHint.classList.add('blur-out-away');
             clonedHintEls.forEach(el => el.classList.add('blur-out-away'));
 
-            // BEAT 2 (260ms): Behind the still-closed curtains, position Couple Details at center & launch silky WAAPI fall!
+            // BEAT 2 (260ms): Position Couple Details at center & launch silky falling split curtains!
             setTimeout(() => {
                 const part2Top = part1Wrapper.offsetHeight;
                 window.scrollTo({ top: part2Top, behavior: 'auto' });
@@ -1480,12 +1459,13 @@ html_content = """
                     { transform: 'translate3d(44vw, 64vh, 0) rotate(11deg) scaleX(0.82)', opacity: 0 }
                 ], animOpts);
 
-                // BEAT 3 (480ms): Blur-in-Fade-in the Bride & Groom Names + Father's Names underneath!
+                // BEAT 3 (480ms): Blur-in-Fade-in Bride & Groom names & trigger Pop-up animation in Royal Red background!
                 setTimeout(() => {
                     coupleDetails.classList.add('couple-revealed');
+                    triggerCoupleCelebration();
                 }, 220);
 
-                // Cleanup split overlay & enable bidirectional scroll blur-in on Couple Details too
+                // Cleanup split overlay & observe Couple Details for bidirectional scroll blur-in
                 setTimeout(() => {
                     splitFinished = true;
                     splitStage.style.display = 'none';
@@ -1498,9 +1478,16 @@ html_content = """
         }
 
         function checkScrollTriggers(scrollY) {
-            if (!splitPrepared) return;
+            if (!isCurtainOpening) return;
 
-            if (!splitTriggered && scrollY >= splitTriggerY) {
+            if (!splitPrepared) {
+                const approxTrigger = Math.max(40, part1Wrapper.offsetHeight - window.innerHeight + 20);
+                if (scrollY >= approxTrigger) {
+                    prepareSplitStage();
+                }
+            }
+
+            if (splitPrepared && !splitTriggered && scrollY >= splitTriggerY) {
                 triggerSplitCurtain();
             }
 
@@ -1525,7 +1512,7 @@ html_content = """
             bgCtx.clearRect(0, 0, dW, dH);
             fgCtx.clearRect(0, 0, dW, dH);
 
-            // 1. Background Parallax Sprites (0.15x scroll speed)
+            // 1. Background Side-Framed Parallax Sprites (0.15x scroll speed)
             const bgWrapH = dH + 180;
             for (let i = 0; i < bgParticles.length; i++) {
                 const p = bgParticles[i];
@@ -1618,7 +1605,7 @@ html_content = """
                 }
             }
 
-            // 3. Foreground Parallax Sprites (1.40x scroll speed)
+            // 3. Foreground Side-Framed Parallax Sprites (1.40x scroll speed)
             const fgWrapH = dH + 220;
             for (let i = 0; i < fgParticles.length; i++) {
                 const p = fgParticles[i];
@@ -1664,16 +1651,20 @@ html_content = """
                 const el = entry.target;
                 if (entry.isIntersecting) {
                     if (el.classList.contains('fade-up')) { el.classList.add('visible-up'); }
-                    if (el.classList.contains('ink-trigger')) { el.classList.add('visible-ink'); }
+                    if (el.classList.contains('ink-trigger')) {
+                        el.classList.add('visible-ink');
+                        // Pre-warm splitStage right as the blooming garden comes into view
+                        if (!splitPrepared) prepareSplitStage();
+                    }
                     if (el.classList.contains('type-fade')) {
                         el.classList.add('visible-fade');
                         typeWriterFadeIn(el);
                     }
                     if (el.id === 'couple-details') {
                         el.classList.add('couple-revealed');
+                        if (splitFinished) triggerCoupleCelebration();
                     }
                 } else {
-                    // Reset when scrolled completely off screen so it blurs-in-fades-in again when scrolling up OR down!
                     if (el.classList.contains('fade-up')) { el.classList.remove('visible-up'); }
                     if (el.classList.contains('ink-trigger')) { el.classList.remove('visible-ink'); }
                     if (el.classList.contains('type-fade')) { el.classList.remove('visible-fade'); }
@@ -1702,6 +1693,7 @@ html_content = """
                 }
 
                 part1Wrapper.querySelectorAll('.obs').forEach(el => observer.observe(el));
+                part2Section.querySelectorAll('.obs').forEach(el => observer.observe(el));
 
                 setTimeout(() => {
                     mainContent.style.filter = 'none';
@@ -1725,8 +1717,6 @@ html_content = """
                 target.classList.add('pop-anim');
                 return;
             }
-
-            if (e.target.closest('#scratchCard')) return;
 
             const cx = e.clientX;
             const cy = e.clientY;
@@ -1793,96 +1783,7 @@ html_content = """
         }
 
         // ============================================================
-        // 8. SCRATCH CARD LOGIC (Unlocks Part 2 + Pre-Warms Split Stage!)
-        // ============================================================
-        const canvas = document.getElementById('scratchCard');
-        const ctx = canvas.getContext('2d');
-        let isDrawing = false;
-        let isRevealed = false;
-
-        ctx.fillStyle = '#a0a0a0';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '30px Playfair Display';
-        ctx.textAlign = 'center';
-        ctx.fillText('Scratch me', canvas.width/2, canvas.height/2 + 10);
-
-        function getMousePos(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-            return {
-                x: (clientX - rect.left) * scaleX,
-                y: (clientY - rect.top) * scaleY
-            };
-        }
-
-        function scratch(e) {
-            if (!isDrawing || isRevealed) return;
-            e.preventDefault();
-            const pos = getMousePos(e);
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2);
-            ctx.fill();
-            checkReveal();
-        }
-
-        canvas.addEventListener('mousedown', () => isDrawing = true);
-        canvas.addEventListener('mousemove', scratch);
-        canvas.addEventListener('mouseup', () => isDrawing = false);
-        canvas.addEventListener('mouseleave', () => isDrawing = false);
-        canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); });
-        canvas.addEventListener('touchmove', scratch);
-        canvas.addEventListener('touchend', () => isDrawing = false);
-
-        function unlockRestOfInvitation() {
-            if (splitPrepared) return;
-            buildSplitClones();
-            part2Section.style.display = 'block';
-            splitPrepared = true;
-
-            const curY = window.scrollY || window.pageYOffset || 0;
-            const part1BottomScroll = Math.max(0, part1Wrapper.offsetHeight - window.innerHeight);
-            splitTriggerY = Math.max(curY, part1BottomScroll) + 18;
-
-            splitStage.style.display = 'block';
-            splitStage.style.zIndex = '19';
-            splitStage.style.opacity = '0.001';
-
-            document.getElementById('unlock-hint').classList.add('active');
-            part2Section.querySelectorAll('.obs').forEach(el => observer.observe(el));
-        }
-
-        function checkReveal() {
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            let transparentPixels = 0;
-            const totalPixels = imageData.data.length / 4;
-
-            for (let i = 3; i < imageData.data.length; i += 40) {
-                if (imageData.data[i] === 0) transparentPixels++;
-            }
-
-            if (transparentPixels / (totalPixels/10) > 0.30 && !isRevealed) {
-                isRevealed = true;
-                canvas.style.transition = 'opacity 0.8s ease-out, filter 0.8s ease-out';
-                canvas.style.opacity = 0;
-                canvas.style.filter = 'blur(10px)';
-                setTimeout(() => canvas.style.display = 'none', 800);
-
-                unlockRestOfInvitation();
-                fireSideCannon('left');
-                fireSideCannon('right');
-                spawnExplosionFlock();
-            }
-        }
-
-        // ============================================================
-        // 9. CUSTOM SIDE-CANNONS (Left & Right Bottom Screen)
+        // 8. CUSTOM SIDE-CANNONS (Left & Right Bottom Screen)
         // ============================================================
         function fireSideCannon(side) {
             const container = document.createElement('div');
@@ -1930,13 +1831,13 @@ html_content = """
         }
 
         // ============================================================
-        // 10. FLOCK OF BIRDS SPAWNING FROM BEHIND THE SCRATCHED HEART
+        // 9. SLOW-MOTION FLOCK OF BIRDS EMERGING BEHIND COUPLE NAMES
         // ============================================================
         function spawnExplosionFlock() {
             const mcRect = mainContent.getBoundingClientRect();
-            const heartRect = document.querySelector('.scratch-container').getBoundingClientRect();
-            const originX = (heartRect.left - mcRect.left) + heartRect.width / 2;
-            const originY = (heartRect.top - mcRect.top) + heartRect.height / 2;
+            const coupleRect = coupleDetails.getBoundingClientRect();
+            const originX = (coupleRect.left - mcRect.left) + coupleRect.width / 2;
+            const originY = (coupleRect.top - mcRect.top) + coupleRect.height / 2;
 
             const flockContainer = document.createElement('div');
             flockContainer.style.position = 'absolute';
@@ -1944,10 +1845,10 @@ html_content = """
             flockContainer.style.top = `${originY}px`;
             flockContainer.style.width = '0px';
             flockContainer.style.height = '0px';
-            // z-index 16 sits BEHIND #part1-wrapper (z-index 20, solid white heart!) and IN FRONT of #part2-section (12)
-            flockContainer.style.zIndex = '16';
+            // z-index 10 sits cleanly BEHIND #part2-section (z-index 12) and IN FRONT of Royal Red backdrop (0)!
+            flockContainer.style.zIndex = '10';
             flockContainer.style.pointerEvents = 'none';
-            mainContent.insertBefore(flockContainer, part1Wrapper);
+            mainContent.insertBefore(flockContainer, part2Section);
 
             const birdCount = isMobile ? 25 : 45;
             for (let i = 0; i < birdCount; i++) {
@@ -1962,15 +1863,14 @@ html_content = """
                         <path class="bird-wing explosion-bird-path" style="animation-delay: ${flapDelay};" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
                     </svg>`;
 
-                // Emerge radially outward & upward from behind the white heart rim
                 let tx = (Math.random() - 0.5) * window.innerWidth * 2.4;
                 let ty = - (Math.random() * window.innerHeight * 1.4 + 420);
                 let rot = (Math.random() - 0.5) * 40;
                 let delay = Math.random() * 2200;
 
                 bird.animate([
-                    { transform: `translate(-50%, -50%) scale(0.35) rotate(0deg)`, opacity: 1 },
-                    { transform: `translate(calc(-50% + ${tx * 0.15}px), calc(-50% + ${ty * 0.15}px)) scale(0.75) rotate(${rot * 0.3}deg)`, opacity: 1, offset: 0.15 },
+                    { transform: `translate(-50%, -50%) scale(0.35) rotate(0deg)`, opacity: 0 },
+                    { transform: `translate(calc(-50% + ${tx * 0.12}px), calc(-50% + ${ty * 0.12}px)) scale(0.75) rotate(${rot * 0.3}deg)`, opacity: 0.95, offset: 0.15 },
                     { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(1.5) rotate(${rot}deg)`, opacity: 0 }
                 ], {
                     duration: Math.random() * 5000 + 15000,
