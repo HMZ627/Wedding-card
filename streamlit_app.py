@@ -45,7 +45,8 @@ st.markdown(
 def load_image_html(base_name, img_id, alt_text, placeholder_text):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     candidates = [
-        f"{base_name}.png", f"{base_name}.webp", f"{base_name}.jpg", f"{base_name}.jpeg",
+        f"{base_name}.avif", f"{base_name}.png", f"{base_name}.webp", f"{base_name}.jpg", f"{base_name}.jpeg",
+        os.path.join("images", f"{base_name}.avif"),
         os.path.join("images", f"{base_name}.png"),
         os.path.join("images", f"{base_name}.webp"),
         os.path.join("images", f"{base_name}.jpg"),
@@ -73,6 +74,12 @@ couple_photo_html = load_image_html(
     "Velvet Heart Box",
     "Upload transparent <b>couple.png</b><br>(374 &times; 667)<br>to your GitHub repo root"
 )
+couple_photo_1_html = load_image_html(
+    "couple1",
+    "couple-photo-img-1",
+    "Sealed Vintage Envelope",
+    "Upload <b>couple1.avif</b><br>to your GitHub repo root"
+)
 couple_photo_2_html = load_image_html(
     "couple2",
     "couple-photo-img-2",
@@ -80,7 +87,7 @@ couple_photo_2_html = load_image_html(
     "Upload transparent <b>couple2.png</b><br>to your GitHub repo root"
 )
 
-# HTML, CSS, JS payload with WebGL silk curtains, synchronized slow ease-in-out gold-bordered photos & Red theme
+# HTML, CSS, JS payload with WebGL silk curtains, mobile-optimized 60fps canvas particles & synchronized tilt-in photos
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -94,6 +101,9 @@ html_content = """
         html, body {
             margin: 0; padding: 0;
             overflow-x: clip;
+            overscroll-behavior: none;
+            /* Locks native mobile drag so fingers never fight auto-scroll */
+            touch-action: none;
         }
         body {
             font-family: 'Playfair Display', serif;
@@ -107,7 +117,7 @@ html_content = """
             color: #4a3b32;
         }
 
-        /* --- Royal Crimson Red Theme Backdrop (Smooth Color Transition) --- */
+        /* --- Royal Crimson Red Theme Backdrop (Fast GPU Gradient without expensive blend modes) --- */
         #red-theme-backdrop {
             position: fixed;
             inset: 0;
@@ -117,11 +127,7 @@ html_content = """
             background-color: #5c0612;
             background-image:
                 radial-gradient(circle at 50% 25%, rgba(185, 22, 48, 0.45) 0%, transparent 58%),
-                radial-gradient(circle at 18% 75%, rgba(45, 0, 7, 0.55) 0%, transparent 50%),
-                radial-gradient(circle at 85% 80%, rgba(45, 0, 7, 0.55) 0%, transparent 50%),
-                radial-gradient(ellipse at center, transparent 38%, rgba(26, 0, 4, 0.68) 100%),
-                url('https://www.transparenttextures.com/patterns/aged-paper.png');
-            background-blend-mode: normal, normal, normal, normal, multiply;
+                radial-gradient(ellipse at center, transparent 38%, rgba(26, 0, 4, 0.72) 100%);
             transition: opacity 1.3s ease-in-out;
             will-change: opacity;
         }
@@ -129,21 +135,20 @@ html_content = """
             opacity: 1;
         }
 
-        /* --- High-FPS Fixed Parallax Decor Canvases (Framing Left & Right Edges) --- */
+        /* --- High-FPS Fixed Parallax & Celebration Canvases --- */
         .decor-canvas {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             pointer-events: none;
             opacity: 0;
-            filter: blur(18px);
-            transition: opacity 1.8s ease-out, filter 1.8s ease-out;
+            transition: opacity 1.8s ease-out;
         }
         #bg-decor-canvas { z-index: 1; }
+        #mid-birds-canvas { z-index: 10; }
         #fg-decor-canvas { z-index: 50; }
         .decor-canvas.decor-revealed {
             opacity: 1;
-            filter: blur(0px);
         }
 
         /* --- WebGL / Canvas Silky Cloth Curtain --- */
@@ -183,9 +188,9 @@ html_content = """
             text-align: center;
             position: relative;
             opacity: 0;
-            filter: blur(22px);
+            filter: blur(14px);
             transform: scale(0.98);
-            transition: opacity 1.8s ease-out, filter 1.8s ease-out, transform 1.8s ease-out;
+            transition: opacity 1.6s ease-out, filter 1.6s ease-out, transform 1.6s ease-out;
         }
         .content.site-revealed {
             opacity: 1;
@@ -204,6 +209,7 @@ html_content = """
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden;
         }
 
         /* --- Part 1 Container --- */
@@ -223,7 +229,7 @@ html_content = """
             color: #fbe59c;
         }
 
-        /* Section 1: Bismillah + Translation + Hadith */
+        /* Section 0: Bismillah + Translation + Hadith */
         .bismillah-wrap {
             width: 100%;
             display: flex;
@@ -235,9 +241,9 @@ html_content = """
             font-family: 'Amiri', 'Traditional Arabic', serif;
             font-size: clamp(1.2rem, 6.2vw, 3.3rem);
             opacity: 0;
-            filter: blur(16px);
+            filter: blur(12px);
             transform: translateY(24px);
-            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out, color 0.9s ease-in-out;
+            transition: opacity 1.1s ease-out, filter 1.1s ease-out, transform 1.1s ease-out, color 0.9s ease-in-out;
             line-height: 1.5;
             white-space: nowrap;
             direction: rtl;
@@ -248,7 +254,6 @@ html_content = """
             transform: translateY(0) !important;
         }
 
-        /* Type-in Fade-in + Bidirectional Blur-in-Fade-in */
         .type-fade {
             font-size: 1.75rem;
             margin: 0 auto 6vh auto;
@@ -257,9 +262,9 @@ html_content = """
             line-height: 1.5;
             font-style: italic;
             opacity: 0;
-            filter: blur(16px);
+            filter: blur(12px);
             transform: translateY(22px);
-            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
+            transition: opacity 1.1s ease-out, filter 1.1s ease-out, transform 1.1s ease-out;
             min-height: 54px;
         }
         .type-fade.visible-fade {
@@ -272,9 +277,9 @@ html_content = """
             margin: 0 auto;
             max-width: 760px;
             opacity: 0;
-            filter: blur(16px);
+            filter: blur(12px);
             transform: translateY(24px);
-            transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
+            transition: opacity 1.1s ease-out, filter 1.1s ease-out, transform 1.1s ease-out;
         }
         .hadith-arabic {
             font-family: 'Amiri', serif;
@@ -292,15 +297,17 @@ html_content = """
             transition: color 0.9s ease-in-out;
         }
 
-        /* Section 2: Ink Spread Hosts & Invitation + Blooming Garden */
+        /* Section 1: Ink Spread Hosts & Invitation + Blooming Garden + Left Envelope Tilt-In */
         .ink-spread-anim {
             clip-path: circle(0% at center);
-            filter: blur(20px);
+            filter: blur(14px);
             opacity: 0;
-            transition: clip-path 2.0s cubic-bezier(0.25, 1, 0.5, 1), filter 1.6s ease-out, opacity 1.2s ease-in;
+            transition: clip-path 1.8s cubic-bezier(0.25, 1, 0.5, 1), filter 1.4s ease-out, opacity 1.1s ease-in;
             padding: 10px 0;
             max-width: 780px;
             margin: 0 auto;
+            position: relative;
+            z-index: 18;
         }
         .sub-header-text {
             font-size: 1.55rem;
@@ -349,7 +356,6 @@ html_content = """
         .visible-ink .flower-layer-2 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.0s; }
         .visible-ink .flower-layer-3 { animation: bloomLayer 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.3s; }
         .visible-ink .flower-center { animation: bloomLayer 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 1.6s; }
-
         .visible-ink .flower svg { animation: continuousBloom 4s infinite alternate ease-in-out 3.1s; }
 
         .plant.delayed .flower-layer-1 { animation-delay: 1.1s; }
@@ -362,8 +368,22 @@ html_content = """
         @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
         @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
+        /* Left Side Envelope (couple1.avif) in Inviting Names Section */
+        .couple-photo-wrap-1 {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 310px;
+            height: 310px;
+            z-index: 14;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate3d(-115%, -50%, 0) rotate(20deg);
+            will-change: transform, opacity;
+        }
+
         /* =========================================================
-           PART 2 SECTION (Royal Red Theme — Smooth Auto-Scroll Sections)
+           PART 2 SECTION (Royal Red Theme)
            ========================================================= */
         #part2-section {
             position: relative;
@@ -372,10 +392,7 @@ html_content = """
             color: #fdf5e6;
         }
 
-        /* Section 3: Groom & Bride Names Centered + Left Bouquet Tilt-In + Right Heart Box Slide-In */
-        #sec-couple {
-            overflow: hidden;
-        }
+        /* Section 2: Groom & Bride Names Centered + Left Bouquet + Right Heart Box */
         .couple-stage-layout {
             width: 100%;
             display: flex;
@@ -390,15 +407,15 @@ html_content = """
             padding: 16px 10px;
             margin: 0 auto;
             opacity: 0;
-            filter: blur(22px);
-            transform: scale(0.95) translateY(20px);
-            transition: opacity 1.4s ease-out, filter 1.4s ease-out, transform 1.4s ease-out;
-            will-change: opacity, filter, transform;
+            filter: blur(12px);
+            transform: translate3d(0, 18px, 0) scale(0.96);
+            transition: opacity 1.3s ease-out, filter 1.3s ease-out, transform 1.3s ease-out;
+            will-change: opacity, transform;
         }
         .couple-details.couple-revealed {
             opacity: 1;
             filter: blur(0px);
-            transform: scale(1) translateY(0);
+            transform: translate3d(0, 0, 0) scale(1);
         }
         .couple-name-big {
             font-family: 'Alex Brush', cursive;
@@ -450,12 +467,12 @@ html_content = """
             will-change: transform, opacity;
         }
 
+        /* Zero live CSS filter on .couple-photo — shadow is pre-baked onto the image! */
         .couple-photo {
             width: 100%;
             height: 100%;
             object-fit: contain;
             display: block;
-            filter: drop-shadow(-8px 16px 24px rgba(0, 0, 0, 0.55));
         }
         .couple-photo-placeholder {
             display: flex;
@@ -472,12 +489,12 @@ html_content = """
             background: rgba(34, 0, 6, 0.35);
         }
 
-        /* Section 4: Schedule Table + Helpful Slide Arrow Controls for Mobile/Elderly Users */
+        /* Section 3: Schedule Table + Slide Arrow Controls */
         .schedule-box {
             width: 100%;
             max-width: 780px;
             margin: 0 auto;
-            opacity: 0; filter: blur(16px); transform: translateY(28px);
+            opacity: 0; filter: blur(12px); transform: translateY(28px);
             transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
             background: rgba(34, 0, 6, 0.42);
             padding: 26px 26px 30px 26px;
@@ -544,6 +561,8 @@ html_content = """
             overflow-x: auto;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
+            /* Lets user swipe table horizontally while vertical swipes still drive section auto-scroll! */
+            touch-action: pan-x;
         }
         table { width: 100%; border-collapse: collapse; min-width: 480px; }
         th, td { padding: 15px; text-align: center; border-bottom: 1px solid rgba(253, 245, 230, 0.22); }
@@ -551,12 +570,12 @@ html_content = """
         td { font-size: 1.15rem; color: #fdf5e6; }
         .venue-sub { font-size: 0.9rem; color: #e6cfb3; }
 
-        /* Section 5: RSVP & Best Compliments + Footer */
+        /* Section 4: RSVP & Best Compliments + Footer */
         .rsvp-box {
             max-width: 720px;
             margin: 0 auto 6vh auto;
             opacity: 0;
-            filter: blur(16px);
+            filter: blur(12px);
             transform: translateY(24px);
             transition: opacity 1.15s ease-out, filter 1.15s ease-out, transform 1.15s ease-out;
             line-height: 1.85;
@@ -583,7 +602,7 @@ html_content = """
 
         .footer-text {
             font-size: 1.55rem;
-            opacity: 0; filter: blur(16px); transform: translateY(24px);
+            opacity: 0; filter: blur(12px); transform: translateY(24px);
             transition: opacity 1.15s ease-out 0.18s, filter 1.15s ease-out 0.18s, transform 1.15s ease-out 0.18s;
             font-style: italic;
             color: #fbe59c;
@@ -607,23 +626,10 @@ html_content = """
         .bf-flap-anim { animation: bfWing 0.3s infinite alternate ease-in-out; transform-origin: 16px 16px; }
         @keyframes bfWing { 0% { transform: scaleX(1); } 100% { transform: scaleX(0.25); } }
 
-        /* --- Explosion Bird SVG Classes --- */
-        .bird-svg { overflow: visible; animation: birdBob 1.2s infinite ease-in-out alternate; }
-        .bird-wing { animation: birdFlap 0.5s infinite ease-in-out alternate; }
-        .explosion-bird-path {
-            stroke: #f5deb3;
-            transition: stroke 0.9s ease-in-out;
-        }
-        @keyframes birdBob { 0% { transform: translateY(0px); } 100% { transform: translateY(12px); } }
-        @keyframes birdFlap {
-            0%   { d: path("M 5 10 Q 30 15 50 30 Q 70 15 95 10"); }
-            100% { d: path("M 5 50 Q 30 35 50 30 Q 70 35 95 50"); }
-        }
-
         .visible-up { opacity: 1 !important; filter: blur(0px) !important; transform: translateY(0) !important; }
 
         /* =========================================
-           MOBILE & TABLET RESPONSIVENESS
+           MOBILE & TABLET RESPONSIVENESS (Ultra-Smooth GPU Transitions)
            ========================================= */
         @media (max-width: 960px) {
             .couple-details {
@@ -645,10 +651,30 @@ html_content = """
                 height: auto;
                 aspect-ratio: 3 / 4;
             }
+            .couple-photo-wrap-1 {
+                top: auto;
+                bottom: 2vh;
+                left: 0;
+                width: min(175px, 42vw);
+                height: min(175px, 42vw);
+            }
         }
 
         @media (max-width: 768px) {
             .snap-section { padding: 4.5vh 24px; }
+            /* Lighter blur on mobile prevents GPU texture bottleneck during reveals */
+            .bismillah, .type-fade, .hadith-box, .schedule-box, .rsvp-box, .footer-text {
+                filter: blur(5px);
+            }
+            .couple-details {
+                filter: blur(6px);
+                padding: 6px 10px;
+                margin-bottom: 20vh;
+            }
+            .ink-spread-anim {
+                filter: blur(6px);
+            }
+
             .type-fade { font-size: 1.35rem !important; margin-bottom: 4.5vh; }
             .hadith-trans { font-size: 1.15rem; }
             .sub-header-text { font-size: 1.22rem; }
@@ -658,7 +684,6 @@ html_content = """
             .butterfly { font-size: 2.2rem; }
             .garden-container { gap: 40px; height: 100px; }
 
-            .couple-details { padding: 6px 10px; margin-bottom: 20vh; }
             .couple-name-big { font-size: clamp(2.4rem, 9vw, 3.3rem); }
             .couple-lineage { font-size: 1.02rem; margin-bottom: 8px; }
             .couple-with { font-size: 2rem; margin: 4px 0; }
@@ -669,6 +694,11 @@ html_content = """
             .couple-photo-wrap-2 {
                 bottom: 2vh;
                 width: min(180px, 45vw);
+            }
+            .couple-photo-wrap-1 {
+                bottom: 1.5vh;
+                width: min(160px, 40vw);
+                height: min(160px, 40vw);
             }
 
             .schedule-box { padding: 16px; }
@@ -694,35 +724,19 @@ html_content = """
                 bottom: 1vh;
                 width: min(165px, 44vw);
             }
+            .couple-photo-wrap-1 {
+                bottom: 1vh;
+                width: min(145px, 38vw);
+                height: min(145px, 38vw);
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- MASTER SVG DEFINITIONS (Used for Garden & Side Cannons) -->
+    <!-- MASTER SVG DEFINITIONS (Used for Garden) -->
     <svg width="0" height="0" style="position:absolute; pointer-events: none;">
       <defs>
-        <path id="svg-heart" d="M16 28.5C16 28.5 4 20 4 10C4 5.6 7.6 2 12 2C14.4 2 16 3.6 16 3.6C16 3.6 17.6 2 20 2C24.4 2 28 5.6 28 10C28 20 16 28.5 16 28.5Z"/>
-
-        <g id="svg-flower">
-            <g stroke="#ffffff" stroke-width="0.5">
-                <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" fill="currentColor"/>
-                <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(72 16 16)" fill="currentColor"/>
-                <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(144 16 16)" fill="currentColor"/>
-                <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(216 16 16)" fill="currentColor"/>
-                <path d="M 16 16 C 4 10 6 -2 16 2 C 26 -2 28 10 16 16 Z" transform="rotate(288 16 16)" fill="currentColor"/>
-            </g>
-            <g fill="#ffffff" opacity="0.4" transform="rotate(36 16 16)">
-                <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" />
-                <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(72 16 16)" />
-                <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(144 16 16)" />
-                <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(216 16 16)" />
-                <path d="M 16 16 C 6 12 8 2 16 5 C 24 2 26 12 16 16 Z" transform="rotate(288 16 16)" />
-            </g>
-            <circle cx="16" cy="16" r="3" fill="#ffd700" />
-            <circle cx="16" cy="16" r="1.5" fill="#fff" opacity="0.8"/>
-        </g>
-
         <g id="svg-butterfly">
             <g class="bf-flap-anim">
                 <path d="M 15 16 C 5 4 0 10 7 16 C 0 22 5 28 15 16 Z" />
@@ -730,15 +744,15 @@ html_content = """
             </g>
             <rect x="15" y="8" width="2" height="16" rx="1" fill="#4a3b32"/>
         </g>
-        <path id="svg-sparkle" d="M16 2 Q16 16 2 16 Q16 16 16 30 Q16 16 30 16 Q16 16 16 2 Z"/>
       </defs>
     </svg>
 
     <!-- Royal Red Theme Backdrop -->
     <div id="red-theme-backdrop"></div>
 
-    <!-- 60fps Pre-Baked Side-Framed Parallax Canvases (Background & Foreground) -->
+    <!-- 60fps Pre-Baked Canvases: Background Sprites + Mid Behind-Text Bird Flock + Foreground Cannons -->
     <canvas id="bg-decor-canvas" class="decor-canvas"></canvas>
+    <canvas id="mid-birds-canvas" class="decor-canvas"></canvas>
     <canvas id="fg-decor-canvas" class="decor-canvas"></canvas>
 
     <!-- Red Glossy Silky Cloth Curtains (Pure Silk, No Yellow Boundary) -->
@@ -766,7 +780,7 @@ html_content = """
                </div>
            </section>
 
-           <!-- SECTION 1: Inviting People's Names + Blooming Garden -->
+           <!-- SECTION 1: Inviting People's Names + Blooming Garden + Left Envelope (couple1.avif) -->
            <section id="sec-hosts" class="snap-section">
                <div class="obs ink-trigger" style="width: 100%; display: flex; align-items: center; justify-content: center;">
                    <div class="ink-spread-anim">
@@ -861,6 +875,9 @@ html_content = """
                            </div>
                        </div>
                    </div>
+               </div>
+               <div id="couple-photo-wrap-1" class="couple-photo-wrap-1">
+                   __COUPLE_PHOTO_1_HTML__
                </div>
            </section>
        </div>
@@ -1221,7 +1238,7 @@ html_content = """
         requestAnimationFrame(renderCurtainFrame);
 
         // ============================================================
-        // 2. AUTO-FIT BISMILLAH + THIN METALLIC GOLD SILHOUETTE BORDERS
+        // 2. AUTO-FIT BISMILLAH + PRE-BAKED THIN GOLD BORDER & DROP SHADOW
         // ============================================================
         function fitBismillah() {
             const el = document.querySelector('.bismillah');
@@ -1241,7 +1258,7 @@ html_content = """
             document.fonts.ready.then(fitBismillah);
         }
 
-        // Traces exact alpha contour of transparent PNGs and draws a delicate thin gold outline on both
+        // Traces exact alpha contour, adds thin metallic gold outline + pre-bakes drop shadow once (0ms runtime filter!)
         function applyGoldBorderToImage(imgId) {
             const img = document.getElementById(imgId);
             if (!img || img.dataset.goldBorderApplied) return;
@@ -1252,13 +1269,12 @@ html_content = """
                 const origH = img.naturalHeight;
                 if (!origW || !origH) return;
 
-                // Cap internal canvas width at 760px for 2x retina crispness & instant startup even on huge PNGs
-                const maxCanvasW = 760;
+                const maxCanvasW = 720;
                 const downScale = origW > maxCanvasW ? (maxCanvasW / origW) : 1;
                 const w = Math.round(origW * downScale);
                 const h = Math.round(origH * downScale);
 
-                const pad = 10;
+                const pad = 26; // Extra space for pre-baked drop shadow + thin gold outline
                 const cw = w + pad * 2;
                 const ch = h + pad * 2;
 
@@ -1283,13 +1299,22 @@ html_content = """
                 out.height = ch;
                 const oCtx = out.getContext('2d');
 
-                // Thin, refined ~1.75px visual border scaled cleanly to canvas resolution
-                const borderPx = Math.max(1.8, (w / 360) * 1.75);
-                const steps = 32;
+                const borderPx = Math.max(1.6, (w / 360) * 1.65);
+                const steps = 28;
 
+                // 1) Pre-bake soft dark depth shadow onto the canvas once (eliminates expensive CSS drop-shadow!)
                 oCtx.save();
-                oCtx.shadowColor = 'rgba(251, 229, 156, 0.45)';
-                oCtx.shadowBlur = Math.max(3, (w / 360) * 4.5);
+                oCtx.shadowColor = 'rgba(0, 0, 0, 0.52)';
+                oCtx.shadowBlur = Math.max(8, (w / 360) * 14);
+                oCtx.shadowOffsetX = -Math.round((w / 360) * 5);
+                oCtx.shadowOffsetY = Math.round((w / 360) * 10);
+                oCtx.drawImage(img, pad, pad, w, h);
+                oCtx.restore();
+
+                // 2) Draw thin golden silhouette ring
+                oCtx.save();
+                oCtx.shadowColor = 'rgba(251, 229, 156, 0.42)';
+                oCtx.shadowBlur = Math.max(3, (w / 360) * 4);
                 for (let i = 0; i < steps; i++) {
                     const ang = (i * Math.PI * 2) / steps;
                     oCtx.drawImage(goldSil, Math.cos(ang) * borderPx, Math.sin(ang) * borderPx);
@@ -1301,6 +1326,7 @@ html_content = """
                     oCtx.drawImage(goldSil, Math.cos(ang) * (borderPx * 0.65), Math.sin(ang) * (borderPx * 0.65));
                 }
 
+                // 3) Draw crisp original transparent photo on top
                 oCtx.drawImage(img, pad, pad, w, h);
 
                 img.dataset.goldBorderApplied = '1';
@@ -1314,24 +1340,22 @@ html_content = """
             }
         }
         applyGoldBorderToImage('couple-photo-img');
+        applyGoldBorderToImage('couple-photo-img-1');
         applyGoldBorderToImage('couple-photo-img-2');
 
         // ============================================================
-        // 3. 60FPS SIDE-FRAMED PARALLAX SPRITES + BIRD FLOCK ENGINE
+        // 3. 60FPS SIDE-FRAMED PARALLAX + CANVAS CELEBRATION ENGINE
         // ============================================================
         const redBackdrop = document.getElementById('red-theme-backdrop');
         const bgDecorCanvas = document.getElementById('bg-decor-canvas');
+        const midBirdsCanvas = document.getElementById('mid-birds-canvas');
         const fgDecorCanvas = document.getElementById('fg-decor-canvas');
         const bgCtx = bgDecorCanvas.getContext('2d');
+        const midCtx = midBirdsCanvas.getContext('2d');
         const fgCtx = fgDecorCanvas.getContext('2d');
 
         const shapeTypes = ['heart', 'flower', 'butterfly', 'sparkle'];
         const weddingColors = ['#ff033e', '#ffb6c1', '#d4af37', '#e6a8d7', '#ffdab9', '#ffffff', '#ffd700'];
-
-        function generateSvgGraphic(sizeRem, color) {
-            let type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-            return `<svg viewBox="0 0 32 32" width="${sizeRem}rem" height="${sizeRem}rem" fill="${color}" style="pointer-events: none;"><use href="#svg-${type}" /></svg>`;
-        }
 
         function drawVectorShape(ctx, type, color) {
             ctx.save();
@@ -1405,6 +1429,11 @@ html_content = """
             rCtx.scale(2, 2);
             drawVectorShape(rCtx, type, color);
 
+            if (blurPx <= 0.1) {
+                spriteCache[key] = raw;
+                return raw;
+            }
+
             const out = document.createElement('canvas');
             out.width = size;
             out.height = size;
@@ -1429,19 +1458,22 @@ html_content = """
         }
 
         const isMobile = window.innerWidth <= 768;
-        const bgCount = isMobile ? 28 : 56;
-        const fgCount = isMobile ? 12 : 24;
+        const bgCount = isMobile ? 24 : 56;
+        const fgCount = isMobile ? 10 : 24;
 
         let dW = 0, dH = 0, dDpr = 1;
         function resizeDecorCanvases() {
             dW = window.innerWidth;
             dH = window.innerHeight;
-            dDpr = Math.min(window.devicePixelRatio || 1, 2);
-            bgDecorCanvas.width = Math.floor(dW * dDpr);
-            bgDecorCanvas.height = Math.floor(dH * dDpr);
-            fgDecorCanvas.width = Math.floor(dW * dDpr);
-            fgDecorCanvas.height = Math.floor(dH * dDpr);
+            // Capping mobile canvas DPR at 1.25 cuts fill-rate load by >60% with zero visual loss
+            dDpr = isMobile ? Math.min(window.devicePixelRatio || 1, 1.25) : Math.min(window.devicePixelRatio || 1, 2);
+
+            [bgDecorCanvas, midBirdsCanvas, fgDecorCanvas].forEach(c => {
+                c.width = Math.floor(dW * dDpr);
+                c.height = Math.floor(dH * dDpr);
+            });
             bgCtx.setTransform(dDpr, 0, 0, dDpr, 0, 0);
+            midCtx.setTransform(dDpr, 0, 0, dDpr, 0, 0);
             fgCtx.setTransform(dDpr, 0, 0, dDpr, 0, 0);
         }
         resizeDecorCanvases();
@@ -1449,8 +1481,8 @@ html_content = """
         function makeParticle(isFg) {
             const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
             const color = weddingColors[Math.floor(Math.random() * weddingColors.length)];
-            const sizePx = isFg ? (Math.random() * 28 + 34) : (Math.random() * 22 + 16);
-            const blurPx = isFg ? 3.2 : 1.6;
+            const sizePx = isFg ? (Math.random() * 26 + 32) : (Math.random() * 20 + 16);
+            const blurPx = isFg ? 3.0 : 1.5;
 
             const isLeft = Math.random() > 0.5;
             const marginBand = isMobile ? 0.08 : 0.14;
@@ -1512,6 +1544,56 @@ html_content = """
             });
         }
 
+        // Zero-DOM Canvas Celebration Particle Arrays (Eliminates mobile DOM/SVG lag!)
+        const cannonParticles = [];
+        const explosionBirds = [];
+
+        function fireSideCannon(side) {
+            const now = performance.now();
+            const count = isMobile ? 36 : 75;
+            for (let i = 0; i < count; i++) {
+                const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+                const color = weddingColors[Math.floor(Math.random() * weddingColors.length)];
+                const angleDeg = side === 'left' ? -(Math.random() * 50 + 20) : -(Math.random() * 50 + 110);
+                const angle = angleDeg * (Math.PI / 180);
+                const velocity = Math.random() * (isMobile ? 620 : 1000) + 360;
+
+                cannonParticles.push({
+                    sprite: getBlurredSprite(type, color, 0),
+                    side,
+                    tx: Math.cos(angle) * velocity,
+                    ty: Math.sin(angle) * velocity,
+                    rotMax: (Math.random() - 0.5) * 12,
+                    sizePx: Math.random() * 20 + 20,
+                    startTime: now + Math.random() * 2000,
+                    duration: Math.random() * 5000 + 10000
+                });
+            }
+        }
+
+        function spawnExplosionFlock() {
+            const now = performance.now();
+            const scrollY = window.scrollY || window.pageYOffset || 0;
+            const cRect = coupleDetails.getBoundingClientRect();
+            const originDocX = cRect.left + cRect.width / 2;
+            const originDocY = cRect.top + cRect.height / 2 + scrollY;
+
+            const count = isMobile ? 22 : 42;
+            for (let i = 0; i < count; i++) {
+                explosionBirds.push({
+                    originDocX,
+                    originDocY,
+                    tx: (Math.random() - 0.5) * dW * 2.2,
+                    ty: -(Math.random() * dH * 1.4 + 420),
+                    rotMax: (Math.random() - 0.5) * 0.7,
+                    scaleBase: (Math.random() * 14 + 28) / 52,
+                    flapPhase: Math.random() * Math.PI * 2,
+                    startTime: now + Math.random() * 2200,
+                    duration: Math.random() * 5000 + 15000
+                });
+            }
+        }
+
         // ============================================================
         // 4. LOCKED SINGLE-SCROLL + SYNCHRONIZED SLOW EASE-IN-OUT PHOTOS
         // ============================================================
@@ -1519,6 +1601,7 @@ html_content = """
         const part2Section = document.getElementById('part2-section');
         const coupleDetails = document.getElementById('couple-details');
         const couplePhotoWrap = document.getElementById('couple-photo-wrap');
+        const couplePhotoWrap1 = document.getElementById('couple-photo-wrap-1');
         const couplePhotoWrap2 = document.getElementById('couple-photo-wrap-2');
         const sections = Array.from(document.querySelectorAll('.snap-section'));
 
@@ -1527,27 +1610,40 @@ html_content = """
         let scrollCooldownUntil = 0;
         let celebrationTriggered = false;
         let redBlend = 0;
-        let currentPhotoP = 0;
+        let currentPhoto1P = 0; // Section 1 (couple1.avif envelope)
+        let currentPhoto2P = 0; // Section 2 (couple.png heart box + couple2.png bouquet)
 
-        function applyCouplePhotoProgress(p) {
-            const clamped = clamp01(p);
+        function applySectionPhotosProgress(p1, p2) {
             const isSmall = window.innerWidth <= 960;
-            const op = clamp01(clamped * 1.35);
 
-            // Right Picture (Heart Box): Slides in from 105% -> 23% (~77% inside right side)
+            // Section 1 Left Picture (couple1.avif Envelope): Tilts in at ~60deg from left
+            if (couplePhotoWrap1) {
+                const c1 = clamp01(p1);
+                const x1 = -115 + c1 * (115 - 22);
+                const rot1 = 20 + c1 * 40; // Ends at 60deg
+                const op1 = clamp01(c1 * 1.35);
+                couplePhotoWrap1.style.opacity = op1.toFixed(3);
+                couplePhotoWrap1.style.transform = isSmall
+                    ? `translate3d(${x1.toFixed(3)}%, 0, 0) rotate(${rot1.toFixed(2)}deg)`
+                    : `translate3d(${x1.toFixed(3)}%, -50%, 0) rotate(${rot1.toFixed(2)}deg)`;
+            }
+
+            // Section 2 Pictures (Right Heart Box + Left 60deg Bouquet)
+            const c2 = clamp01(p2);
+            const op2 = clamp01(c2 * 1.35);
+
             if (couplePhotoWrap) {
-                const xRight = 105 - clamped * (105 - 23);
-                couplePhotoWrap.style.opacity = op.toFixed(3);
+                const xRight = 105 - c2 * (105 - 23);
+                couplePhotoWrap.style.opacity = op2.toFixed(3);
                 couplePhotoWrap.style.transform = isSmall
                     ? `translate3d(${xRight.toFixed(3)}%, 0, 0)`
                     : `translate3d(${xRight.toFixed(3)}%, -50%, 0)`;
             }
 
-            // Left Picture (Flower Bouquet): Tilts in from left side (-115%, 20deg -> -20%, 60deg)
             if (couplePhotoWrap2) {
-                const xLeft = -115 + clamped * (115 - 20);
-                const rotLeft = 20 + clamped * 40; // Ends at 60 degrees tilt!
-                couplePhotoWrap2.style.opacity = op.toFixed(3);
+                const xLeft = -115 + c2 * (115 - 20);
+                const rotLeft = 20 + c2 * 40; // Ends at 60deg
+                couplePhotoWrap2.style.opacity = op2.toFixed(3);
                 couplePhotoWrap2.style.transform = isSmall
                     ? `translate3d(${xLeft.toFixed(3)}%, 0, 0) rotate(${rotLeft.toFixed(2)}deg)`
                     : `translate3d(${xLeft.toFixed(3)}%, -50%, 0) rotate(${rotLeft.toFixed(2)}deg)`;
@@ -1577,32 +1673,34 @@ html_content = """
             const endY = getSectionTargetY(targetIdx);
             const distance = endY - startY;
 
-            // Slower, graceful 2.4s glide whenever entering or leaving the Name Reveal & Photos section
-            const involvesCouple = (targetIdx === 2 || prevIdx === 2);
-            const duration = involvesCouple ? 2400 : 1650;
+            const involvesPhotoSec = (targetIdx === 1 || prevIdx === 1 || targetIdx === 2 || prevIdx === 2);
+            const duration = involvesPhotoSec ? 2350 : 1650;
 
-            const startPhotoP = currentPhotoP;
-            const endPhotoP = (targetIdx === 2) ? 1 : 0;
+            const startP1 = currentPhoto1P;
+            const endP1 = (targetIdx === 1) ? 1 : 0;
+            const startP2 = currentPhoto2P;
+            const endP2 = (targetIdx === 2) ? 1 : 0;
             const startTime = performance.now();
 
             function step(now) {
                 const elapsed = now - startTime;
                 const t = Math.min(1, elapsed / duration);
-                // easeInOutQuart provides a slower, gentler ease-in and longer cushioned ease-out
-                const ease = involvesCouple ? easeInOutQuart(t) : easeInOutCubic(t);
+                const ease = involvesPhotoSec ? easeInOutQuart(t) : easeInOutCubic(t);
 
                 window.scrollTo(0, startY + distance * ease);
 
-                // Both pictures' ease-in & ease-out start at t=0 and finish cleanly at t=1 with scroll!
-                currentPhotoP = startPhotoP + (endPhotoP - startPhotoP) * ease;
-                applyCouplePhotoProgress(currentPhotoP);
+                // Pictures ease-in & ease-out 1:1 synced with scroll progress
+                currentPhoto1P = startP1 + (endP1 - startP1) * ease;
+                currentPhoto2P = startP2 + (endP2 - startP2) * ease;
+                applySectionPhotosProgress(currentPhoto1P, currentPhoto2P);
 
                 if (t < 1) {
                     requestAnimationFrame(step);
                 } else {
                     window.scrollTo(0, endY);
-                    currentPhotoP = endPhotoP;
-                    applyCouplePhotoProgress(currentPhotoP);
+                    currentPhoto1P = endP1;
+                    currentPhoto2P = endP2;
+                    applySectionPhotosProgress(currentPhoto1P, currentPhoto2P);
                     isAutoScrolling = false;
                     scrollCooldownUntil = performance.now() + 250;
                 }
@@ -1646,19 +1744,19 @@ html_content = """
             const dx = touchStartX - e.touches[0].clientX;
             const dy = touchStartY - e.touches[0].clientY;
 
+            // Only permit native horizontal touch panning inside the schedule table
             if (touchInTable && Math.abs(dx) > Math.abs(dy)) return;
 
+            // Always prevent vertical native scroll immediately so page never drags with finger
+            e.preventDefault();
+
             if (!isCurtainOpening || isAutoScrolling || performance.now() < scrollCooldownUntil) {
-                e.preventDefault();
                 return;
             }
 
-            if (Math.abs(dy) > 16) {
-                e.preventDefault();
-                if (!touchTriggered) {
-                    touchTriggered = true;
-                    stepSection(dy > 0 ? 1 : -1);
-                }
+            if (Math.abs(dy) > 14 && !touchTriggered) {
+                touchTriggered = true;
+                stepSection(dy > 0 ? 1 : -1);
             }
         }, { passive: false });
 
@@ -1726,7 +1824,7 @@ html_content = """
             bgCtx.clearRect(0, 0, dW, dH);
             fgCtx.clearRect(0, 0, dW, dH);
 
-            // 1. Background Side-Framed Parallax Sprites (0.15x scroll speed)
+            // 1. Background Side-Framed Parallax Sprites
             const bgWrapH = dH + 180;
             for (let i = 0; i < bgParticles.length; i++) {
                 const p = bgParticles[i];
@@ -1819,7 +1917,48 @@ html_content = """
                 }
             }
 
-            // 3. Foreground Side-Framed Parallax Sprites (1.40x scroll speed)
+            // 3. Behind-Names Explosion Bird Flock (Drawn on Canvas at z-index 10 -> 0 DOM/SVG lag!)
+            if (explosionBirds.length > 0) {
+                midCtx.clearRect(0, 0, dW, dH);
+                midCtx.strokeStyle = '#f5deb3';
+                midCtx.lineWidth = 3.4;
+                midCtx.lineCap = 'round';
+                midCtx.lineJoin = 'round';
+
+                for (let i = explosionBirds.length - 1; i >= 0; i--) {
+                    const eb = explosionBirds[i];
+                    const p = (now - eb.startTime) / eb.duration;
+                    if (p < 0) continue;
+                    if (p >= 1) {
+                        explosionBirds.splice(i, 1);
+                        continue;
+                    }
+                    const ease = 1 - Math.pow(1 - p, 2.2);
+                    const bx = eb.originDocX + eb.tx * ease;
+                    const by = (eb.originDocY - scrollY) + eb.ty * ease;
+                    const sc = eb.scaleBase * (0.35 + 1.15 * ease);
+                    const alpha = p < 0.12 ? (p / 0.12) * 0.92 : (1 - (p - 0.12) / 0.88) * 0.92;
+
+                    const flap = Math.sin(timeSec * 6.5 + eb.flapPhase) * 0.5 + 0.5;
+                    const tipY = -12 + flap * 26;
+                    const ctrlY = -8 + flap * 13;
+
+                    midCtx.save();
+                    midCtx.globalAlpha = Math.max(0, alpha);
+                    midCtx.translate(bx, by);
+                    midCtx.rotate(eb.rotMax * ease);
+                    midCtx.scale(sc, sc);
+                    midCtx.beginPath();
+                    midCtx.moveTo(-26, tipY);
+                    midCtx.quadraticCurveTo(-12, ctrlY, 0, 2);
+                    midCtx.quadraticCurveTo(12, ctrlY, 26, tipY);
+                    midCtx.stroke();
+                    midCtx.restore();
+                }
+                if (explosionBirds.length === 0) midCtx.clearRect(0, 0, dW, dH);
+            }
+
+            // 4. Foreground Side-Framed Parallax Sprites
             const fgWrapH = dH + 220;
             for (let i = 0; i < fgParticles.length; i++) {
                 const p = fgParticles[i];
@@ -1851,6 +1990,46 @@ html_content = """
                 if (popRot !== 0) fgCtx.rotate(popRot);
                 fgCtx.scale(popScale * flapX, popScale);
                 fgCtx.drawImage(p.sprite, -drawSize * 0.5, -drawSize * 0.5, drawSize, drawSize);
+                fgCtx.restore();
+            }
+
+            // 5. Foreground Side-Cannon Explosion Sprites (Drawn directly on fgCtx -> 60fps on mobile!)
+            for (let i = cannonParticles.length - 1; i >= 0; i--) {
+                const cp = cannonParticles[i];
+                const p = (now - cp.startTime) / cp.duration;
+                if (p < 0) continue;
+                if (p >= 1) {
+                    cannonParticles.splice(i, 1);
+                    continue;
+                }
+
+                const origX = cp.side === 'left' ? -20 : dW + 20;
+                const origY = dH * 0.90;
+                let x, y, sc, alpha;
+
+                if (p < 0.25) {
+                    const q = 1 - Math.pow(1 - p / 0.25, 3);
+                    x = origX + cp.tx * 0.8 * q;
+                    y = origY + cp.ty * 0.8 * q;
+                    sc = 0.3 + 0.7 * q;
+                    alpha = Math.min(1, p * 20);
+                } else {
+                    const q = (p - 0.25) / 0.75;
+                    const qEase = 1 - Math.pow(1 - q, 2);
+                    x = origX + cp.tx * (0.8 + 0.7 * qEase);
+                    const peakY = origY + cp.ty * 0.8;
+                    y = peakY + (dH + 650 - peakY) * (0.35 * q + 0.65 * q * q);
+                    sc = 1 - 0.4 * q;
+                    alpha = Math.max(0, 1 - Math.pow(q, 1.4));
+                }
+
+                const drawSize = cp.sizePx * (112 / 64);
+                fgCtx.save();
+                fgCtx.globalAlpha = alpha;
+                fgCtx.translate(x, y);
+                fgCtx.rotate(cp.rotMax * p);
+                fgCtx.scale(sc, sc);
+                fgCtx.drawImage(cp.sprite, -drawSize * 0.5, -drawSize * 0.5, drawSize, drawSize);
                 fgCtx.restore();
             }
 
@@ -1899,7 +2078,7 @@ html_content = """
         window.addEventListener('resize', () => {
             resizeDecorCanvases();
             updateTableSlideBar();
-            applyCouplePhotoProgress(currentPhotoP);
+            applySectionPhotosProgress(currentPhoto1P, currentPhoto2P);
             if (isCurtainOpening && !isAutoScrolling) {
                 window.scrollTo(0, getSectionTargetY(currentSectionIdx));
             }
@@ -1946,10 +2125,11 @@ html_content = """
             setTimeout(() => {
                 fitBismillah();
                 updateTableSlideBar();
-                applyCouplePhotoProgress(0);
+                applySectionPhotosProgress(0, 0);
                 mainContent.classList.add('site-revealed');
 
                 bgDecorCanvas.classList.add('decor-revealed');
+                midBirdsCanvas.classList.add('decor-revealed');
                 fgDecorCanvas.classList.add('decor-revealed');
                 if (!decorLoopActive) {
                     decorLoopActive = true;
@@ -1961,9 +2141,7 @@ html_content = """
                 setTimeout(() => {
                     mainContent.style.filter = 'none';
                     mainContent.style.transform = 'none';
-                    bgDecorCanvas.style.filter = 'none';
-                    fgDecorCanvas.style.filter = 'none';
-                }, 1900);
+                }, 1700);
             }, 1000);
         }
 
@@ -2045,110 +2223,9 @@ html_content = """
                 else { clearInterval(timer); }
             }, 30);
         }
-
-        // ============================================================
-        // 10. CUSTOM SIDE-CANNONS (Left & Right Bottom Screen)
-        // ============================================================
-        function fireSideCannon(side) {
-            const container = document.createElement('div');
-            container.style.position = 'fixed';
-            container.style[side] = '-20px';
-            container.style.bottom = '10%';
-            container.style.zIndex = '1000';
-            container.style.pointerEvents = 'none';
-            document.body.appendChild(container);
-
-            const particleCount = isMobile ? 40 : 80;
-
-            for (let i = 0; i < particleCount; i++) {
-                let p = document.createElement('div');
-                p.style.position = 'absolute';
-
-                let randomSize = Math.random() * 1.5 + 1.2;
-                let randomColor = weddingColors[Math.floor(Math.random() * weddingColors.length)];
-                p.innerHTML = generateSvgGraphic(randomSize, randomColor);
-
-                let angleDeg = side === 'left' ? -(Math.random() * 50 + 20) : -(Math.random() * 50 + 110);
-                let angle = angleDeg * (Math.PI / 180);
-
-                let velocity = Math.random() * 1000 + 400;
-                let tx = Math.cos(angle) * velocity;
-                let ty = Math.sin(angle) * velocity;
-                let rot = (Math.random() - 0.5) * 720;
-                let delay = Math.random() * 2000;
-
-                p.animate([
-                    { transform: `translate(0px, 0px) scale(0) rotate(0deg)`, opacity: 0 },
-                    { transform: `translate(0px, 0px) scale(0.5) rotate(0deg)`, opacity: 1, offset: 0.05 },
-                    { transform: `translate(${tx * 0.8}px, ${ty * 0.8}px) scale(1) rotate(${rot/2}deg)`, opacity: 1, offset: 0.25 },
-                    { transform: `translate(${tx * 1.5}px, ${window.innerHeight + 1000}px) scale(0.6) rotate(${rot}deg)`, opacity: 0 }
-                ], {
-                    duration: Math.random() * 5000 + 10000,
-                    delay: delay,
-                    easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
-                    fill: 'forwards'
-                });
-
-                container.appendChild(p);
-            }
-            setTimeout(() => container.remove(), 17000);
-        }
-
-        // ============================================================
-        // 11. SLOW-MOTION FLOCK OF BIRDS EMERGING BEHIND COUPLE NAMES
-        // ============================================================
-        function spawnExplosionFlock() {
-            const mcRect = mainContent.getBoundingClientRect();
-            const coupleRect = coupleDetails.getBoundingClientRect();
-            const originX = (coupleRect.left - mcRect.left) + coupleRect.width / 2;
-            const originY = (coupleRect.top - mcRect.top) + coupleRect.height / 2;
-
-            const flockContainer = document.createElement('div');
-            flockContainer.style.position = 'absolute';
-            flockContainer.style.left = `${originX}px`;
-            flockContainer.style.top = `${originY}px`;
-            flockContainer.style.width = '0px';
-            flockContainer.style.height = '0px';
-            flockContainer.style.zIndex = '10';
-            flockContainer.style.pointerEvents = 'none';
-            mainContent.insertBefore(flockContainer, part2Section);
-
-            const birdCount = isMobile ? 25 : 45;
-            for (let i = 0; i < birdCount; i++) {
-                let bird = document.createElement('div');
-                bird.style.position = 'absolute';
-                bird.style.left = '0px';
-                bird.style.top = '0px';
-
-                let flapDelay = '-' + (Math.random() * 0.5).toFixed(2) + 's';
-                bird.innerHTML = `
-                    <svg class="bird-svg explosion-flock-bird" viewBox="0 0 100 60" width="${Math.random() * 15 + 32}" height="22">
-                        <path class="bird-wing explosion-bird-path" style="animation-delay: ${flapDelay};" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 5 10 Q 30 15 50 30 Q 70 15 95 10" />
-                    </svg>`;
-
-                let tx = (Math.random() - 0.5) * window.innerWidth * 2.4;
-                let ty = - (Math.random() * window.innerHeight * 1.4 + 420);
-                let rot = (Math.random() - 0.5) * 40;
-                let delay = Math.random() * 2200;
-
-                bird.animate([
-                    { transform: `translate(-50%, -50%) scale(0.35) rotate(0deg)`, opacity: 0 },
-                    { transform: `translate(calc(-50% + ${tx * 0.12}px), calc(-50% + ${ty * 0.12}px)) scale(0.75) rotate(${rot * 0.3}deg)`, opacity: 0.95, offset: 0.15 },
-                    { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(1.5) rotate(${rot}deg)`, opacity: 0 }
-                ], {
-                    duration: Math.random() * 5000 + 15000,
-                    delay: delay,
-                    easing: 'ease-out',
-                    fill: 'forwards'
-                });
-
-                flockContainer.appendChild(bird);
-            }
-            setTimeout(() => flockContainer.remove(), 25000);
-        }
     </script>
 </body>
 </html>
-""".replace("__COUPLE_PHOTO_HTML__", couple_photo_html).replace("__COUPLE_PHOTO_2_HTML__", couple_photo_2_html)
+""".replace("__COUPLE_PHOTO_HTML__", couple_photo_html).replace("__COUPLE_PHOTO_1_HTML__", couple_photo_1_html).replace("__COUPLE_PHOTO_2_HTML__", couple_photo_2_html)
 
 components.html(html_content, scrolling=True)
