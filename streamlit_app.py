@@ -45,10 +45,10 @@ st.markdown(
 def load_image_html(base_name, img_id, alt_text, placeholder_text):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     candidates = [
-        f"{base_name}.avif", f"{base_name}.png", f"{base_name}.webp", f"{base_name}.jpg", f"{base_name}.jpeg",
-        os.path.join("images", f"{base_name}.avif"),
+        f"{base_name}.png", f"{base_name}.webp", f"{base_name}.avif", f"{base_name}.jpg", f"{base_name}.jpeg",
         os.path.join("images", f"{base_name}.png"),
         os.path.join("images", f"{base_name}.webp"),
+        os.path.join("images", f"{base_name}.avif"),
         os.path.join("images", f"{base_name}.jpg"),
         os.path.join("images", f"{base_name}.jpeg"),
     ]
@@ -78,7 +78,7 @@ couple_photo_1_html = load_image_html(
     "couple1",
     "couple-photo-img-1",
     "Sealed Vintage Envelope",
-    "Upload <b>couple1.avif</b><br>to your GitHub repo root"
+    "Upload transparent <b>couple1.png</b><br>to your GitHub repo root"
 )
 couple_photo_2_html = load_image_html(
     "couple2",
@@ -102,7 +102,6 @@ html_content = """
             margin: 0; padding: 0;
             overflow-x: clip;
             overscroll-behavior: none;
-            /* Locks native mobile drag so fingers never fight auto-scroll */
             touch-action: none;
         }
         body {
@@ -117,7 +116,7 @@ html_content = """
             color: #4a3b32;
         }
 
-        /* --- Royal Crimson Red Theme Backdrop (Fast GPU Gradient without expensive blend modes) --- */
+        /* --- Royal Crimson Red Theme Backdrop --- */
         #red-theme-backdrop {
             position: fixed;
             inset: 0;
@@ -368,7 +367,7 @@ html_content = """
         @keyframes continuousBloom { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.08) rotate(3deg); } }
         @keyframes hoverfly { 0% { transform: translateY(0) translateX(0) rotate(-10deg); } 100% { transform: translateY(-15px) translateX(15px) rotate(15deg); } }
 
-        /* Left Side Envelope (couple1.avif) in Inviting Names Section */
+        /* Left Side Envelope (couple1.png) in Inviting Names Section */
         .couple-photo-wrap-1 {
             position: absolute;
             left: 0;
@@ -467,7 +466,6 @@ html_content = """
             will-change: transform, opacity;
         }
 
-        /* Zero live CSS filter on .couple-photo — shadow is pre-baked onto the image! */
         .couple-photo {
             width: 100%;
             height: 100%;
@@ -561,7 +559,6 @@ html_content = """
             overflow-x: auto;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            /* Lets user swipe table horizontally while vertical swipes still drive section auto-scroll! */
             touch-action: pan-x;
         }
         table { width: 100%; border-collapse: collapse; min-width: 480px; }
@@ -629,7 +626,7 @@ html_content = """
         .visible-up { opacity: 1 !important; filter: blur(0px) !important; transform: translateY(0) !important; }
 
         /* =========================================
-           MOBILE & TABLET RESPONSIVENESS (Ultra-Smooth GPU Transitions)
+           MOBILE & TABLET RESPONSIVENESS
            ========================================= */
         @media (max-width: 960px) {
             .couple-details {
@@ -662,7 +659,6 @@ html_content = """
 
         @media (max-width: 768px) {
             .snap-section { padding: 4.5vh 24px; }
-            /* Lighter blur on mobile prevents GPU texture bottleneck during reveals */
             .bismillah, .type-fade, .hadith-box, .schedule-box, .rsvp-box, .footer-text {
                 filter: blur(5px);
             }
@@ -780,7 +776,7 @@ html_content = """
                </div>
            </section>
 
-           <!-- SECTION 1: Inviting People's Names + Blooming Garden + Left Envelope (couple1.avif) -->
+           <!-- SECTION 1: Inviting People's Names + Blooming Garden + Left Envelope (couple1.png) -->
            <section id="sec-hosts" class="snap-section">
                <div class="obs ink-trigger" style="width: 100%; display: flex; align-items: center; justify-content: center;">
                    <div class="ink-spread-anim">
@@ -790,7 +786,7 @@ html_content = """
                                Mr. Ahmer Mukhtar (Late)<br>
                                Mrs. Mehnaz Ahmer<br>
                                Mr. Ali Ahmer<br>
-                               Mr. Umer Ahmer
+                               Mr. Umer Mukhtar
                            </span>
                            cordially request the pleasure of your company<br>
                            at the <span class="wedding-word">wedding</span> ceremonies of their beloved daughter &amp; sister
@@ -926,6 +922,12 @@ html_content = """
                                <td>11:00 AM onwards</td>
                                <td>Grand Al-Noor Marriage Hall (JTS)<br><span class="venue-sub">(Near Faridia Park, Tariq Bin Ziad Colony, Sahiwal)</span></td>
                            </tr>
+                           <tr>
+                               <td><b>WALIMA</b></td>
+                               <td>26th December, 2026</td>
+                               <td>12:00 PM</td>
+                               <td>To be Finalized</td>
+                           </tr>
                        </table>
                    </div>
                </div>
@@ -936,7 +938,7 @@ html_content = """
                <div class="rsvp-box obs fade-up">
                    <div class="rsvp-heading">RSVP:</div>
                    <div class="rsvp-detail">Mr. Ali Ahmer: <a href="tel:03088887023" class="rsvp-phone">0308-8887023</a></div>
-                   <div class="rsvp-detail">Mr. Umer Ahmer: <a href="tel:03009696692" class="rsvp-phone">0300-9696692</a></div>
+                   <div class="rsvp-detail">Mr. Umer Mukhtar: <a href="tel:03009696692" class="rsvp-phone">0300-9696692</a></div>
 
                    <div class="rsvp-heading" style="margin-top: 28px;">With Best Compliments From:</div>
                    <div class="rsvp-detail">All Relatives &amp; Friends</div>
@@ -1258,7 +1260,6 @@ html_content = """
             document.fonts.ready.then(fitBismillah);
         }
 
-        // Traces exact alpha contour, adds thin metallic gold outline + pre-bakes drop shadow once (0ms runtime filter!)
         function applyGoldBorderToImage(imgId) {
             const img = document.getElementById(imgId);
             if (!img || img.dataset.goldBorderApplied) return;
@@ -1274,7 +1275,7 @@ html_content = """
                 const w = Math.round(origW * downScale);
                 const h = Math.round(origH * downScale);
 
-                const pad = 26; // Extra space for pre-baked drop shadow + thin gold outline
+                const pad = 26;
                 const cw = w + pad * 2;
                 const ch = h + pad * 2;
 
@@ -1302,7 +1303,7 @@ html_content = """
                 const borderPx = Math.max(1.6, (w / 360) * 1.65);
                 const steps = 28;
 
-                // 1) Pre-bake soft dark depth shadow onto the canvas once (eliminates expensive CSS drop-shadow!)
+                // Pre-bake depth shadow once (0ms live filter cost)
                 oCtx.save();
                 oCtx.shadowColor = 'rgba(0, 0, 0, 0.52)';
                 oCtx.shadowBlur = Math.max(8, (w / 360) * 14);
@@ -1311,7 +1312,6 @@ html_content = """
                 oCtx.drawImage(img, pad, pad, w, h);
                 oCtx.restore();
 
-                // 2) Draw thin golden silhouette ring
                 oCtx.save();
                 oCtx.shadowColor = 'rgba(251, 229, 156, 0.42)';
                 oCtx.shadowBlur = Math.max(3, (w / 360) * 4);
@@ -1326,7 +1326,6 @@ html_content = """
                     oCtx.drawImage(goldSil, Math.cos(ang) * (borderPx * 0.65), Math.sin(ang) * (borderPx * 0.65));
                 }
 
-                // 3) Draw crisp original transparent photo on top
                 oCtx.drawImage(img, pad, pad, w, h);
 
                 img.dataset.goldBorderApplied = '1';
@@ -1344,7 +1343,7 @@ html_content = """
         applyGoldBorderToImage('couple-photo-img-2');
 
         // ============================================================
-        // 3. 60FPS SIDE-FRAMED PARALLAX + CANVAS CELEBRATION ENGINE
+        // 3. 60FPS SIDE-FRAMED PARALLAX + REALISTIC GRAVITY CELEBRATION
         // ============================================================
         const redBackdrop = document.getElementById('red-theme-backdrop');
         const bgDecorCanvas = document.getElementById('bg-decor-canvas');
@@ -1465,7 +1464,6 @@ html_content = """
         function resizeDecorCanvases() {
             dW = window.innerWidth;
             dH = window.innerHeight;
-            // Capping mobile canvas DPR at 1.25 cuts fill-rate load by >60% with zero visual loss
             dDpr = isMobile ? Math.min(window.devicePixelRatio || 1, 1.25) : Math.min(window.devicePixelRatio || 1, 2);
 
             [bgDecorCanvas, midBirdsCanvas, fgDecorCanvas].forEach(c => {
@@ -1544,29 +1542,30 @@ html_content = """
             });
         }
 
-        // Zero-DOM Canvas Celebration Particle Arrays (Eliminates mobile DOM/SVG lag!)
+        // Realistic Parabolic Gravity Cannon Particles (Fast arc & immediate natural fall!)
         const cannonParticles = [];
         const explosionBirds = [];
 
         function fireSideCannon(side) {
             const now = performance.now();
-            const count = isMobile ? 36 : 75;
+            const count = isMobile ? 38 : 75;
             for (let i = 0; i < count; i++) {
                 const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
                 const color = weddingColors[Math.floor(Math.random() * weddingColors.length)];
-                const angleDeg = side === 'left' ? -(Math.random() * 50 + 20) : -(Math.random() * 50 + 110);
+                const angleDeg = side === 'left' ? -(Math.random() * 42 + 30) : -(Math.random() * 42 + 108);
                 const angle = angleDeg * (Math.PI / 180);
-                const velocity = Math.random() * (isMobile ? 620 : 1000) + 360;
+                const speed = Math.random() * (isMobile ? 420 : 540) + (isMobile ? 560 : 760);
 
                 cannonParticles.push({
                     sprite: getBlurredSprite(type, color, 0),
                     side,
-                    tx: Math.cos(angle) * velocity,
-                    ty: Math.sin(angle) * velocity,
-                    rotMax: (Math.random() - 0.5) * 12,
-                    sizePx: Math.random() * 20 + 20,
-                    startTime: now + Math.random() * 2000,
-                    duration: Math.random() * 5000 + 10000
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    gravity: isMobile ? 860 : 1020,
+                    spinSpeed: (Math.random() - 0.5) * 7.5,
+                    phase: Math.random() * Math.PI * 2,
+                    sizePx: Math.random() * 18 + 20,
+                    startTime: now + Math.random() * 1350
                 });
             }
         }
@@ -1588,8 +1587,8 @@ html_content = """
                     rotMax: (Math.random() - 0.5) * 0.7,
                     scaleBase: (Math.random() * 14 + 28) / 52,
                     flapPhase: Math.random() * Math.PI * 2,
-                    startTime: now + Math.random() * 2200,
-                    duration: Math.random() * 5000 + 15000
+                    startTime: now + Math.random() * 2000,
+                    duration: Math.random() * 5000 + 14000
                 });
             }
         }
@@ -1610,13 +1609,13 @@ html_content = """
         let scrollCooldownUntil = 0;
         let celebrationTriggered = false;
         let redBlend = 0;
-        let currentPhoto1P = 0; // Section 1 (couple1.avif envelope)
+        let currentPhoto1P = 0; // Section 1 (couple1.png envelope)
         let currentPhoto2P = 0; // Section 2 (couple.png heart box + couple2.png bouquet)
 
         function applySectionPhotosProgress(p1, p2) {
             const isSmall = window.innerWidth <= 960;
 
-            // Section 1 Left Picture (couple1.avif Envelope): Tilts in at ~60deg from left
+            // Section 1 Left Picture (couple1.png Envelope): Tilts in at ~60deg from left
             if (couplePhotoWrap1) {
                 const c1 = clamp01(p1);
                 const x1 = -115 + c1 * (115 - 22);
@@ -1642,7 +1641,7 @@ html_content = """
 
             if (couplePhotoWrap2) {
                 const xLeft = -115 + c2 * (115 - 20);
-                const rotLeft = 20 + c2 * 40; // Ends at 60deg
+                const rotLeft = 20 + c2 * 40;
                 couplePhotoWrap2.style.opacity = op2.toFixed(3);
                 couplePhotoWrap2.style.transform = isSmall
                     ? `translate3d(${xLeft.toFixed(3)}%, 0, 0) rotate(${rotLeft.toFixed(2)}deg)`
@@ -1689,7 +1688,6 @@ html_content = """
 
                 window.scrollTo(0, startY + distance * ease);
 
-                // Pictures ease-in & ease-out 1:1 synced with scroll progress
                 currentPhoto1P = startP1 + (endP1 - startP1) * ease;
                 currentPhoto2P = startP2 + (endP2 - startP2) * ease;
                 applySectionPhotosProgress(currentPhoto1P, currentPhoto2P);
@@ -1744,10 +1742,8 @@ html_content = """
             const dx = touchStartX - e.touches[0].clientX;
             const dy = touchStartY - e.touches[0].clientY;
 
-            // Only permit native horizontal touch panning inside the schedule table
             if (touchInTable && Math.abs(dx) > Math.abs(dy)) return;
 
-            // Always prevent vertical native scroll immediately so page never drags with finger
             e.preventDefault();
 
             if (!isCurtainOpening || isAutoScrolling || performance.now() < scrollCooldownUntil) {
@@ -1917,7 +1913,7 @@ html_content = """
                 }
             }
 
-            // 3. Behind-Names Explosion Bird Flock (Drawn on Canvas at z-index 10 -> 0 DOM/SVG lag!)
+            // 3. Behind-Names Explosion Bird Flock (Canvas, z-index 10)
             if (explosionBirds.length > 0) {
                 midCtx.clearRect(0, 0, dW, dH);
                 midCtx.strokeStyle = '#f5deb3';
@@ -1993,41 +1989,38 @@ html_content = """
                 fgCtx.restore();
             }
 
-            // 5. Foreground Side-Cannon Explosion Sprites (Drawn directly on fgCtx -> 60fps on mobile!)
+            // 5. Realistic Gravity Side-Cannon Particles (Quick natural arc & immediate fall!)
             for (let i = cannonParticles.length - 1; i >= 0; i--) {
                 const cp = cannonParticles[i];
-                const p = (now - cp.startTime) / cp.duration;
-                if (p < 0) continue;
-                if (p >= 1) {
+                const t = (now - cp.startTime) / 1000;
+                if (t < 0) continue;
+
+                const origX = cp.side === 'left' ? -20 : dW + 20;
+                const origY = dH * 0.88;
+
+                // Continuous parabolic projectile physics with gentle air drag (no pause at apex!)
+                const dragX = 0.72;
+                const dragY = 0.35;
+                const x = origX
+                        + cp.vx * ((1 - Math.exp(-dragX * t)) / dragX)
+                        + Math.sin(t * 4.0 + cp.phase) * 12 * Math.min(1, t);
+                const y = origY
+                        + cp.vy * ((1 - Math.exp(-dragY * t)) / dragY)
+                        + 0.5 * cp.gravity * t * t;
+
+                if (y > dH + 140 || t > 4.6) {
                     cannonParticles.splice(i, 1);
                     continue;
                 }
 
-                const origX = cp.side === 'left' ? -20 : dW + 20;
-                const origY = dH * 0.90;
-                let x, y, sc, alpha;
-
-                if (p < 0.25) {
-                    const q = 1 - Math.pow(1 - p / 0.25, 3);
-                    x = origX + cp.tx * 0.8 * q;
-                    y = origY + cp.ty * 0.8 * q;
-                    sc = 0.3 + 0.7 * q;
-                    alpha = Math.min(1, p * 20);
-                } else {
-                    const q = (p - 0.25) / 0.75;
-                    const qEase = 1 - Math.pow(1 - q, 2);
-                    x = origX + cp.tx * (0.8 + 0.7 * qEase);
-                    const peakY = origY + cp.ty * 0.8;
-                    y = peakY + (dH + 650 - peakY) * (0.35 * q + 0.65 * q * q);
-                    sc = 1 - 0.4 * q;
-                    alpha = Math.max(0, 1 - Math.pow(q, 1.4));
-                }
-
+                const sc = Math.min(1, 0.35 + t * 3.0);
+                const alpha = t > 2.8 ? Math.max(0, 1 - (t - 2.8) / 1.2) : Math.min(1, t * 8);
                 const drawSize = cp.sizePx * (112 / 64);
+
                 fgCtx.save();
                 fgCtx.globalAlpha = alpha;
                 fgCtx.translate(x, y);
-                fgCtx.rotate(cp.rotMax * p);
+                fgCtx.rotate(cp.spinSpeed * t);
                 fgCtx.scale(sc, sc);
                 fgCtx.drawImage(cp.sprite, -drawSize * 0.5, -drawSize * 0.5, drawSize, drawSize);
                 fgCtx.restore();
